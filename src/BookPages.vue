@@ -1,5 +1,9 @@
 <template>
   <div>
+    <div class="config-container">
+      <button class="save-button" @click="saveContent">Sauvegarder</button>
+      <button class="close-button" @click="close">Close</button>
+    </div>
     <div class="pages-container" v-if="pages[currentPage]">
       <!-- Page de Gauche -->
       <RecipePage 
@@ -11,10 +15,9 @@
       />
     </div>
     <div class="navigation-container">
-      <button @click="prevPage" :disabled="currentPage === 0" class="nav-button">Précédent</button>
+      <button class="nav-button" @click="prevPage" :disabled="currentPage === 0">Précédent</button>
       <span class="page-number">Pages {{ currentPage * 2 + 1 }} - {{ currentPage * 2 + 2 }}</span>
-      <button @click="nextPage" :disabled="isNextButtonDisabled" class="nav-button">Suivant</button>
-      <button @click="saveContent" class="save-button">Sauvegarder</button>
+      <button class="nav-button" @click="nextPage" :disabled="isNextButtonDisabled">Suivant</button>
     </div>
   </div>
 </template>
@@ -29,7 +32,7 @@ export default {
   components: {
     RecipePage
   },
-  data() {
+  data() {  //ici quand cur°page change, page est aussi reset car si une valeur dans data bouge, les autre sont rechargé
     return {
       // Tableau pour stocker plusieurs doubles pages
       pages: [
@@ -38,6 +41,9 @@ export default {
       // Index de la double page actuelle
       currentPage: 0,
     };
+  },
+  props: {
+    pagesVisible: false
   },
   computed: {
     isNextButtonDisabled() {
@@ -51,8 +57,11 @@ export default {
       try {
         const parsedPages = JSON.parse(savedPages);
         // S'assurer que les données chargées ont la bonne structure
-        if (Array.isArray(parsedPages) && parsedPages.length > 0 && parsedPages[0].left && parsedPages[0].right) {
-          this.pages = parsedPages;
+        if (Array.isArray(parsedPages) && parsedPages.every(p => p && typeof p.left === 'object' && typeof p.right === 'object')) {
+          // Limiter au nombre maximum de pages pour éviter les problèmes
+          this.pages = parsedPages.slice(0, MAX_DOUBLE_PAGES);
+        } else {
+          throw new Error("Invalid data structure in localStorage.");
         }
       } catch (e) {
         console.error("Erreur lors de la lecture des pages sauvegardées:", e);
@@ -68,14 +77,16 @@ export default {
 
       alert("Contenu sauvegardé dans le navigateur !");
     },
+    close() {
+      this.$emit('close-book');
+    },
     nextPage() {
-      // Si on est sur la dernière page et qu'on peut en ajouter, on le fait.
-      if (this.currentPage === this.pages.length - 1 && this.pages.length < MAX_DOUBLE_PAGES) {
+      if (this.currentPage < MAX_DOUBLE_PAGES - 1) {
+        this.currentPage++;
+        // Ajouter une nouvelle double page si on arrive sur une page qui n'existe pas encore
+        if (this.currentPage === this.pages.length) {
         this.pages.push({ left: createEmptyPage(), right: createEmptyPage() });
-      }
-      // On ne peut avancer que s'il y a une page suivante.
-      if (this.currentPage < this.pages.length - 1) {
-          this.currentPage++;
+        }
       }
     },
     prevPage() {
@@ -88,19 +99,29 @@ export default {
 </script>
 
 <style scoped>
+
+.config-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 20px;
+  gap: 20px; /* Espace entre les boutons */
+}
+
 .pages-container {
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
+  margin-top: 10px;
+  justify-content: left;
+  align-items: center;
   flex-direction: row; /* Ensure pages are side by side */
 }
 
 .navigation-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   margin-top: 20px;
-  gap: 20px; /* Espace entre les boutons */
+  gap: 20px;
 }
 
 .page-number {
@@ -117,6 +138,16 @@ export default {
   font-size: 16px;
   cursor: pointer;
   background-color: #4CAF50; /* Green */
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.close-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #e02929; /* Green */
   color: white;
   border: none;
   border-radius: 5px;

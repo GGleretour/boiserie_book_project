@@ -2,15 +2,15 @@
   <div class="page">
     <img src="./assets/book_boiserie_page.png" alt="Page background" class="page-image">
     <div class="page-content">
-      <input type="text" :value="pageData.title" @input="updateField('title', $event.target.value)" placeholder="Titre de la recette" class="recipe-title">
+      <input type="text" v-model="editablePageData.title" placeholder="Titre de la recette" class="recipe-title">
       <div class="recipe-body">
         <div class="recipe-image-container">
           <img v-if="pageData.imageUrl" :src="pageData.imageUrl" alt="Recipe Image" class="recipe-image">
-          <input type="text" :value="pageData.imageUrl" @input="updateField('imageUrl', $event.target.value)" placeholder="URL de l'image" class="image-url-input">
+          <input type="text" v-model="editablePageData.imageUrl" placeholder="URL de l'image" class="image-url-input">
         </div>
-        <textarea :value="pageData.ingredients" @input="updateField('ingredients', $event.target.value)" placeholder="Liste des ingrédients..." class="ingredients-list"></textarea>
+        <textarea v-model="editablePageData.ingredients" placeholder="Liste des ingrédients..." class="ingredients-list"></textarea>
       </div>
-      <textarea :value="pageData.description" @input="updateField('description', $event.target.value)" placeholder="Description de la recette..." class="recipe-description"></textarea>
+      <textarea v-model="editablePageData.description" placeholder="Description de la recette..." class="recipe-description"></textarea>
     </div>
   </div>
 </template>
@@ -23,14 +23,15 @@ export default {
       required: true,
     }
   },
-  emits: ['update:pageData'],
-  methods: {
-    updateField(field, value) {
-      const updatedData = {
-        ...this.pageData,
-        [field]: value
-      };
-      this.$emit('update:pageData', updatedData);
+  emits: ['update:pageData.object', 'update:pageData'],
+  computed: {
+    editablePageData: {
+      get() {
+        return this.pageData;
+      },
+      set(newValue) {
+        this.$emit('update:pageData', newValue);
+      }
     }
   }
 }
@@ -39,11 +40,10 @@ export default {
 <style scoped>
 .page {
   position: relative;
-  width: 45%;
 }
 
 .page-image {
-  width: 45vw;
+  width: 600px;
   height: auto;
   display: block;
 }
@@ -61,7 +61,7 @@ export default {
 }
 
 .recipe-title {
-  font-size: 1.5vw;
+  font-size: 1.5;
   font-weight: bold;
   text-align: center;
   background: transparent;
@@ -79,10 +79,11 @@ export default {
 }
 
 .recipe-image-container {
-  flex: 1;
+  flex: 2;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
+  margin-top: 50%;
 }
 
 .recipe-image {
@@ -94,7 +95,7 @@ export default {
 
 .image-url-input {
   width: 100%;
-  font-size: 0.7vw;
+  font-size: 1;
   background: #f0f0f0;
   border: 1px solid #ccc;
   padding: 2px;
@@ -105,7 +106,7 @@ export default {
   background: transparent;
   border: 1px solid #ccc;
   padding: 5px;
-  font-size: 0.9vw;
+  font-size: 1;
   resize: none;
 }
 </style>
