@@ -84,7 +84,7 @@ export default {
     },
     visibleCubes() {
       // Filtre les cubes pour la double-page actuelle
-      return this.cubes.filter(cube => cube.page === this.currentPage);
+      return this.cubes.filter(cube => cube.page === this.currentPage && !cube.isInInventory);
     },
     leftPageCubes() {
       // Cubes pour la page de gauche

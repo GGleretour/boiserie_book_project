@@ -35,6 +35,7 @@
       v-show="readMeVisible"
       @close-book="receiveEmit"
     />
+    <SpecialCube :cubes="cubes" />
 </main>
 </template>
 
@@ -42,12 +43,14 @@
 import BookPages from './BookPages.vue';
 import ReadMe from './ReadMe.vue';
 import Cube from './Cube.vue';
+import SpecialCube from './SpecialCube.vue';
 import { cubesinfos } from './cubes';
 export default {
   components: {
     BookPages,
     ReadMe,
     Cube,
+    SpecialCube,
   },
   data()
   {
@@ -61,7 +64,7 @@ export default {
   computed: {
     homeCubes() {
       // Affiche les cubes qui n'ont pas de page assignée (ceux de la page principale)
-      return this.cubes.filter(cube => cube.page === undefined || cube.page === null);
+      return this.cubes.filter(cube => (cube.page === undefined || cube.page === null) && !cube.isInInventory);
     }
   },
   methods: {

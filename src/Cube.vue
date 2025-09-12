@@ -6,7 +6,7 @@
     <img
       alt="cube"
       :src="cubeData.img_src"
-      @mousedown="startDrag"
+      @mousedown.stop="startDrag"
       draggable="false"
       />
   </div>
@@ -33,6 +33,11 @@ export default {
       default: 920, // Valeur par défaut pour la page d'accueil
       note: "Hauteur de la zone de rebond.",
     },
+    overrideSize: {
+      type: String,
+      default: null,
+      note: "Permet de forcer une taille pour le cube (ex: '50px')."
+    }
   },
   data() {
     return {
@@ -52,17 +57,25 @@ export default {
         left: this.cubeData.find ? `${this.currentLeft}px` : this.cubeData.x_out, // Positionne le cube
         top: this.cubeData.find ? `${this.currentTop}px` : this.cubeData.y_out, // Positionne le cube
         opacity: this.cubeData.find ? 1 : this.cubeData.opacity,
-        width: this.cubeData.width,
-        height: this.cubeData.height,
+        width: this.overrideSize || this.cubeData.width,
+        height: this.overrideSize || this.cubeData.height,
+        // Passe en position 'fixed' pendant le drag pour un positionnement fiable
+        position: this.isDragging ? 'fixed' : 'absolute',
     };
     }
+  },
+  created() {
+    // Initialise la position du cube lors de sa création.
+    // Si le cube est dans l'inventaire et a des coordonnées de départ, on les utilise.
+    // Sinon, on utilise les coordonnées de base.
+    this.currentLeft = (this.cubeData.isInInventory && this.cubeData.inventoryStartX) || parseInt(this.cubeData.x_out, 10);
+    this.currentTop = (this.cubeData.isInInventory && this.cubeData.inventoryStartY) || parseInt(this.cubeData.y_out, 10);
   },
   methods: {
     startDrag(event) {
       // Empêche le comportement par défaut du navigateur (comme la sélection ou le glisser-déposer d'image)
       event.preventDefault();
 
-      // Si le cube n'a pas encore été trouvé, on le marque comme tel.
       if (!this.cubeData.find) {
         this.cubeData.find = true;
       }
@@ -70,11 +83,10 @@ export default {
       this.isDragging = true;
       // Arrête toute animation en cours
       this.velocityY = 0;
+      this.velocityX = 0;
 
-      // Initialise la position du cube à sa position de départ
-      this.currentLeft = parseInt(this.cubeData.x_out, 10);
-      this.currentTop = parseInt(this.cubeData.y_out, 10);
-
+      // On ne réinitialise PAS la position ici, on la conserve.
+      // La position sera mise à jour par onDrag.
       // Empêche la sélection de texte/images pendant le drag
       document.body.classList.add('no-select');
 
@@ -87,16 +99,34 @@ export default {
       if (!this.isDragging) return;
 
       // Met à jour la position du cube pour suivre le curseur de la souris.
-      // Nous devons obtenir la position du conteneur parent pour calculer la position relative.
-      const parentRect = this.$el.parentElement.getBoundingClientRect();
-      this.currentLeft = event.clientX - parentRect.left;
-      this.currentTop = event.clientY - parentRect.top;
+      // Comme le cube est en 'position: fixed', on peut utiliser directement les coordonnées du client.
+      this.currentLeft = event.clientX;
+      this.currentTop = event.clientY;
     },
 
-    stopDrag() {
+    stopDrag(event) {
       if (!this.isDragging) return;
 
       this.isDragging = false;
+
+      // Vérifie si le cube est lâché sur le SpecialCube (qui agit comme un inventaire)
+      const inventoryEl = document.getElementById('special-cube-container');
+      if (inventoryEl) {
+        const rect = inventoryEl.getBoundingClientRect();
+        if (event.clientX >= rect.left && event.clientX <= rect.right &&
+            event.clientY >= rect.top && event.clientY <= rect.bottom) { // Le cube est lâché DANS l'inventaire
+          this.cubeData.isInInventory = true; // Marque le cube comme étant "contenu"
+          // On stocke les coordonnées RELATIVES au conteneur pour l'initialisation du nouveau cube
+          this.cubeData.inventoryStartX = event.clientX - rect.left;
+          this.cubeData.inventoryStartY = event.clientY - rect.top;
+        } else if (this.cubeData.isInInventory) {
+          // Le cube était dans l'inventaire et est lâché DEHORS
+          this.cubeData.isInInventory = false;
+          // Réinitialise sa position là où la souris l'a lâché
+          this.currentLeft = event.clientX;
+          this.currentTop = event.clientY;
+        }
+      }
 
       // Réactive la sélection de texte/images
       document.body.classList.remove('no-select');
