@@ -1,7 +1,7 @@
 <template>
   <div>
+    <!-- Le bouton "Close" est conservé pour fermer le livre -->
     <div class="config-container">
-      <button class="save-button" @click="saveContent">Sauvegarder</button>
       <button class="close-button" @click="close">Close</button>
     </div>
     <div class="pages-container" v-if="pages[currentPage]">
@@ -15,78 +15,72 @@
       />
     </div>
     <div class="navigation-container">
-      <button class="nav-button" @click="prevPage" :disabled="currentPage === 0">Précédent</button>
+      <img
+        id="arrow_left"
+        src="./assets/arrow.png" 
+        alt="arrow left"
+        class="nav-button"
+        @click="prevPage"
+        width="100"
+        height="100"
+        :disabled="currentPage === 0"/>
       <span class="page-number">Pages {{ currentPage * 2 + 1 }} - {{ currentPage * 2 + 2 }}</span>
-      <button class="nav-button" @click="nextPage" :disabled="isNextButtonDisabled">Suivant</button>
+      <img
+        id="arrow_right"
+        src="./assets/arrow.png" 
+        alt="arrow right"
+        class="nav-button"
+        @click="nextPage"
+        width="100"
+        height="100"
+        :disabled="isNextButtonDisabled"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import RecipePage from './RecipePage.vue';
-import { MAX_DOUBLE_PAGES } from './config.js';
-
-const createEmptyPage = () => ({ title: '', imageUrl: '', ingredients: '', description: '' });
+import { pageImages } from './pages.js';
 
 export default {
   components: {
     RecipePage
   },
-  data() {  //ici quand cur°page change, page est aussi reset car si une valeur dans data bouge, les autre sont rechargé
-    return {
-      // Tableau pour stocker plusieurs doubles pages
-      pages: [
-        { left: createEmptyPage(), right: createEmptyPage() }
-      ],
-      // Index de la double page actuelle
-      currentPage: 0,
-    };
-  },
   props: {
-    pagesVisible: false
+    // Cette prop n'est plus utilisée mais conservée pour ne pas causer d'erreur dans le parent
+    pagesVisible: Boolean
+  },
+  data() {
+    // Crée les doubles-pages à partir de la liste d'images
+    const pages = [];
+    for (let i = 0; i < pageImages.length; i += 2) {
+      pages.push({
+        left: { imageUrl: pageImages[i] || null },
+        right: { imageUrl: pageImages[i + 1] || null },
+      });
+    }
+
+    return {
+      // Le livre est maintenant basé sur les images importées
+      pages: pages,
+      // Index de la double page actuelle
+      currentPage: 0
+    };
   },
   computed: {
     isNextButtonDisabled() {
-      return this.currentPage >= MAX_DOUBLE_PAGES - 1;
-    }
-  },
-  mounted() {
-    // Charger le contenu depuis le localStorage quand le composant est monté
-    const savedPages = localStorage.getItem('boiserieBookPages');
-    if (savedPages) {
-      try {
-        const parsedPages = JSON.parse(savedPages);
-        // S'assurer que les données chargées ont la bonne structure
-        if (Array.isArray(parsedPages) && parsedPages.every(p => p && typeof p.left === 'object' && typeof p.right === 'object')) {
-          // Limiter au nombre maximum de pages pour éviter les problèmes
-          this.pages = parsedPages.slice(0, MAX_DOUBLE_PAGES);
-        } else {
-          throw new Error("Invalid data structure in localStorage.");
-        }
-      } catch (e) {
-        console.error("Erreur lors de la lecture des pages sauvegardées:", e);
-        // En cas d'erreur, on réinitialise le localStorage pour éviter des problèmes futurs
-        localStorage.removeItem('boiserieBookPages');
-      }
+      // Le bouton "suivant" est désactivé si on est sur la dernière double-page
+      return this.currentPage >= this.pages.length - 1;
     }
   },
   methods: {
-    saveContent() {
-      // Sauvegarder le contenu dans le localStorage
-      localStorage.setItem('boiserieBookPages', JSON.stringify(this.pages));
-
-      alert("Contenu sauvegardé dans le navigateur !");
-    },
     close() {
       this.$emit('close-book');
     },
     nextPage() {
-      if (this.currentPage < MAX_DOUBLE_PAGES - 1) {
+      if (this.currentPage < this.pages.length - 1) {
         this.currentPage++;
-        // Ajouter une nouvelle double page si on arrive sur une page qui n'existe pas encore
-        if (this.currentPage === this.pages.length) {
-        this.pages.push({ left: createEmptyPage(), right: createEmptyPage() });
-        }
       }
     },
     prevPage() {
@@ -118,13 +112,15 @@ export default {
 
 .navigation-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
-  gap: 20px;
+  margin-top: -80px;
+  gap: 60px;
 }
 
 .page-number {
+  z-index:2;
+
   font-size: 16px;
   color: #333;
   background-color: rgba(255, 255, 255, 0.7);
@@ -154,17 +150,21 @@ export default {
 }
 
 .nav-button {
-  padding: 10px 20px;
-  font-size: 16px;
+  z-index:2;
+
+  padding: 10px 10px;
+  font-size: 30px;
   cursor: pointer;
-  background-color: #008CBA; /* Blue */
-  color: white;
-  border: none;
-  border-radius: 5px;
 }
 
 .nav-button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+}
+#arrow_right {
+  scale: 1 -1;
+}
+#arrow_left {
+  scale: -1 -1;
 }
 </style>
