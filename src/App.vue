@@ -21,13 +21,16 @@
       />
       <Cube 
         v-for="cube in homeCubes"
-        :key="cube.id" :cube-data="cube"
+        :key="cube.id" 
+        :cube-data="cube"
+        @discovered="spawnDiscoveredCube"
       />
     </div>
     <BookPages
       v-show="pagesVisible"
       @close-book="receiveEmit"
       @page-changed="updateCurrentBookPage"
+      @discovered="spawnDiscoveredCube"
       :cubes="cubes"
       :current-book-page="currentBookPage"
     />
@@ -74,8 +77,7 @@ export default {
       currentBookPage: -1, // -1 signifie que le livre est fermé
       // Gère l'état des cubes découverts
       discoveredCubes: [
-        { id: 'dc-1', isStored: false },
-        { id: 'dc-2', isStored: false },
+        // Cette liste sera remplie dynamiquement
       ],
     };
   },
@@ -103,6 +105,11 @@ export default {
     },
     updateCurrentBookPage(pageIndex) {
       this.currentBookPage = pageIndex;
+    },
+    spawnDiscoveredCube() {
+      const newId = `dc-${Date.now()}`; // Crée un ID unique
+      this.discoveredCubes.push({ id: newId, isStored: false });
+      console.log('Nouveau DiscoveredCube créé !', newId);
     },
     storeDiscoveredCube(cubeId) {
       const cube = this.discoveredCubes.find(c => c.id === cubeId);

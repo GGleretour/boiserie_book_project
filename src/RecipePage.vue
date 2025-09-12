@@ -5,8 +5,9 @@
       v-for="cube in cubes"
       :key="cube.id"
       :cube-data="cube"
-      :floor-width="pageWidth"
-      :floor-height="pageHeight" />
+      :floor-width="pageWidth" 
+      :floor-height="pageHeight"
+      @discovered="$emit('discovered')" />
 
     <!-- Affiche directement l'image de la page si elle existe -->
     <img v-if="pageData.imageUrl" :src="pageData.imageUrl" alt="Page du livre" class="page-image">

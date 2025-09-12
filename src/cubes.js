@@ -17,7 +17,7 @@ export const cubesinfos = [
   },
   {
     id:"cube-2",
-    img_src:'../src/assets/ronge_bois_symbole.png',
+    img_src:'../src/assets/book_boiserie.png',
     find:false,
     stocked:false,
     opacity: 0.2,

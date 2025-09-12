@@ -78,6 +78,8 @@ export default {
 
       if (!this.cubeData.find) {
         this.cubeData.find = true;
+        // Emet un événement pour signaler qu'un cube a été découvert
+        this.$emit('discovered');
       }
 
       this.isDragging = true;

@@ -10,7 +10,8 @@
         v-model:pageData="pages[currentPage].left"
         :cubes="leftPageCubes"
         :page-width="640"
-        :page-height="920"
+        :page-height="920" 
+        @discovered="$emit('discovered')"
       />
       <!-- Page de Droite -->
       <RecipePage 
@@ -18,6 +19,7 @@
         :cubes="rightPageCubes"
         :page-width="640"
         :page-height="920"
+        @discovered="$emit('discovered')"
       />
     </div>
     <div class="navigation-container">
