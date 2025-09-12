@@ -10,23 +10,27 @@
   </header>
 
   <main>
-    <img
-      v-show="pagesVisible == false && readMeVisible == false"
-      src="./assets/book_boiserie.png"
-      alt="Book Cover"
-      class="book-cover"
-      width="400"
-      height="600"
-      @click="showPages"
-    />
+    <div v-show="pagesVisible == false && readMeVisible == false" class="home-container">
+      <img
+        src="./assets/book_boiserie.png"
+        alt="Book Cover"
+        class="book-cover"
+        width="400"
+        height="600"
+        @click="showPages"
+      />
+      <Cube 
+        v-for="cube in homeCubes"
+        :key="cube.id" :cube-data="cube"
+      />
+    </div>
     <BookPages
       v-show="pagesVisible"
       @close-book="receiveEmit"
+      @page-changed="updateCurrentBookPage"
+      :cubes="cubes"
+      :current-book-page="currentBookPage"
     />
-    <Cube v-show="pagesVisible == false && readMeVisible == false"
-      v-for="cube in cubes"
-      :key="cube.id"
-      :cubeid="cube"/>
     <ReadMe
       v-show="readMeVisible"
       @close-book="receiveEmit"
@@ -47,30 +51,23 @@ export default {
   },
   data()
   {
-    const cubes = [];
-
-    for (let i = 0; i < cubesinfos.length; i += 1)
-      cubes.push( {
-          id: cubesinfos[i].id,
-          img_src:cubesinfos[i].img_src,
-          find:cubesinfos[i].find,
-          stocked:cubesinfos[i].stocked,
-          transparence:cubesinfos[i].transparence,
-          x_out:cubesinfos[i].x_out,
-          y_out:cubesinfos[i].y_out,
-          x_in:cubesinfos[i].x_in,
-          y_in:cubesinfos[i].y_in,
-          rotation:cubesinfos[i].rotation,
-      });
     return {
       pagesVisible: false,
       readMeVisible: false,
-      cubes: cubes
+      cubes: cubesinfos, // Utilisation directe du tableau importé
+      currentBookPage: -1, // -1 signifie que le livre est fermé
     };
+  },
+  computed: {
+    homeCubes() {
+      // Affiche les cubes qui n'ont pas de page assignée (ceux de la page principale)
+      return this.cubes.filter(cube => cube.page === undefined || cube.page === null);
+    }
   },
   methods: {
     showPages() {
       this.pagesVisible = true;
+      this.currentBookPage = 0; // Le livre s'ouvre à la première double-page (index 0)
     },
     showReadMe() {
       this.readMeVisible = true;
@@ -78,7 +75,11 @@ export default {
     receiveEmit(){
       this.pagesVisible = false;
       this.readMeVisible = false;
-    }
+      this.currentBookPage = -1; // Le livre est fermé
+    },
+    updateCurrentBookPage(pageIndex) {
+      this.currentBookPage = pageIndex;
+    },
   },
 };
 </script>
@@ -99,6 +100,10 @@ header {
 .book-cover {
   display: block;
   margin: 0 auto 2rem;
+}
+
+.home-container {
+  position: relative;
 }
 
 

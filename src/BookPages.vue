@@ -8,10 +8,12 @@
       <!-- Page de Gauche -->
       <RecipePage 
         v-model:pageData="pages[currentPage].left"
+        :cubes="leftPageCubes"
       />
       <!-- Page de Droite -->
       <RecipePage 
         v-model:pageData="pages[currentPage].right"
+        :cubes="rightPageCubes"
       />
     </div>
     <div class="navigation-container">
@@ -40,16 +42,19 @@
 </template>
 
 <script>
+import Cube from './Cube.vue';
 import RecipePage from './RecipePage.vue';
 import { pageImages } from './pages.js';
 
 export default {
   components: {
-    RecipePage
+    RecipePage,
+    Cube,
   },
   props: {
-    // Cette prop n'est plus utilisée mais conservée pour ne pas causer d'erreur dans le parent
-    pagesVisible: Boolean
+    cubes: Array,
+    currentBookPage: Number,
+    pagesVisible: Boolean // Cette prop n'est plus utilisée mais conservée pour l'instant
   },
   data() {
     // Crée les doubles-pages à partir de la liste d'images
@@ -64,7 +69,7 @@ export default {
     return {
       // Le livre est maintenant basé sur les images importées
       pages: pages,
-      // Index de la double page actuelle
+      // Index de la double page actuelle (utilisera la prop)
       currentPage: 0
     };
   },
@@ -72,6 +77,18 @@ export default {
     isNextButtonDisabled() {
       // Le bouton "suivant" est désactivé si on est sur la dernière double-page
       return this.currentPage >= this.pages.length - 1;
+    },
+    visibleCubes() {
+      // Filtre les cubes pour la double-page actuelle
+      return this.cubes.filter(cube => cube.page === this.currentPage);
+    },
+    leftPageCubes() {
+      // Cubes pour la page de gauche
+      return this.visibleCubes.filter(cube => cube.side === 'left');
+    },
+    rightPageCubes() {
+      // Cubes pour la page de droite
+      return this.visibleCubes.filter(cube => cube.side === 'right');
     }
   },
   methods: {
@@ -81,11 +98,13 @@ export default {
     nextPage() {
       if (this.currentPage < this.pages.length - 1) {
         this.currentPage++;
+        this.$emit('page-changed', this.currentPage);
       }
     },
     prevPage() {
       if (this.currentPage > 0) {
         this.currentPage--;
+        this.$emit('page-changed', this.currentPage);
       }
     },
   },
