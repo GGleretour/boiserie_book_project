@@ -10,14 +10,13 @@
       draggable="false"
       class="background-img"
     />
-    <!-- Affiche les cubes qui sont à l'intérieur -->
-    <Cube
-      v-for="cube in containedCubes"
-      :key="cube.id"
-      :cube-data="cube"
-      :floor-width="parseInt(width, 10)"
-      :floor-height="parseInt(height, 10)"
-      override-size="50px"
+    <!-- Affiche les cubes découverts qui sont stockés à l'intérieur -->
+    <DiscoveredCube
+      v-for="cube in storedDiscoveredCubes"
+      :key="`stored-${cube.id}`"
+      :is-in-inventory="true"
+      :cube-id="cube.id"
+      @released="$emit('release-discovered-cube', cube.id)"
     />
   </div>
 </template>
@@ -26,16 +25,20 @@
 // --- Constantes pour la physique de l'animation ---
 const GRAVITY = 0.3;
 const DAMPING = 0.95;
-import Cube from './Cube.vue';
+import DiscoveredCube from './DiscoveredCube.vue';
 
 export default {
   name: 'SpecialCube',
-  components: { Cube },
+  components: { DiscoveredCube },
   props: {
     cubes: {
       type: Array,
       default: () => [],
     },
+    storedDiscoveredCubes: {
+      type: Array,
+      default: () => [],
+    }
   },
   data() {
     return {
@@ -61,16 +64,6 @@ export default {
         height: this.height,
         cursor: this.isDragging ? 'grabbing' : 'grab',
       };
-    },
-    containedCubes() {
-      // Filtre les cubes pour n'afficher que ceux qui sont dans ce conteneur.
-      // On utilise une propriété `isInInventory` pour cela.
-      return this.cubes.filter(cube => {
-        if (cube.isInInventory && !cube.find) {
-          cube.find = true; // Active le cube pour l'animation
-        }
-        return cube.isInInventory;
-      });
     },
     floorWidth() {
       return window.innerWidth;
@@ -165,10 +158,6 @@ export default {
   object-fit: cover;
   border-radius: 8px;
   z-index: -1; /* Place l'image en arrière-plan des cubes contenus */
-}
-
-::v-deep(.cube-container) {
-  z-index: 1001; /* S'assure que les cubes sont au-dessus de l'image de fond */
 }
 
 /*

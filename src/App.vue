@@ -35,7 +35,18 @@
       v-show="readMeVisible"
       @close-book="receiveEmit"
     />
-    <SpecialCube :cubes="cubes" />
+    <SpecialCube 
+      :cubes="cubes" 
+      :stored-discovered-cubes="storedDiscoveredCubes"
+      @release-discovered-cube="releaseDiscoveredCube"
+    />
+    <DiscoveredCube
+      v-for="cube in discoveredCubes"
+      :key="cube.id"
+      v-show="!cube.isStored"
+      :cube-id="cube.id"
+      @stored="storeDiscoveredCube"
+    />
 </main>
 </template>
 
@@ -44,6 +55,7 @@ import BookPages from './BookPages.vue';
 import ReadMe from './ReadMe.vue';
 import Cube from './Cube.vue';
 import SpecialCube from './SpecialCube.vue';
+import DiscoveredCube from './DiscoveredCube.vue';
 import { cubesinfos } from './cubes';
 export default {
   components: {
@@ -51,6 +63,7 @@ export default {
     ReadMe,
     Cube,
     SpecialCube,
+    DiscoveredCube,
   },
   data()
   {
@@ -59,13 +72,21 @@ export default {
       readMeVisible: false,
       cubes: cubesinfos, // Utilisation directe du tableau importé
       currentBookPage: -1, // -1 signifie que le livre est fermé
+      // Gère l'état des cubes découverts
+      discoveredCubes: [
+        { id: 'dc-1', isStored: false },
+        { id: 'dc-2', isStored: false },
+      ],
     };
   },
   computed: {
     homeCubes() {
       // Affiche les cubes qui n'ont pas de page assignée (ceux de la page principale)
       return this.cubes.filter(cube => (cube.page === undefined || cube.page === null) && !cube.isInInventory);
-    }
+    },
+    storedDiscoveredCubes() {
+      return this.discoveredCubes.filter(c => c.isStored);
+    },
   },
   methods: {
     showPages() {
@@ -83,6 +104,18 @@ export default {
     updateCurrentBookPage(pageIndex) {
       this.currentBookPage = pageIndex;
     },
+    storeDiscoveredCube(cubeId) {
+      const cube = this.discoveredCubes.find(c => c.id === cubeId);
+      if (cube) {
+        cube.isStored = true;
+      }
+    },
+    releaseDiscoveredCube(cubeId) {
+      const cube = this.discoveredCubes.find(c => c.id === cubeId);
+      if (cube) {
+        cube.isStored = false;
+      }
+    }
   },
 };
 </script>

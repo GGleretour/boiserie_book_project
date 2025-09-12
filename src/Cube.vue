@@ -13,8 +13,8 @@
 </template>
 <script>
 // --- Constantes pour la physique de l'animation ---
-const GRAVITY = 0.3; // Accélération verticale
-const DAMPING = 0.95; // Facteur d'amortissement (0.8 = 80% de l'énergie conservée après un rebond).
+const GRAVITY = 0.1; // Accélération verticale
+const DAMPING = 1; // Facteur d'amortissement (0.8 = 80% de l'énergie conservée après un rebond).
 
 export default {
   props: {

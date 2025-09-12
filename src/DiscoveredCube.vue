@@ -1,0 +1,174 @@
+<template>
+  <div
+    class="discovered-cube-container"
+    :style="cubeStyle"
+    @mousedown.stop="startDrag"
+  >
+    <img
+      alt="discovered-cube"
+      src="./assets/ronge_bois_symbole.png"
+      draggable="false"
+    />
+  </div>
+</template>
+
+<script>
+// --- Constantes pour la physique de l'animation ---
+const GRAVITY = 0.3;
+const DAMPING = 0.95;
+
+export default {
+  name: 'DiscoveredCube',
+  props: {
+    isInInventory: {
+      type: Boolean,
+      default: false,
+    },
+    cubeId: {
+      type: String,
+      required: true,
+    }
+  },
+  data() {
+    return {
+      // --- Données de l'élément ---
+      width: '100px',
+      height: '100px',
+
+      // --- État de la physique et du déplacement ---
+      currentLeft: window.innerWidth / 2,
+      currentTop: 100,
+      velocityX: (Math.random() - 0.5) * 10,
+      velocityY: (Math.random() - 0.5) * 5,
+      isDragging: false,
+      dragOffset: { x: 0, y: 0 },
+    };
+  },
+  computed: {
+    cubeStyle() {
+      return {
+        left: `${this.currentLeft}px`,
+        top: `${this.currentTop}px`,
+        width: this.isInInventory ? `${parseInt(this.width, 10) / 3}px` : this.width,
+        height: this.isInInventory ? `${parseInt(this.height, 10) / 3}px` : this.height,
+        cursor: this.isDragging ? 'grabbing' : 'grab',
+        position: this.isInInventory ? 'absolute' : 'fixed',
+        transform: 'translate(-50%, -50%)',
+      };
+    },
+  },
+  mounted() {
+    // Si le cube est créé directement dans l'inventaire, on initialise sa position au centre.
+    if (this.isInInventory) {
+      const parentRect = this.$el.parentElement.getBoundingClientRect();
+      this.currentLeft = parentRect.width / 2;
+      this.currentTop = parentRect.height / 2;
+    }
+    this.animate();
+  },
+  methods: {
+    startDrag(event) {
+      event.preventDefault();
+      this.isDragging = true;
+      document.body.classList.add('no-select');
+
+      this.dragOffset.x = event.clientX - this.currentLeft;
+      this.dragOffset.y = event.clientY - this.currentTop;
+
+      this.velocityX = 0;
+      this.velocityY = 0;
+
+      window.addEventListener('mousemove', this.onDrag);
+      window.addEventListener('mouseup', this.stopDrag);
+    },
+
+    onDrag(event) {
+      if (!this.isDragging) return;
+      this.currentLeft = event.clientX - this.dragOffset.x;
+      this.currentTop = event.clientY - this.dragOffset.y;
+    },
+
+    stopDrag(event) {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+      document.body.classList.remove('no-select');
+
+      window.removeEventListener('mousemove', this.onDrag);
+      window.removeEventListener('mouseup', this.stopDrag);
+
+      // Vérifie si le cube est lâché sur l'inventaire (SpecialCube)
+      const inventoryEl = document.getElementById('special-cube-container');
+      if (inventoryEl) {
+        const rect = inventoryEl.getBoundingClientRect();
+        if (!this.isInInventory && event.clientX >= rect.left && event.clientX <= rect.right &&
+            event.clientY >= rect.top && event.clientY <= rect.bottom) {
+          this.$emit('stored', this.cubeId); // Emet un événement avec son ID
+          return; // On arrête l'animation et la fonction
+        } else if (this.isInInventory) {
+          // Le cube est dans l'inventaire et est relâché dehors
+          this.$emit('released', this.cubeId);
+          return;
+        }
+      }
+
+      this.animate();
+    },
+
+    animate() {
+      if (this.isDragging) return;
+
+      this.velocityY += GRAVITY;
+      this.currentLeft += this.velocityX;
+      this.currentTop += this.velocityY;
+
+      // Les limites de rebond dépendent de si le cube est dans l'inventaire ou non
+      const parentRect = this.isInInventory ? this.$el.parentElement.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
+      const floorWidth = parentRect.width;
+      const floorHeight = parentRect.height;
+
+      const halfWidth = parseInt(this.width, 10) / 2;
+      const halfHeight = parseInt(this.height, 10) / 2;
+
+      // Rebond sur les murs (gauche/droite) de la fenêtre
+      if (this.currentLeft < halfWidth || this.currentLeft > floorWidth - halfWidth) {
+        this.velocityX *= -1 * DAMPING; // Inverse la vitesse
+        // Repositionne le cube juste à l'intérieur de la bordure pour éviter le "tunneling"
+        this.currentLeft = Math.max(halfWidth, Math.min(this.currentLeft, floorWidth - halfWidth));
+      }
+
+      // Rebond sur le sol et le plafond de la fenêtre
+      if (this.currentTop < halfHeight || this.currentTop > floorHeight - halfHeight) {
+        this.velocityY *= -1 * DAMPING; // Inverse la vitesse
+        // Repositionne le cube juste à l'intérieur de la bordure pour éviter le "tunneling"
+        if (this.currentTop > floorHeight - halfHeight) {
+          this.currentTop = floorHeight - halfHeight;
+        } else if (this.currentTop < halfHeight) {
+          this.currentTop = halfHeight;
+        }
+      }
+
+      requestAnimationFrame(this.animate);
+    }
+  }
+};
+</script>
+
+<style scoped>
+.discovered-cube-container {
+  z-index: 1000;
+  background-color: #f0e6d2; /* Une couleur un peu différente pour le distinguer */
+  border: 2px solid #a08c6d;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.discovered-cube-container img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  pointer-events: none;
+}
+</style>
