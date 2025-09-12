@@ -9,11 +9,15 @@
       <RecipePage 
         v-model:pageData="pages[currentPage].left"
         :cubes="leftPageCubes"
+        :page-width="640"
+        :page-height="920"
       />
       <!-- Page de Droite -->
       <RecipePage 
         v-model:pageData="pages[currentPage].right"
         :cubes="rightPageCubes"
+        :page-width="640"
+        :page-height="920"
       />
     </div>
     <div class="navigation-container">

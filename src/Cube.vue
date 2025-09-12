@@ -1,31 +1,159 @@
 <template>
-  <div 
+  <div
     class="cube-container" 
     :style="cubeStyle"
   >
     <img
       alt="cube"
       :src="cubeData.img_src"
-      width="100"
-      height="auto"
-    />
+      @mousedown="startDrag"
+      draggable="false"
+      />
   </div>
 </template>
-
 <script>
+// --- Constantes pour la physique de l'animation ---
+const GRAVITY = 0.3; // Accélération verticale
+const DAMPING = 0.95; // Facteur d'amortissement (0.8 = 80% de l'énergie conservée après un rebond).
+
 export default {
   props: {
+    /** Données du cube, incluant sa source d'image, sa position, et son état (trouvé ou non). */
     cubeData: {
       type: Object,
       required: true,
-    }
+    },
+    floorWidth: {
+      type: Number,
+      default: 800, // Valeur par défaut pour la page d'accueil
+      note: "Largeur de la zone de rebond.",
+    },
+    floorHeight: {
+      type: Number,
+      default: 920, // Valeur par défaut pour la page d'accueil
+      note: "Hauteur de la zone de rebond.",
+    },
+  },
+  data() {
+    return {
+      // Position et vitesse locales pour l'animation
+      currentLeft: 0,
+      currentTop: 0,
+      velocityX: 0,
+      velocityY: 0,
+      isDragging: false, // Pour savoir si le cube est en cours de déplacement
+    };
   },
   computed: {
     cubeStyle() {
+      // Applique le style dynamiquement en fonction de l'état du cube.
       return {
-        left: this.cubeData.x_out,
-        top: this.cubeData.y_out,
-      };
+        // Utilise la position locale si le cube est trouvé
+        left: this.cubeData.find ? `${this.currentLeft}px` : this.cubeData.x_out, // Positionne le cube
+        top: this.cubeData.find ? `${this.currentTop}px` : this.cubeData.y_out, // Positionne le cube
+        opacity: this.cubeData.find ? 1 : this.cubeData.opacity,
+        width: this.cubeData.width,
+        height: this.cubeData.height,
+    };
+    }
+  },
+  methods: {
+    startDrag(event) {
+      // Empêche le comportement par défaut du navigateur (comme la sélection ou le glisser-déposer d'image)
+      event.preventDefault();
+
+      // Si le cube n'a pas encore été trouvé, on le marque comme tel.
+      if (!this.cubeData.find) {
+        this.cubeData.find = true;
+      }
+
+      this.isDragging = true;
+      // Arrête toute animation en cours
+      this.velocityY = 0;
+
+      // Initialise la position du cube à sa position de départ
+      this.currentLeft = parseInt(this.cubeData.x_out, 10);
+      this.currentTop = parseInt(this.cubeData.y_out, 10);
+
+      // Empêche la sélection de texte/images pendant le drag
+      document.body.classList.add('no-select');
+
+      // Ajoute les écouteurs d'événements pour le déplacement et le relâchement
+      window.addEventListener('mousemove', this.onDrag);
+      window.addEventListener('mouseup', this.stopDrag);
+    },
+
+    onDrag(event) {
+      if (!this.isDragging) return;
+
+      // Met à jour la position du cube pour suivre le curseur de la souris.
+      // Nous devons obtenir la position du conteneur parent pour calculer la position relative.
+      const parentRect = this.$el.parentElement.getBoundingClientRect();
+      this.currentLeft = event.clientX - parentRect.left;
+      this.currentTop = event.clientY - parentRect.top;
+    },
+
+    stopDrag() {
+      if (!this.isDragging) return;
+
+      this.isDragging = false;
+
+      // Réactive la sélection de texte/images
+      document.body.classList.remove('no-select');
+
+      // Retire les écouteurs d'événements
+      window.removeEventListener('mousemove', this.onDrag);
+      window.removeEventListener('mouseup', this.stopDrag);
+
+      // Initialise une vitesse aléatoire pour l'animation de chute
+      this.velocityX = (Math.random() - 0.5) * 10;
+      this.velocityY = (Math.random() - 0.5) * 5;
+
+      // Démarre l'animation de chute
+      this.animate();
+    },
+
+    /**
+     * Gère la boucle d'animation pour la physique du cube (gravité et rebonds).
+     */
+    animate() {
+      // Si le cube est en train d'être déplacé par l'utilisateur, on arrête l'animation.
+      if (this.isDragging) {
+        // On s'assure que la vélocité est nulle pour qu'il ne bouge pas tout seul
+        this.velocityX = 0;
+        this.velocityY = 0;
+        return;
+      }
+      // Applique la gravité à la vitesse verticale
+      this.velocityY += GRAVITY;
+
+      // Met à jour la position
+      this.currentLeft += this.velocityX;
+      this.currentTop += this.velocityY;
+
+      // Calcule les demi-dimensions pour la détection de collision
+      const halfWidth = parseInt(this.cubeData.width, 10) / 2;
+      const halfHeight = parseInt(this.cubeData.height, 10) / 2;
+
+      // --- Détection des rebonds ---
+
+      // Rebond sur les murs (gauche/droite)
+      if (this.currentLeft < halfWidth || this.currentLeft > this.floorWidth - halfWidth) {
+        this.velocityX *= -1 * DAMPING; // Inverse la vitesse et applique l'amortissement
+        this.currentLeft = Math.max(halfWidth, Math.min(this.currentLeft, this.floorWidth - halfWidth)); // Bloque le cube à l'intérieur
+      }
+
+      // Rebond sur le sol et le plafond
+      if (this.currentTop < halfHeight || this.currentTop > this.floorHeight - halfHeight) {
+        this.velocityY *= -1 * DAMPING; // Inverse la vitesse et applique l'amortissement
+        this.currentTop = Math.max(halfHeight, Math.min(this.currentTop, this.floorHeight - halfHeight)); // Bloque le cube à l'intérieur
+      }
+
+      // Continue l'animation à la prochaine frame
+      // On arrête l'animation si le cube est presque immobile pour économiser les ressources
+      if (Math.abs(this.velocityX) > 0.1 || Math.abs(this.velocityY) > 0.1 || this.currentTop < this.floorHeight - halfHeight - 1) {
+        requestAnimationFrame(this.animate);
+      }
     }
   }
 };
@@ -37,5 +165,15 @@ export default {
   display: flex;
   position: absolute;
   transform: translate(-50%, -50%);
+}
+
+/*
+  Cette règle est ajoutée globalement via JavaScript pendant le drag.
+  Elle empêche le surlignage du texte et des images.
+*/
+::v-deep(.no-select) {
+  user-select: none;
+  -webkit-user-select: none; /* Pour Safari */
+  -moz-user-select: none;    /* Pour Firefox */
 }
 </style>
