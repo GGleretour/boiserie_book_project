@@ -11,7 +11,7 @@
         :cubes="leftPageCubes"
         :page-width="640"
         :page-height="920" 
-        @discovered="$emit('discovered')"
+        @discovered="$emit('discovered', $event)"
       />
       <!-- Page de Droite -->
       <RecipePage 
@@ -19,7 +19,7 @@
         :cubes="rightPageCubes"
         :page-width="640"
         :page-height="920"
-        @discovered="$emit('discovered')"
+        @discovered="$emit('discovered', $event)"
       />
     </div>
     <div class="navigation-container">

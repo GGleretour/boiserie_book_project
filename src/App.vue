@@ -47,6 +47,7 @@
       v-for="cube in discoveredCubes"
       :key="cube.id"
       v-show="!cube.isStored"
+      :img-src="cube.img_src"
       :cube-id="cube.id"
       @stored="storeDiscoveredCube"
     />
@@ -106,9 +107,9 @@ export default {
     updateCurrentBookPage(pageIndex) {
       this.currentBookPage = pageIndex;
     },
-    spawnDiscoveredCube() {
+    spawnDiscoveredCube(imgSrc) {
       const newId = `dc-${Date.now()}`; // Crée un ID unique
-      this.discoveredCubes.push({ id: newId, isStored: false });
+      this.discoveredCubes.push({ id: newId, isStored: false, img_src: imgSrc });
       console.log('Nouveau DiscoveredCube créé !', newId);
     },
     storeDiscoveredCube(cubeId) {

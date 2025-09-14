@@ -6,7 +6,7 @@
   >
     <img
       alt="discovered-cube"
-      src="./assets/ronge_bois_symbole.png"
+      :src="imgSrc"
       draggable="false"
     />
   </div>
@@ -24,9 +24,25 @@ export default {
       type: Boolean,
       default: false,
     },
+    imgSrc: {
+      type: String,
+      default: './assets/ronge_bois_symbole.png' // Une image par défaut
+    },
     cubeId: {
       type: String,
       required: true,
+    },
+    inventoryFloorWidth: {
+      type: Number,
+      default: null,
+    },
+    inventoryCeiling: {
+      type: Number,
+      default: 0, // 0 par défaut, ce qui correspond au haut du conteneur
+    },
+    inventoryFloor: {
+      type: Number,
+      default: null,
     }
   },
   data() {
@@ -122,8 +138,8 @@ export default {
       this.currentTop += this.velocityY;
 
       // Les limites de rebond dépendent de si le cube est dans l'inventaire ou non
-      const parentRect = this.isInInventory ? this.$el.parentElement.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
-      const floorWidth = parentRect.width;
+      const parentRect = this.isInInventory ? { width: this.inventoryFloorWidth || this.$el.parentElement.getBoundingClientRect().width, height: this.$el.parentElement.getBoundingClientRect().height } : { width: window.innerWidth, height: window.innerHeight };
+      const floorWidth = parentRect.width; // La largeur de la zone de rebond
       const floorHeight = parentRect.height;
 
       const halfWidth = parseInt(this.width, 10) / 2;
@@ -137,11 +153,12 @@ export default {
       }
 
       // Rebond sur le sol et le plafond de la fenêtre
-      if (this.currentTop < halfHeight || this.currentTop > floorHeight - halfHeight) {
+      const effectiveFloor = this.isInInventory && this.inventoryFloor !== null ? this.inventoryFloor : floorHeight;
+      if (this.currentTop < (this.isInInventory ? this.inventoryCeiling : halfHeight) || this.currentTop > effectiveFloor - halfHeight) {
         this.velocityY *= -1 * DAMPING; // Inverse la vitesse
         // Repositionne le cube juste à l'intérieur de la bordure pour éviter le "tunneling"
-        if (this.currentTop > floorHeight - halfHeight) {
-          this.currentTop = floorHeight - halfHeight;
+        if (this.currentTop > effectiveFloor - halfHeight) {
+          this.currentTop = effectiveFloor - halfHeight;
         } else if (this.currentTop < halfHeight) {
           this.currentTop = halfHeight;
         }
@@ -155,7 +172,7 @@ export default {
 
 <style scoped>
 .discovered-cube-container {
-  z-index: 1000;
+  z-index: 998; /* Juste en dessous du special-cube-container */
   background-color: #f0e6d2; /* Une couleur un peu différente pour le distinguer */
   border: 2px solid #a08c6d;
   border-radius: 10px;

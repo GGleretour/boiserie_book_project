@@ -7,7 +7,7 @@
       :cube-data="cube"
       :floor-width="pageWidth" 
       :floor-height="pageHeight"
-      @discovered="$emit('discovered')" />
+      @discovered="$emit('discovered', $event)" />
 
     <!-- Affiche directement l'image de la page si elle existe -->
     <img v-if="pageData.imageUrl" :src="pageData.imageUrl" alt="Page du livre" class="page-image">

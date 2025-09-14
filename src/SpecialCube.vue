@@ -5,18 +5,28 @@
     @mousedown="startDrag"
   >
     <img
-      alt="special-cube"
-      src="./assets/ronge_bois_symbole.png"
+      alt="special-cube_back"
+      src="./assets/sac_de_jute_2.png"
       draggable="false"
       class="background-img"
     />
     <!-- Affiche les cubes découverts qui sont stockés à l'intérieur -->
     <DiscoveredCube
-      v-for="cube in storedDiscoveredCubes"
-      :key="`stored-${cube.id}`"
-      :is-in-inventory="true"
-      :cube-id="cube.id"
-      @released="$emit('release-discovered-cube', cube.id)"
+    v-for="cube in storedDiscoveredCubes"
+    :key="`stored-${cube.id}`"
+    :is-in-inventory="true"
+    :cube-id="cube.id"
+    :img-src="cube.img_src"
+    :inventory-floor-width="140"
+    :inventory-ceiling="10"
+    :inventory-floor="160"
+    @released="$emit('release-discovered-cube', cube.id)"
+    />
+    <img
+      alt="special-cub-front"
+      src="./assets/sac_de_jute_1.png"
+      draggable="false"
+      class="background-img_2"
     />
   </div>
 </template>
@@ -138,12 +148,9 @@ export default {
 
 <style scoped>
 .special-cube-container, #special-cube-container {
-  z-index: 1000;
+  z-index: 999; /* z-index élevé pour être au-dessus des autres éléments */
   position: fixed; /* Important pour se positionner par rapport à la fenêtre */
   transform: translate(-50%, -50%);
-  border: 2px solid #c3a183;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,7 +164,22 @@ export default {
   height: 100%;
   object-fit: cover;
   border-radius: 8px;
-  z-index: -1; /* Place l'image en arrière-plan des cubes contenus */
+  z-index: 1; /* Arrière-plan */
+}
+.background-img_2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none; /* Permet de cliquer à travers pour attraper les cubes */
+  z-index: 3; /* Premier plan, au-dessus des cubes */
+}
+
+/* Cible les cubes DÉCOUVERTS qui sont DANS ce conteneur */
+::v-deep(.discovered-cube-container) {
+  z-index: 2; /* Positionne les cubes entre les deux images du sac */
 }
 
 /*
