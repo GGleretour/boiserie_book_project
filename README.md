@@ -29,6 +29,7 @@ npm run build
 ```
 
 ### Si t'es sur windows ;-;
+```sh
 tu dois : 
         installe le .zip sur github
         extrait le
@@ -42,5 +43,5 @@ tu dois :
         -> nmp run dev       #ça le lance le site web
         ferme le terminal pour couper le site
         
-
+```
 
