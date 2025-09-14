@@ -27,3 +27,20 @@ npm run dev
 ```sh
 npm run build
 ```
+
+### Si t'es sur windows ;-;
+tu dois : 
+        installe le .zip sur github
+        extrait le
+        button windows + x   #ça ouvre un terminal
+        cd ...               #ce déplacer dans le dossier du projet, y'a un fichier.json dedans
+        node -v              #pour voir si tu l'as bien (ça permet de lancer du javascript)
+        si tu l'as pas -> install node.js 'https://nodejs.org/en/download'
+        -> node -v           #pour voir si tu l'as bien
+        -> nmp -v            #pour voir si tu l'as bien
+        -> nmp install       # c'est a faire dans le dossier avec le fichier .json, plus besoin de le faire après
+        -> nmp run dev       #ça le lance le site web
+        ferme le terminal pour couper le site
+        
+
+
