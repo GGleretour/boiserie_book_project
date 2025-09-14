@@ -77,9 +77,7 @@ export default {
       cubes: cubesinfos, // Utilisation directe du tableau importé
       currentBookPage: -1, // -1 signifie que le livre est fermé
       // Gère l'état des cubes découverts
-      discoveredCubes: [
-        // Cette liste sera remplie dynamiquement
-      ],
+      discoveredCubes: [],
     };
   },
   computed: {
@@ -90,6 +88,30 @@ export default {
     storedDiscoveredCubes() {
       return this.discoveredCubes.filter(c => c.isStored);
     },
+  },
+  created() {
+    // Au chargement, on restaure l'état depuis le localStorage avec une nouvelle logique.
+    const savedCubes = localStorage.getItem('cubes');
+    const savedDiscoveredCubes = localStorage.getItem('discoveredCubes');
+
+    if (savedCubes && savedDiscoveredCubes) {
+      let discovered = JSON.parse(savedDiscoveredCubes);
+      let originals = JSON.parse(savedCubes);
+
+      // 1. On ne garde que les cubes découverts qui sont stockés dans le sac.
+      const storedDiscovered = discovered.filter(c => c.isStored);
+      const storedImgSrcs = new Set(storedDiscovered.map(c => c.img_src));
+
+      // 2. On met à jour la liste des cubes originaux.
+      // Un cube original est considéré comme "trouvé" (find: true) SEULEMENT si sa version découverte est dans le sac.
+      originals.forEach(cube => {
+        cube.find = storedImgSrcs.has(cube.img_src);
+      });
+
+      // 3. On applique les états filtrés et mis à jour.
+      this.discoveredCubes = storedDiscovered;
+      this.cubes = originals;
+    }
   },
   methods: {
     showPages() {
@@ -108,20 +130,38 @@ export default {
       this.currentBookPage = pageIndex;
     },
     spawnDiscoveredCube(imgSrc) {
+      // Vérifie si un cube découvert avec cette image existe déjà
+      const alreadyExists = this.discoveredCubes.some(c => c.img_src === imgSrc);
+      if (alreadyExists) {
+        console.log('Ce cube a déjà été découvert, on ne le recrée pas.');
+        return; // On arrête la fonction pour ne pas créer de doublon
+      }
       const newId = `dc-${Date.now()}`; // Crée un ID unique
       this.discoveredCubes.push({ id: newId, isStored: false, img_src: imgSrc });
+      localStorage.setItem('discoveredCubes', JSON.stringify(this.discoveredCubes));
+      // Sauvegarde aussi l'état des cubes normaux (pour l'état 'find')
+      localStorage.setItem('cubes', JSON.stringify(this.cubes));
       console.log('Nouveau DiscoveredCube créé !', newId);
     },
     storeDiscoveredCube(cubeId) {
       const cube = this.discoveredCubes.find(c => c.id === cubeId);
       if (cube) {
         cube.isStored = true;
+        // On cherche le cube original correspondant par sa source d'image
+        const originalCube = this.cubes.find(c => c.img_src === cube.img_src);
+        if (originalCube) {
+          originalCube.find = true; // On s'assure qu'il est bien marqué comme trouvé
+          // On sauvegarde l'état des deux listes
+          localStorage.setItem('cubes', JSON.stringify(this.cubes));
+        }
+        localStorage.setItem('discoveredCubes', JSON.stringify(this.discoveredCubes));
       }
     },
     releaseDiscoveredCube(cubeId) {
       const cube = this.discoveredCubes.find(c => c.id === cubeId);
       if (cube) {
         cube.isStored = false;
+        localStorage.setItem('discoveredCubes', JSON.stringify(this.discoveredCubes));
       }
     }
   },

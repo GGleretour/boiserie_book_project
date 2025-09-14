@@ -55,7 +55,7 @@ export default {
       return {
         // Utilise la position locale si le cube est trouvé
         left: this.cubeData.find ? `${this.currentLeft}px` : this.cubeData.x_out, // Positionne le cube
-        top: this.cubeData.find ? `${this.currentTop}px` : this.cubeData.y_out, // Positionne le cube
+        top: this.cubeData.find ? `${this.currentTop}px` : this.cubeData.y_out,
         opacity: this.cubeData.find ? 1 : this.cubeData.opacity,
         width: this.overrideSize || this.cubeData.width,
         height: this.overrideSize || this.cubeData.height,
@@ -71,6 +71,12 @@ export default {
     this.currentLeft = (this.cubeData.isInInventory && this.cubeData.inventoryStartX) || parseInt(this.cubeData.x_out, 10);
     this.currentTop = (this.cubeData.isInInventory && this.cubeData.inventoryStartY) || parseInt(this.cubeData.y_out, 10);
   },
+  mounted() {
+    // Si le cube est déjà trouvé (après un rechargement de page), on le cache directement.
+    if (this.cubeData.find) {
+      this.$el.style.display = 'none';
+    }
+  },
   methods: {
     startDrag(event) {
       // Empêche le comportement par défaut du navigateur (comme la sélection ou le glisser-déposer d'image)
@@ -78,8 +84,14 @@ export default {
 
       if (!this.cubeData.find) {
         this.cubeData.find = true;
+        // Cache le cube immédiatement au clic
+        this.$el.style.display = 'none';
         // Emet un événement pour signaler qu'un cube a été découvert
         this.$emit('discovered', this.cubeData.img_src);
+        // On n'a plus besoin de gérer le drag pour le cube original,
+        // car il disparaît et est remplacé par le DiscoveredCube.
+        // On arrête donc la fonction ici.
+        return;
       }
 
       this.isDragging = true;

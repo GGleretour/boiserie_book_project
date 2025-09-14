@@ -75,12 +75,6 @@ export default {
         cursor: this.isDragging ? 'grabbing' : 'grab',
       };
     },
-    floorWidth() {
-      return window.innerWidth;
-    },
-    floorHeight() {
-      return window.innerHeight;
-    }
   },
   mounted() {
     this.animate();
@@ -125,19 +119,22 @@ export default {
       this.currentLeft += this.velocityX;
       this.currentTop += this.velocityY;
 
+      const floorWidth = window.innerWidth;
+      const floorHeight = window.innerHeight;
+
       const halfWidth = parseInt(this.width, 10) / 2;
       const halfHeight = parseInt(this.height, 10) / 2;
 
       // Rebond sur les murs (gauche/droite) de la fenêtre
-      if (this.currentLeft < halfWidth || this.currentLeft > this.floorWidth - halfWidth) {
+      if (this.currentLeft < halfWidth || this.currentLeft > floorWidth - halfWidth) {
         this.velocityX *= -1 * DAMPING;
-        this.currentLeft = Math.max(halfWidth, Math.min(this.currentLeft, this.floorWidth - halfWidth));
+        this.currentLeft = Math.max(halfWidth, Math.min(this.currentLeft, floorWidth - halfWidth));
       }
 
       // Rebond sur le sol et le plafond de la fenêtre
-      if (this.currentTop < halfHeight || this.currentTop > this.floorHeight - halfHeight) {
+      if (this.currentTop < halfHeight || this.currentTop > floorHeight - halfHeight) {
         this.velocityY *= -1 * DAMPING;
-        this.currentTop = Math.max(halfHeight, Math.min(this.currentTop, this.floorHeight - halfHeight));
+        this.currentTop = Math.max(halfHeight, Math.min(this.currentTop, floorHeight - halfHeight));
       }
 
       requestAnimationFrame(this.animate);

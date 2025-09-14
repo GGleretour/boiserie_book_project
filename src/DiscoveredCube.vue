@@ -173,10 +173,6 @@ export default {
 <style scoped>
 .discovered-cube-container {
   z-index: 998; /* Juste en dessous du special-cube-container */
-  background-color: #f0e6d2; /* Une couleur un peu différente pour le distinguer */
-  border: 2px solid #a08c6d;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
