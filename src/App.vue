@@ -24,6 +24,7 @@
         :key="cube.id" 
         :cube-data="cube"
         @discovered="spawnDiscoveredCube"
+        @state-changed="saveCubesState"
       />
     </div>
     <BookPages
@@ -32,6 +33,7 @@
       @page-changed="updateCurrentBookPage"
       @discovered="spawnDiscoveredCube"
       :cubes="cubes"
+      @state-changed="saveCubesState"
       :current-book-page="currentBookPage"
     />
     <ReadMe
@@ -138,12 +140,12 @@ export default {
       }
       const newId = `dc-${Date.now()}`; // Crée un ID unique
       this.discoveredCubes.push({ id: newId, isStored: false, img_src: imgSrc });
+      // On sauvegarde uniquement la liste des cubes découverts ici
       localStorage.setItem('discoveredCubes', JSON.stringify(this.discoveredCubes));
-      // Sauvegarde aussi l'état des cubes normaux (pour l'état 'find')
-      localStorage.setItem('cubes', JSON.stringify(this.cubes));
       console.log('Nouveau DiscoveredCube créé !', newId);
     },
     storeDiscoveredCube(cubeId) {
+      // Le cube original est déjà marqué comme 'find' et sauvegardé.
       const cube = this.discoveredCubes.find(c => c.id === cubeId);
       if (cube) {
         cube.isStored = true;
@@ -163,6 +165,9 @@ export default {
         cube.isStored = false;
         localStorage.setItem('discoveredCubes', JSON.stringify(this.discoveredCubes));
       }
+    },
+    saveCubesState() {
+      localStorage.setItem('cubes', JSON.stringify(this.cubes));
     }
   },
 };
