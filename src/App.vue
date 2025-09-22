@@ -93,27 +93,48 @@ export default {
   },
   created() {
     // Au chargement, on restaure l'état depuis le localStorage avec une nouvelle logique.
-    const savedCubes = localStorage.getItem('cubes');
-    const savedDiscoveredCubes = localStorage.getItem('discoveredCubes');
+    // On commence par la définition des cubes depuis cubes.js (la source de vérité pour les propriétés statiques)
+    // Cela permet d'ajouter de nouveaux cubes ou de modifier les propriétés existantes (opacity, width, etc.)
+    this.cubes = JSON.parse(JSON.stringify(cubesinfos)); // Deep copy pour ne pas modifier l'objet importé directement
 
-    if (savedCubes && savedDiscoveredCubes) {
-      let discovered = JSON.parse(savedDiscoveredCubes);
-      let originals = JSON.parse(savedCubes);
+    const savedCubesString = localStorage.getItem('cubes');
+    const savedDiscoveredCubesString = localStorage.getItem('discoveredCubes');
 
-      // 1. On ne garde que les cubes découverts qui sont stockés dans le sac.
-      const storedDiscovered = discovered.filter(c => c.isStored);
-      const storedImgSrcs = new Set(storedDiscovered.map(c => c.img_src));
+    let savedOriginalsFindStatus = new Map(); // Pour stocker le statut 'find' des cubes sauvegardés
+    let savedDiscoveredCubesData = []; // Pour stocker les cubes découverts sauvegardés
 
-      // 2. On met à jour la liste des cubes originaux.
-      // Un cube original est considéré comme "trouvé" (find: true) SEULEMENT si sa version découverte est dans le sac.
-      originals.forEach(cube => {
-        cube.find = storedImgSrcs.has(cube.img_src);
+    if (savedCubesString) {
+      const parsedSavedCubes = JSON.parse(savedCubesString);
+      parsedSavedCubes.forEach(cube => {
+        savedOriginalsFindStatus.set(cube.id, cube.find);
       });
-
-      // 3. On applique les états filtrés et mis à jour.
-      this.discoveredCubes = storedDiscovered;
-      this.cubes = originals;
     }
+
+    if (savedDiscoveredCubesString) {
+      savedDiscoveredCubesData = JSON.parse(savedDiscoveredCubesString);
+    }
+
+    // 1. Appliquer le statut 'find' sauvegardé aux cubes actuels.
+    // Cela restaure l'état de découverte des cubes de la session précédente.
+    this.cubes.forEach(cube => {
+      if (savedOriginalsFindStatus.has(cube.id)) {
+        cube.find = savedOriginalsFindStatus.get(cube.id);
+      }
+      // Les nouveaux cubes de cubes.js qui n'étaient pas sauvegardés garderont leur 'find: false' par défaut.
+    });
+
+    // 2. Filtrer les cubes découverts : on ne garde que ceux qui sont stockés dans le sac.
+    const storedDiscovered = savedDiscoveredCubesData.filter(c => c.isStored);
+    const storedImgSrcs = new Set(storedDiscovered.map(c => c.img_src));
+
+    // 3. Synchroniser le statut 'find' des cubes originaux avec les cubes découverts stockés.
+    // Un cube original est considéré comme "trouvé" (find: true) SEULEMENT si sa version découverte est dans le sac.
+    this.cubes.forEach(cube => {
+      cube.find = storedImgSrcs.has(cube.img_src);
+    });
+
+    // 4. Appliquer l'état filtré et mis à jour aux cubes découverts du composant.
+    this.discoveredCubes = storedDiscovered;
   },
   methods: {
     showPages() {
