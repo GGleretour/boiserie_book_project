@@ -97,6 +97,11 @@ export default {
 
     onDrag(event) {
       if (!this.isDragging) return;
+
+      // Calcul de la nouvelle position
+      this.velocityX = (event.clientX - this.dragOffset.x - this.currentLeft);
+      this.velocityY = (event.clientY - this.dragOffset.y - this.currentTop);
+
       this.currentLeft = event.clientX - this.dragOffset.x;
       this.currentTop = event.clientY - this.dragOffset.y;
     },
@@ -110,6 +115,7 @@ export default {
       window.removeEventListener('mouseup', this.stopDrag);
 
       this.animate();
+
     },
 
     animate() {

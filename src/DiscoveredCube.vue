@@ -15,7 +15,7 @@
 <script>
 // --- Constantes pour la physique de l'animation ---
 const GRAVITY = 0.3;
-const DAMPING = 0.95;
+const DAMPING = 0.8;
 
 export default {
   name: 'DiscoveredCube',
@@ -104,6 +104,11 @@ export default {
 
     onDrag(event) {
       if (!this.isDragging) return;
+
+            // Calcul de la nouvelle position
+      this.velocityX = (event.clientX - this.dragOffset.x - this.currentLeft);
+      this.velocityY = (event.clientY - this.dragOffset.y - this.currentTop);
+
       this.currentLeft = event.clientX - this.dragOffset.x;
       this.currentTop = event.clientY - this.dragOffset.y;
     },
@@ -149,6 +154,8 @@ export default {
       const halfWidth = parseInt(this.width, 10) / 2;
       const halfHeight = parseInt(this.height, 10) / 2;
 
+      const isGrounded = this.currentTop >= floorHeight - halfHeight;
+
       // Rebond sur les murs (gauche/droite) de la fenêtre
       if (this.currentLeft < halfWidth || this.currentLeft > floorWidth - halfWidth) {
         this.velocityX *= -1 * DAMPING; // Inverse la vitesse
@@ -156,6 +163,9 @@ export default {
         this.currentLeft = Math.max(halfWidth, Math.min(this.currentLeft, floorWidth - halfWidth));
       }
 
+      if (isGrounded) {
+        this.velocityX *= DAMPING; // Applique la friction au sol
+      }
       // Rebond sur le sol et le plafond de la fenêtre
       const effectiveFloor = this.isInInventory && this.inventoryFloor !== null ? this.inventoryFloor : floorHeight;
       if (this.currentTop < (this.isInInventory ? this.inventoryCeiling : halfHeight) || this.currentTop > effectiveFloor - halfHeight) {
