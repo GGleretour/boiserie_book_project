@@ -53,11 +53,11 @@
       v-show="kitchenVisible"
       @close-book="receiveEmit"
     />
-    <SpecialCube 
-      :cubes="cubes" 
+   <SpecialCube
+      :cubes="cubes"
       :stored-discovered-cubes="storedDiscoveredCubes"
       @release-discovered-cube="releaseDiscoveredCube"
-    />
+   />
     <DiscoveredCube
       v-for="cube in discoveredCubes"
       :key="cube.id"

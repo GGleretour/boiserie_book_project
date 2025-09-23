@@ -5,7 +5,7 @@
       </div>
     <img
         id="readme_page"
-        src="./assets/page.png"
+        src="/assets/page.png"
         alt="read me page"
         width="600"
         height="auto"

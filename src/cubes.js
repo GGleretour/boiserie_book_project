@@ -1,7 +1,7 @@
 export const cubesinfos = [
   {
     id:"cube-1",
-    img_src:'../src/assets/block_ecorce_de_pin.png',
+    img_src:'/assets/block_ecorce_de_pin.png',
     find:false,
     stocked:false,
     opacity: 0.1,
@@ -17,7 +17,7 @@ export const cubesinfos = [
   },
   {
     id:"cube-2",
-    img_src:'../src/assets/block_ecorce_de_pin.png',
+    img_src:'/assets/block_ecorce_de_pin.png',
     find:false,
     stocked:false,
     opacity: 0.2,
@@ -32,7 +32,7 @@ export const cubesinfos = [
   },
   {
     id:"cube-3",
-    img_src:'../src/assets/block_petit_chaudron.png',
+    img_src:'/assets/block_petit_chaudron.png',
     find:false,
     stocked:false,
     opacity: 0.2,
