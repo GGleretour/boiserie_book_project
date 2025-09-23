@@ -80,8 +80,8 @@ import DiscoveredCube from './DiscoveredCube.vue';
 import { cubesinfos } from './cubes';
 import CryptoJS from 'crypto-js';
 
-// Clé "secrète" pour le chiffrement. Changez-la pour une chaîne complexe.
-const SECRET_KEY = 'ma-super-cle-secrete-pour-boiserie-book';
+// Récupère la clé secrète depuis les variables d'environnement.
+const SECRET_KEY = import.meta.env.VITE_CRYPTO_SECRET_KEY;
 
 export default {
   components: {
