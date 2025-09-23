@@ -32,7 +32,7 @@ export const cubesinfos = [
   },
   {
     id:"cube-3",
-    img_src:'../src/assets/block_de_bois_vide.png',
+    img_src:'../src/assets/block_petit_chaudron.png',
     find:false,
     stocked:false,
     opacity: 0.2,

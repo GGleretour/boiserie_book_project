@@ -33,8 +33,8 @@
 
 <script>
 // --- Constantes pour la physique de l'animation ---
-const GRAVITY = 0.3;
-const DAMPING = 0.95;
+const GRAVITY = 0.50;
+const DAMPING = 0.50;
 import DiscoveredCube from './DiscoveredCube.vue';
 
 export default {
@@ -125,12 +125,17 @@ export default {
       const halfWidth = parseInt(this.width, 10) / 2;
       const halfHeight = parseInt(this.height, 10) / 2;
 
+      const isGrounded = this.currentTop >= floorHeight - halfHeight;
+
       // Rebond sur les murs (gauche/droite) de la fenêtre
       if (this.currentLeft < halfWidth || this.currentLeft > floorWidth - halfWidth) {
         this.velocityX *= -1 * DAMPING;
         this.currentLeft = Math.max(halfWidth, Math.min(this.currentLeft, floorWidth - halfWidth));
       }
 
+      if (isGrounded) {
+        this.velocityX *= DAMPING; // Applique la friction au sol
+      }
       // Rebond sur le sol et le plafond de la fenêtre
       if (this.currentTop < halfHeight || this.currentTop > floorHeight - halfHeight) {
         this.velocityY *= -1 * DAMPING;

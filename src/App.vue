@@ -1,16 +1,25 @@
 
 <template> 
-  <header v-show="pagesVisible == false && readMeVisible == false">
+  <header v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false">
     <img alt="logo_ronge_bois"
       class="logo"
       src="./assets/ronge_bois_symbole.png"
       width="250"
       height="auto"
-      @click="showReadMe"/>
+      @click="showReadMe"
+    />
+
+    <img alt="logo_petit_chaudron"
+      class="logo"
+      src="./assets/petit_chaudron.png"
+      width="250"
+      height="auto"
+      @click="showKitchen"
+    />
   </header>
 
   <main>
-    <div v-show="pagesVisible == false && readMeVisible == false" class="home-container">
+    <div v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false" class="home-container">
       <img
         src="./assets/book_boiserie.png"
         alt="Book Cover"
@@ -40,6 +49,10 @@
       v-show="readMeVisible"
       @close-book="receiveEmit"
     />
+    <Kitchen
+      v-show="kitchenVisible"
+      @close-book="receiveEmit"
+    />
     <SpecialCube 
       :cubes="cubes" 
       :stored-discovered-cubes="storedDiscoveredCubes"
@@ -60,6 +73,7 @@
 <script> 
 import BookPages from './BookPages.vue';
 import ReadMe from './ReadMe.vue';
+import Kitchen from './Kitchen.vue';
 import Cube from './Cube.vue';
 import SpecialCube from './SpecialCube.vue';
 import DiscoveredCube from './DiscoveredCube.vue';
@@ -68,6 +82,7 @@ export default {
   components: {
     BookPages,
     ReadMe,
+    Kitchen,
     Cube,
     SpecialCube,
     DiscoveredCube,
@@ -77,6 +92,7 @@ export default {
     return {
       pagesVisible: false,
       readMeVisible: false,
+      kitchenVisible: false,
       cubes: cubesinfos, // Utilisation directe du tableau importé
       currentBookPage: -1, // -1 signifie que le livre est fermé
       // Gère l'état des cubes découverts
@@ -145,9 +161,13 @@ export default {
     showReadMe() {
       this.readMeVisible = true;
     },
+    showKitchen() {
+      this.kitchenVisible = true;
+    },
     receiveEmit(){
       this.pagesVisible = false;
       this.readMeVisible = false;
+      this.kitchenVisible = false;
       this.currentBookPage = -1; // Le livre est fermé
     },
     updateCurrentBookPage(pageIndex) {
