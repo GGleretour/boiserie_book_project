@@ -78,6 +78,11 @@ import Cube from './Cube.vue';
 import SpecialCube from './SpecialCube.vue';
 import DiscoveredCube from './DiscoveredCube.vue';
 import { cubesinfos } from './cubes';
+import CryptoJS from 'crypto-js';
+
+// Clé "secrète" pour le chiffrement. Changez-la pour une chaîne complexe.
+const SECRET_KEY = 'ma-super-cle-secrete-pour-boiserie-book';
+
 export default {
   components: {
     BookPages,
@@ -114,8 +119,24 @@ export default {
     // Cela permet d'ajouter de nouveaux cubes ou de modifier les propriétés existantes (opacity, width, etc.)
     this.cubes = JSON.parse(JSON.stringify(cubesinfos)); // Deep copy pour ne pas modifier l'objet importé directement
 
-    const savedCubesString = localStorage.getItem('cubes');
-    const savedDiscoveredCubesString = localStorage.getItem('discoveredCubes');
+    const encryptedCubes = localStorage.getItem('cubes');
+    const encryptedDiscoveredCubes = localStorage.getItem('discoveredCubes');
+
+    let savedCubesString = null;
+    if (encryptedCubes) {
+      try {
+        const bytes = CryptoJS.AES.decrypt(encryptedCubes, SECRET_KEY);
+        savedCubesString = bytes.toString(CryptoJS.enc.Utf8);
+      } catch (e) { console.error("Erreur de déchiffrement pour 'cubes'", e); }
+    }
+
+    let savedDiscoveredCubesString = null;
+    if (encryptedDiscoveredCubes) {
+      try {
+        const bytes = CryptoJS.AES.decrypt(encryptedDiscoveredCubes, SECRET_KEY);
+        savedDiscoveredCubesString = bytes.toString(CryptoJS.enc.Utf8);
+      } catch (e) { console.error("Erreur de déchiffrement pour 'discoveredCubes'", e); }
+    }
 
     let savedOriginalsFindStatus = new Map(); // Pour stocker le statut 'find' des cubes sauvegardés
     let savedDiscoveredCubesData = []; // Pour stocker les cubes découverts sauvegardés
@@ -123,7 +144,7 @@ export default {
     if (savedCubesString) {
       const parsedSavedCubes = JSON.parse(savedCubesString);
       parsedSavedCubes.forEach(cube => {
-        savedOriginalsFindStatus.set(cube.id, cube.find);
+        if (cube && cube.id) savedOriginalsFindStatus.set(cube.id, cube.find);
       });
     }
 
@@ -182,8 +203,8 @@ export default {
       }
       const newId = `dc-${Date.now()}`; // Crée un ID unique pour le DiscoveredCube
       this.discoveredCubes.push({ id: newId, originalCubeId: cubeData.id, isStored: false, img_src: cubeData.img_src });
-      // On sauvegarde uniquement la liste des cubes découverts ici
-      localStorage.setItem('discoveredCubes', JSON.stringify(this.discoveredCubes));
+      // On sauvegarde la liste chiffrée des cubes découverts
+      this.saveDiscoveredCubesState();
       console.log('Nouveau DiscoveredCube créé !', newId);
     },
     storeDiscoveredCube(cubeId) {
@@ -195,22 +216,28 @@ export default {
         const originalCube = this.cubes.find(c => c.id === cube.originalCubeId);
         if (originalCube) {
           originalCube.find = true; // On s'assure qu'il est bien marqué comme trouvé
-          // On sauvegarde l'état des deux listes
-          localStorage.setItem('cubes', JSON.stringify(this.cubes));
+          this.saveCubesState();
         }
-        localStorage.setItem('discoveredCubes', JSON.stringify(this.discoveredCubes));
+        this.saveDiscoveredCubesState();
       }
     },
     releaseDiscoveredCube(cubeId) {
       const cube = this.discoveredCubes.find(c => c.id === cubeId);
       if (cube) {
         cube.isStored = false;
-        localStorage.setItem('discoveredCubes', JSON.stringify(this.discoveredCubes));
+        this.saveDiscoveredCubesState();
       }
     },
     saveCubesState() {
-      localStorage.setItem('cubes', JSON.stringify(this.cubes));
-    }
+      const stringifiedData = JSON.stringify(this.cubes);
+      const encryptedData = CryptoJS.AES.encrypt(stringifiedData, SECRET_KEY).toString();
+      localStorage.setItem('cubes', encryptedData);
+    },
+    saveDiscoveredCubesState() {
+      const stringifiedData = JSON.stringify(this.discoveredCubes);
+      const encryptedData = CryptoJS.AES.encrypt(stringifiedData, SECRET_KEY).toString();
+      localStorage.setItem('discoveredCubes', encryptedData);
+    },
   },
 };
 </script>
