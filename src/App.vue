@@ -49,6 +49,7 @@
       v-for="cube in discoveredCubes"
       :key="cube.id"
       v-show="!cube.isStored"
+      :original-cube-id="cube.originalCubeId"
       :img-src="cube.img_src"
       :cube-id="cube.id"
       @stored="storeDiscoveredCube"
@@ -125,12 +126,12 @@ export default {
 
     // 2. Filtrer les cubes découverts : on ne garde que ceux qui sont stockés dans le sac.
     const storedDiscovered = savedDiscoveredCubesData.filter(c => c.isStored);
-    const storedImgSrcs = new Set(storedDiscovered.map(c => c.img_src));
+    const storedOriginalIds = new Set(storedDiscovered.map(c => c.originalCubeId));
 
     // 3. Synchroniser le statut 'find' des cubes originaux avec les cubes découverts stockés.
     // Un cube original est considéré comme "trouvé" (find: true) SEULEMENT si sa version découverte est dans le sac.
     this.cubes.forEach(cube => {
-      cube.find = storedImgSrcs.has(cube.img_src);
+      cube.find = storedOriginalIds.has(cube.id);
     });
 
     // 4. Appliquer l'état filtré et mis à jour aux cubes découverts du composant.
@@ -152,15 +153,15 @@ export default {
     updateCurrentBookPage(pageIndex) {
       this.currentBookPage = pageIndex;
     },
-    spawnDiscoveredCube(imgSrc) {
-      // Vérifie si un cube découvert avec cette image existe déjà
-      const alreadyExists = this.discoveredCubes.some(c => c.img_src === imgSrc);
+    spawnDiscoveredCube(cubeData) {
+      // Vérifie si un cube découvert lié à cet ID original existe déjà
+      const alreadyExists = this.discoveredCubes.some(c => c.originalCubeId === cubeData.id);
       if (alreadyExists) {
         console.log('Ce cube a déjà été découvert, on ne le recrée pas.');
         return; // On arrête la fonction pour ne pas créer de doublon
       }
-      const newId = `dc-${Date.now()}`; // Crée un ID unique
-      this.discoveredCubes.push({ id: newId, isStored: false, img_src: imgSrc });
+      const newId = `dc-${Date.now()}`; // Crée un ID unique pour le DiscoveredCube
+      this.discoveredCubes.push({ id: newId, originalCubeId: cubeData.id, isStored: false, img_src: cubeData.img_src });
       // On sauvegarde uniquement la liste des cubes découverts ici
       localStorage.setItem('discoveredCubes', JSON.stringify(this.discoveredCubes));
       console.log('Nouveau DiscoveredCube créé !', newId);
@@ -170,8 +171,8 @@ export default {
       const cube = this.discoveredCubes.find(c => c.id === cubeId);
       if (cube) {
         cube.isStored = true;
-        // On cherche le cube original correspondant par sa source d'image
-        const originalCube = this.cubes.find(c => c.img_src === cube.img_src);
+        // On cherche le cube original correspondant par son ID
+        const originalCube = this.cubes.find(c => c.id === cube.originalCubeId);
         if (originalCube) {
           originalCube.find = true; // On s'assure qu'il est bien marqué comme trouvé
           // On sauvegarde l'état des deux listes

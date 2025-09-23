@@ -82,7 +82,7 @@ export default {
         // On sauvegarde l'état 'find' du cube original dans le localStorage
         this.$emit('state-changed');
         // Emet un événement pour signaler qu'un cube a été découvert
-        this.$emit('discovered', this.cubeData.img_src);
+        this.$emit('discovered', { id: this.cubeData.id, img_src: this.cubeData.img_src });
         // On n'a plus besoin de gérer le drag pour le cube original,
         // car il disparaît et est remplacé par le DiscoveredCube.
         // On arrête donc la fonction ici.

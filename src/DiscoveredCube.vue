@@ -32,6 +32,10 @@ export default {
       type: String,
       required: true,
     },
+    originalCubeId: {
+      type: String,
+      required: true,
+    },
     inventoryFloorWidth: {
       type: Number,
       default: null,
