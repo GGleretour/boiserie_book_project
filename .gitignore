@@ -32,3 +32,7 @@ coverage
 # Fichiers d'environnement
 .env
 .env.*
+
+# Fichier de configuration des cubes en clair
+/src/cubes.js
+/public/assets/*

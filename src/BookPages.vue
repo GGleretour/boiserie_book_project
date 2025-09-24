@@ -191,7 +191,4 @@ export default {
 #arrow_right {
   transform: scaleX(-1);
 }
-#arrow_left {
-  /* La flèche gauche est déjà dans la bonne direction, pas besoin de la retourner */
-}
 </style>

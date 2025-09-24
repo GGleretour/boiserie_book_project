@@ -25,9 +25,6 @@ a,
   body {
     display: flex;
     place-items: center;
-    background: url("../assets/background.png");
-    background-repeat: no-repeat;
-    background-size: cover;
   }
 
   #app {

@@ -5,17 +5,14 @@
   >
     <EncryptedImage
       alt="cube"
-      :src="cubeData.img_src.replace('/assets/', '/assets-encrypted/').replace(/\.(png|jpe?g|gif|svg)$/, '.$1.enc')"
-      @mousedown.stop="startDrag"
+      :src="encryptedImgSrc"
+      @mousedown.stop="discover"
       draggable="false"
       />
   </div>
 </template>
 <script>
-// --- Constantes pour la physique de l'animation ---
 import EncryptedImage from './EncryptedImage.vue';
-const GRAVITY = 0.5; // Accélération verticale
-const DAMPING = 0.8; // Facteur d'amortissement (0.8 = 80% de l'énergie conservée après un rebond).
 
 export default {
   components: { EncryptedImage },
@@ -25,93 +22,36 @@ export default {
       type: Object,
       required: true,
     },
-    floorWidth: {
-      type: Number,
-      default: 800, // Valeur par défaut pour la page d'accueil
-      note: "Largeur de la zone de rebond.",
-    },
-    floorHeight: {
-      type: Number,
-      default: 920, // Valeur par défaut pour la page d'accueil
-      note: "Hauteur de la zone de rebond.",
-    },
     overrideSize: {
       type: String,
       default: null,
       note: "Permet de forcer une taille pour le cube (ex: '50px')."
     }
   },
-  data() {
-    return {
-      // Position et vitesse locales pour l'animation
-      currentLeft: 0,
-      currentTop: 0,
-      velocityX: 0,
-      velocityY: 0,
-      isDragging: false, // Pour savoir si le cube est en cours de déplacement
-    };
-  },
   computed: {
     cubeStyle() {
       // Applique le style dynamiquement en fonction de l'état du cube.
       return {
-        left: this.isDragging ? `${this.currentLeft}px` : this.cubeData.x_out,
-        top: this.isDragging ? `${this.currentTop}px` : this.cubeData.y_out,
+        left: this.cubeData.x_out,
+        top: this.cubeData.y_out,
         opacity: this.cubeData.find ? 1 : this.cubeData.opacity,
         width: this.overrideSize || this.cubeData.width,
         height: this.overrideSize || this.cubeData.height,
-        position: this.isDragging ? 'fixed' : 'absolute',
-    };
+        position: 'absolute',
+        cursor: 'pointer', // Change le curseur pour indiquer que c'est cliquable
+      };
+    },
+    encryptedImgSrc() {
+      if (!this.cubeData.img_src) return '';
+      return this.cubeData.img_src.replace('/assets/', '/assets-encrypted/').replace(/\.(png|jpe?g|gif|svg)$/, '.$1.enc');
     }
   },
-  created() {
-    // Initialise la position du cube lors de sa création.
-    // Si le cube est dans l'inventaire et a des coordonnées de départ, on les utilise.
-    // Sinon, on utilise les coordonnées de base.
-    this.currentLeft = (this.cubeData.isInInventory && this.cubeData.inventoryStartX) || parseInt(this.cubeData.x_out, 10);
-    this.currentTop = (this.cubeData.isInInventory && this.cubeData.inventoryStartY) || parseInt(this.cubeData.y_out, 10);
-  },
   methods: {
-    startDrag(event) {
-      // Empêche le comportement par défaut du navigateur (comme la sélection ou le glisser-déposer d'image)
-      event.preventDefault();
-
-      this.isDragging = true;
-      // Arrête toute animation en cours
-      // Empêche la sélection de texte/images pendant le drag
-      document.body.classList.add('no-select');
-
-      // Ajoute les écouteurs d'événements pour le déplacement et le relâchement
-      window.addEventListener('mousemove', this.onDrag);
-      window.addEventListener('mouseup', this.stopDrag);
-    },
-
-    onDrag(event) {
-      if (!this.isDragging) return;
-
-      // Met à jour la position du cube pour suivre le curseur de la souris.
-      // Comme le cube est en 'position: fixed', on peut utiliser directement les coordonnées du client.
-      this.currentLeft = event.clientX - (parseInt(this.cubeData.width) / 2);
-      this.currentTop = event.clientY - (parseInt(this.cubeData.height) / 2);
-    },
-
-    stopDrag(event) {
-      if (!this.isDragging) return;
-
-      this.isDragging = false;
-
-      // Au lieu de gérer l'inventaire ici, on émet simplement l'événement de découverte.
-      // Le composant parent (App.vue) créera un DiscoveredCube qui gérera sa propre physique.
+    discover() {
+      // Au clic, on marque le cube comme "trouvé" et on émet les événements.
       this.cubeData.find = true;
       this.$emit('state-changed');
       this.$emit('discovered', { id: this.cubeData.id, img_src: this.cubeData.img_src });
-
-      // Réactive la sélection de texte/images
-      document.body.classList.remove('no-select');
-
-      // Retire les écouteurs d'événements
-      window.removeEventListener('mousemove', this.onDrag);
-      window.removeEventListener('mouseup', this.stopDrag);
     },
   }
 };
