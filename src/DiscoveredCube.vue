@@ -80,9 +80,7 @@ export default {
     },
     encryptedImgSrc() {
       if (!this.imgSrc) return '';
-      // Transforme le chemin de l'image originale en chemin chiffré
-      return this.imgSrc.replace('/assets/', '/assets-encrypted/')
-                        .replace(/\.(png|jpe?g|gif|svg)$/, '.$1.enc');
+      return this.imgSrc;
     }
   },
   mounted() {

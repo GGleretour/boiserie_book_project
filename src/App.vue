@@ -1,13 +1,13 @@
 
 <template> 
   <EncryptedImage
-    src="/assets-encrypted/background.png.enc"
+    src="/assets/background.png"
     class="background-app"
     alt="background"/>
   <header v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false">
     <EncryptedImage alt="logo_ronge_bois"
       class="logo"
-      src="/assets-encrypted/ronge_bois_symbole.png.enc"
+      src="/assets/ronge_bois_symbole.png"
       width="250"
       height="auto"
       @click="showReadMe"
@@ -15,7 +15,7 @@
 
     <EncryptedImage alt="logo_petit_chaudron"
       class="logo"
-      src="/assets-encrypted/petit_chaudron.png.enc"
+      src="/assets/petit_chaudron.png"
       width="250"
       height="auto"
       @click="showKitchen"
@@ -25,7 +25,7 @@
   <main>
     <div v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false" class="home-container">
       <EncryptedImage
-        src="/assets-encrypted/book_boiserie.png.enc"
+        src="/assets/book_boiserie.png"
         alt="Book Cover"
         class="book-cover"
         width="400"

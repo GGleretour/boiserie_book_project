@@ -10,16 +10,18 @@
       @discovered="$emit('discovered', $event)" />
 
     <!-- Affiche directement l'image de la page si elle existe -->
-    <img v-if="pageData.imageUrl" :src="pageData.imageUrl" alt="Page du livre" class="page-image">
+    <EncryptedImage v-if="pageData.imageUrl" :src="pageData.imageUrl" alt="Page du livre" class="page-image"/>
     <!-- Sinon, affiche une page de fond par défaut -->
-    <img v-else src="./assets/book_boiserie_page.png" alt="Page de fond" class="page-image">
+    <EncryptedImage v-else src="./assets/book_boiserie_page.png" alt="Page de fond" class="page-image"/>
   </div>
 </template>
 <script>
 import Cube from './Cube.vue';
+import EncryptedImage from './EncryptedImage.vue';
 export default {
   components: {
     Cube,
+    EncryptedImage,
   },
   props: {
     // pageData contient maintenant juste { imageUrl: '...' }
@@ -32,6 +34,12 @@ export default {
     cubes: {
       type: Array,
       default: () => [],
+    }
+  },
+  methods: {
+    encryptedImageUrl(url) {
+      if (!url) return '';
+      return url.replace('/assets/', '/assets-encrypted/').replace(/\.(png|jpe?g|gif|svg)$/, '.$1.enc');
     }
   },
 }

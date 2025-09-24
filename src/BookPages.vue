@@ -25,7 +25,7 @@
     <div class="navigation-container">
       <EncryptedImage
         id="arrow_left"
-        src="/assets-encrypted/arrow.png.enc" 
+        src="/assets/arrow.png" 
         alt="arrow left"
         class="nav-button"
         @click="prevPage"
@@ -35,7 +35,7 @@
       <span class="page-number">Pages {{ currentPage * 2 + 1 }} - {{ currentPage * 2 + 2 }}</span>
       <EncryptedImage
         id="arrow_right"
-        src="/assets-encrypted/arrow.png.enc" 
+        src="/assets/arrow.png" 
         alt="arrow right"
         class="nav-button"
         @click="nextPage"

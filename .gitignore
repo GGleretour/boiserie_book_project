@@ -35,4 +35,3 @@ coverage
 
 # Fichier de configuration des cubes en clair
 /src/cubes.js
-/public/assets/*

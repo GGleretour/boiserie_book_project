@@ -43,7 +43,7 @@ export default {
     },
     encryptedImgSrc() {
       if (!this.cubeData.img_src) return '';
-      return this.cubeData.img_src.replace('/assets/', '/assets-encrypted/').replace(/\.(png|jpe?g|gif|svg)$/, '.$1.enc');
+      return this.cubeData.img_src;
     }
   },
   methods: {

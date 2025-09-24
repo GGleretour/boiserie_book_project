@@ -3,7 +3,7 @@
       <div class="config-container">
         <button class="close-button" @click="close">Close</button>
       </div>
-    <img
+    <EncryptedImage
         id="readme_page"
         src="/assets/page.png"
         alt="read me page"
@@ -12,7 +12,7 @@
         />
     <div id="text_container">
         <p>
-            tu peux trouver le lien du discorde de la FA de SevenWands
+            tu peux trouver le lien du discord de la FA de SevenWands
             juste  
             <a id="discord_link" href="https://discord.com/channels/1328312922752946207/1339507185784324218/1413967932350009435" target="_blank">
                 "ici"
@@ -34,7 +34,10 @@
 </template>
 
 <script>
+import EncryptedImage from './EncryptedImage.vue';
+
 export default {
+    components: { EncryptedImage },
     methods: {
     close() {
       this.$emit('close-book');
