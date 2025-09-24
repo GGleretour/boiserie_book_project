@@ -3,9 +3,9 @@
       <div class="config-container">
         <button class="close-button" @click="close">Close</button>
       </div>
-    <img
+    <EncryptedImage
         id="readme_page"
-        src="/assets/page.png"
+        src="/assets-encrypted/page.png.enc"
         alt="read me page"
         width="600"
         height="auto"
@@ -16,7 +16,9 @@
 </template>
 
 <script>
+import EncryptedImage from './EncryptedImage.vue';
 export default {
+    components: { EncryptedImage },
     methods: {
     close() {
       this.$emit('close-book');

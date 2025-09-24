@@ -1,17 +1,18 @@
 
 <template> 
+  <EncryptedImage v-if="!pagesVisible && !readMeVisible && !kitchenVisible" src="/assets-encrypted/background.png.enc" class="background-app" alt="background"/>
   <header v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false">
-    <img alt="logo_ronge_bois"
+    <EncryptedImage alt="logo_ronge_bois"
       class="logo"
-      src="./assets/ronge_bois_symbole.png"
+      src="/assets-encrypted/ronge_bois_symbole.png.enc"
       width="250"
       height="auto"
       @click="showReadMe"
     />
 
-    <img alt="logo_petit_chaudron"
+    <EncryptedImage alt="logo_petit_chaudron"
       class="logo"
-      src="./assets/petit_chaudron.png"
+      src="/assets-encrypted/petit_chaudron.png.enc"
       width="250"
       height="auto"
       @click="showKitchen"
@@ -20,8 +21,8 @@
 
   <main>
     <div v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false" class="home-container">
-      <img
-        src="./assets/book_boiserie.png"
+      <EncryptedImage
+        src="/assets-encrypted/book_boiserie.png.enc"
         alt="Book Cover"
         class="book-cover"
         width="400"
@@ -78,6 +79,7 @@ import Cube from './Cube.vue';
 import SpecialCube from './SpecialCube.vue';
 import DiscoveredCube from './DiscoveredCube.vue';
 import { cubesinfos } from './cubes';
+import EncryptedImage from './EncryptedImage.vue';
 import CryptoJS from 'crypto-js';
 
 // Récupère la clé secrète depuis les variables d'environnement.
@@ -90,6 +92,7 @@ export default {
     Kitchen,
     Cube,
     SpecialCube,
+    EncryptedImage,
     DiscoveredCube,
   },
   data()
@@ -260,6 +263,15 @@ header {
   margin: 0 auto 2rem;
 }
 
+.background-app {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -1;
+}
 .home-container {
   position: relative;
 }

@@ -23,9 +23,9 @@
       />
     </div>
     <div class="navigation-container">
-      <img
+      <EncryptedImage
         id="arrow_left"
-        src="./assets/arrow.png" 
+        src="/assets-encrypted/arrow.png.enc" 
         alt="arrow left"
         class="nav-button"
         @click="prevPage"
@@ -33,9 +33,9 @@
         height="100"
         :disabled="currentPage === 0"/>
       <span class="page-number">Pages {{ currentPage * 2 + 1 }} - {{ currentPage * 2 + 2 }}</span>
-      <img
+      <EncryptedImage
         id="arrow_right"
-        src="./assets/arrow.png" 
+        src="/assets-encrypted/arrow.png.enc" 
         alt="arrow right"
         class="nav-button"
         @click="nextPage"
@@ -49,6 +49,7 @@
 
 <script>
 import Cube from './Cube.vue';
+import EncryptedImage from './EncryptedImage.vue';
 import RecipePage from './RecipePage.vue';
 import { pageImages } from './pages.js';
 
@@ -56,6 +57,7 @@ export default {
   components: {
     RecipePage,
     Cube,
+    EncryptedImage,
   },
   props: {
     cubes: Array,
@@ -187,9 +189,9 @@ export default {
   cursor: not-allowed;
 }
 #arrow_right {
-  scale: 1 -1;
+  transform: scaleX(-1);
 }
 #arrow_left {
-  scale: -1 -1;
+  /* La flèche gauche est déjà dans la bonne direction, pas besoin de la retourner */
 }
 </style>

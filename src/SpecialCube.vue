@@ -4,9 +4,9 @@
     :style="cubeStyle"
     @mousedown="startDrag"
   >
-    <img
+    <EncryptedImage
       alt="special-cube_back"
-      src="./assets/sac_de_jute_2.png"
+      src="/assets-encrypted/sac_de_jute_2.png.enc"
       draggable="false"
       class="background-img"
     />
@@ -16,15 +16,16 @@
     :key="`stored-${cube.id}`"
     :is-in-inventory="true"
     :cube-id="cube.id"
+    :original-cube-id="cube.originalCubeId"
     :img-src="cube.img_src"
     :inventory-floor-width="140"
     :inventory-ceiling="10"
     :inventory-floor="160"
     @released="$emit('release-discovered-cube', cube.id)"
     />
-    <img
+    <EncryptedImage
       alt="special-cub-front"
-      src="./assets/sac_de_jute_1.png"
+      src="/assets-encrypted/sac_de_jute_1.png.enc"
       draggable="false"
       class="background-img_2"
     />
@@ -35,11 +36,12 @@
 // --- Constantes pour la physique de l'animation ---
 const GRAVITY = 0.50;
 const DAMPING = 0.50;
+import EncryptedImage from './EncryptedImage.vue';
 import DiscoveredCube from './DiscoveredCube.vue';
 
 export default {
   name: 'SpecialCube',
-  components: { DiscoveredCube },
+  components: { DiscoveredCube, EncryptedImage },
   props: {
     cubes: {
       type: Array,

@@ -4,21 +4,23 @@
     :style="cubeStyle"
     @mousedown.stop="startDrag"
   >
-    <img
+    <EncryptedImage
       alt="discovered-cube"
-      :src="imgSrc"
+      :src="encryptedImgSrc"
       draggable="false"
     />
   </div>
 </template>
 
 <script>
+import EncryptedImage from './EncryptedImage.vue';
 // --- Constantes pour la physique de l'animation ---
 const GRAVITY = 0.3;
 const DAMPING = 0.8;
 
 export default {
   name: 'DiscoveredCube',
+  components: { EncryptedImage },
   props: {
     isInInventory: {
       type: Boolean,
@@ -76,6 +78,12 @@ export default {
         transform: 'translate(-50%, -50%)',
       };
     },
+    encryptedImgSrc() {
+      if (!this.imgSrc) return '';
+      // Transforme le chemin de l'image originale en chemin chiffré
+      return this.imgSrc.replace('/assets/', '/assets-encrypted/')
+                        .replace(/\.(png|jpe?g|gif|svg)$/, '.$1.enc');
+    }
   },
   mounted() {
     // Si le cube est créé directement dans l'inventaire, on initialise sa position au centre.

@@ -1,12 +1,11 @@
 <template>
   <div
     class="cube-container" 
-    v-if="!cubeData.find"
-    :style="cubeStyle"
+    :style="cubeStyle" v-if="!cubeData.find"
   >
-    <img
+    <EncryptedImage
       alt="cube"
-      :src="cubeData.img_src"
+      :src="cubeData.img_src.replace('/assets/', '/assets-encrypted/').replace(/\.(png|jpe?g|gif|svg)$/, '.$1.enc')"
       @mousedown.stop="startDrag"
       draggable="false"
       />
@@ -14,10 +13,12 @@
 </template>
 <script>
 // --- Constantes pour la physique de l'animation ---
+import EncryptedImage from './EncryptedImage.vue';
 const GRAVITY = 0.5; // Accélération verticale
 const DAMPING = 0.8; // Facteur d'amortissement (0.8 = 80% de l'énergie conservée après un rebond).
 
 export default {
+  components: { EncryptedImage },
   props: {
     /** Données du cube, incluant sa source d'image, sa position, et son état (trouvé ou non). */
     cubeData: {
@@ -54,13 +55,11 @@ export default {
     cubeStyle() {
       // Applique le style dynamiquement en fonction de l'état du cube.
       return {
-        // Utilise la position locale si le cube est trouvé
-        left: this.cubeData.x_out, // Positionne le cube
-        top: this.cubeData.y_out,
+        left: this.isDragging ? `${this.currentLeft}px` : this.cubeData.x_out,
+        top: this.isDragging ? `${this.currentTop}px` : this.cubeData.y_out,
         opacity: this.cubeData.find ? 1 : this.cubeData.opacity,
         width: this.overrideSize || this.cubeData.width,
         height: this.overrideSize || this.cubeData.height,
-        // Passe en position 'fixed' pendant le drag pour un positionnement fiable
         position: this.isDragging ? 'fixed' : 'absolute',
     };
     }
@@ -77,25 +76,8 @@ export default {
       // Empêche le comportement par défaut du navigateur (comme la sélection ou le glisser-déposer d'image)
       event.preventDefault();
 
-      if (!this.cubeData.find) {
-        this.cubeData.find = true;
-        // On sauvegarde l'état 'find' du cube original dans le localStorage
-        this.$emit('state-changed');
-        // Emet un événement pour signaler qu'un cube a été découvert
-        this.$emit('discovered', { id: this.cubeData.id, img_src: this.cubeData.img_src });
-        // On n'a plus besoin de gérer le drag pour le cube original,
-        // car il disparaît et est remplacé par le DiscoveredCube.
-        // On arrête donc la fonction ici.
-        return;
-      }
-
       this.isDragging = true;
       // Arrête toute animation en cours
-      this.velocityY = 0;
-      this.velocityX = 0;
-
-      // On ne réinitialise PAS la position ici, on la conserve.
-      // La position sera mise à jour par onDrag.
       // Empêche la sélection de texte/images pendant le drag
       document.body.classList.add('no-select');
 
@@ -109,8 +91,8 @@ export default {
 
       // Met à jour la position du cube pour suivre le curseur de la souris.
       // Comme le cube est en 'position: fixed', on peut utiliser directement les coordonnées du client.
-      this.currentLeft = event.clientX;
-      this.currentTop = event.clientY;
+      this.currentLeft = event.clientX - (parseInt(this.cubeData.width) / 2);
+      this.currentTop = event.clientY - (parseInt(this.cubeData.height) / 2);
     },
 
     stopDrag(event) {
@@ -118,24 +100,11 @@ export default {
 
       this.isDragging = false;
 
-      // Vérifie si le cube est lâché sur le SpecialCube (qui agit comme un inventaire)
-      const inventoryEl = document.getElementById('special-cube-container');
-      if (inventoryEl) {
-        const rect = inventoryEl.getBoundingClientRect();
-        if (event.clientX >= rect.left && event.clientX <= rect.right &&
-            event.clientY >= rect.top && event.clientY <= rect.bottom) { // Le cube est lâché DANS l'inventaire
-          this.cubeData.isInInventory = true; // Marque le cube comme étant "contenu"
-          // On stocke les coordonnées RELATIVES au conteneur pour l'initialisation du nouveau cube
-          this.cubeData.inventoryStartX = event.clientX - rect.left;
-          this.cubeData.inventoryStartY = event.clientY - rect.top;
-        } else if (this.cubeData.isInInventory) {
-          // Le cube était dans l'inventaire et est lâché DEHORS
-          this.cubeData.isInInventory = false;
-          // Réinitialise sa position là où la souris l'a lâché
-          this.currentLeft = event.clientX;
-          this.currentTop = event.clientY;
-        }
-      }
+      // Au lieu de gérer l'inventaire ici, on émet simplement l'événement de découverte.
+      // Le composant parent (App.vue) créera un DiscoveredCube qui gérera sa propre physique.
+      this.cubeData.find = true;
+      this.$emit('state-changed');
+      this.$emit('discovered', { id: this.cubeData.id, img_src: this.cubeData.img_src });
 
       // Réactive la sélection de texte/images
       document.body.classList.remove('no-select');
@@ -143,57 +112,7 @@ export default {
       // Retire les écouteurs d'événements
       window.removeEventListener('mousemove', this.onDrag);
       window.removeEventListener('mouseup', this.stopDrag);
-
-      // Initialise une vitesse aléatoire pour l'animation de chute
-      this.velocityX = (Math.random() - 0.5) * 10;
-      this.velocityY = (Math.random() - 0.5) * 5;
-
-      // Démarre l'animation de chute
-      this.animate();
     },
-
-    /**
-     * Gère la boucle d'animation pour la physique du cube (gravité et rebonds).
-     */
-    animate() {
-      // Si le cube est en train d'être déplacé par l'utilisateur, on arrête l'animation.
-      if (this.isDragging) {
-        // On s'assure que la vélocité est nulle pour qu'il ne bouge pas tout seul
-        this.velocityX = 0;
-        this.velocityY = 0;
-        return;
-      }
-      // Applique la gravité à la vitesse verticale
-      this.velocityY += GRAVITY;
-
-      // Met à jour la position
-      this.currentLeft += this.velocityX;
-      this.currentTop += this.velocityY;
-
-      // Calcule les demi-dimensions pour la détection de collision
-      const halfWidth = parseInt(this.cubeData.width, 10) / 2;
-      const halfHeight = parseInt(this.cubeData.height, 10) / 2;
-
-      // --- Détection des rebonds ---
-
-      // Rebond sur les murs (gauche/droite)
-      if (this.currentLeft < halfWidth || this.currentLeft > this.floorWidth - halfWidth) {
-        this.velocityX *= -1 * DAMPING; // Inverse la vitesse et applique l'amortissement
-        this.currentLeft = Math.max(halfWidth, Math.min(this.currentLeft, this.floorWidth - halfWidth)); // Bloque le cube à l'intérieur
-      }
-
-      // Rebond sur le sol et le plafond
-      if (this.currentTop < halfHeight || this.currentTop > this.floorHeight - halfHeight) {
-        this.velocityY *= -1 * DAMPING; // Inverse la vitesse et applique l'amortissement
-        this.currentTop = Math.max(halfHeight, Math.min(this.currentTop, this.floorHeight - halfHeight)); // Bloque le cube à l'intérieur
-      }
-
-      // Continue l'animation à la prochaine frame
-      // On arrête l'animation si le cube est presque immobile pour économiser les ressources
-      if (Math.abs(this.velocityX) > 0.1 || Math.abs(this.velocityY) > 0.1 || this.currentTop < this.floorHeight - halfHeight - 1) {
-        requestAnimationFrame(this.animate);
-      }
-    }
   }
 };
 </script>
