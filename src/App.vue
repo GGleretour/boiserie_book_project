@@ -56,6 +56,7 @@
     <Kitchen
       v-show="kitchenVisible"
       @close-book="receiveEmit"
+      :cauldron-cubes="cauldronCubes"
     />
    <SpecialCube
       :cubes="cubes"
@@ -65,7 +66,7 @@
     <DiscoveredCube
       v-for="cube in discoveredCubes"
       :key="cube.id"
-      v-show="!cube.isStored"
+      v-show="!cube.isStored && !cube.isInCauldron"
       :original-cube-id="cube.originalCubeId"
       :img-src="cube.img_src"
       :cube-id="cube.id"
@@ -117,6 +118,9 @@ export default {
     storedDiscoveredCubes() {
       return this.discoveredCubes.filter(c => c.isStored);
     },
+    cauldronCubes() {
+      return this.discoveredCubes.filter(c => c.isInCauldron);
+    }
   },
   async created() {
     // Charge et déchiffre la configuration des cubes
@@ -170,7 +174,7 @@ export default {
       });
 
       // 2. Filtrer les cubes découverts : on ne garde que ceux qui sont stockés dans le sac.
-      const storedDiscovered = savedDiscoveredCubesData.filter(c => c.isStored);
+      const storedDiscovered = savedDiscoveredCubesData.filter(c => c.isStored || c.isInCauldron);
       const storedOriginalIds = new Set(storedDiscovered.map(c => c.originalCubeId));
 
       // 3. Synchroniser le statut 'find' des cubes originaux avec les cubes découverts stockés.
@@ -227,16 +231,23 @@ export default {
         return; // On arrête la fonction pour ne pas créer de doublon
       }
       const newId = `dc-${Date.now()}`; // Crée un ID unique pour le DiscoveredCube
-      this.discoveredCubes.push({ id: newId, originalCubeId: cubeData.id, isStored: false, img_src: cubeData.img_src });
+      this.discoveredCubes.push({ id: newId, originalCubeId: cubeData.id, isStored: false, isInCauldron: false, img_src: cubeData.img_src });
       // On sauvegarde la liste chiffrée des cubes découverts
       this.saveDiscoveredCubesState();
       console.log('Nouveau DiscoveredCube créé !', newId);
     },
     storeDiscoveredCube(cubeId) {
-      // Le cube original est déjà marqué comme 'find' et sauvegardé.
       const cube = this.discoveredCubes.find(c => c.id === cubeId);
       if (cube) {
-        cube.isStored = true;
+        // Pour l'instant, on stocke tout dans le sac (isStored).
+        // On pourrait ajouter une logique pour différencier le sac du chaudron.
+        // Par exemple, en regardant quel composant est visible.
+        if (this.kitchenVisible) {
+          console.log(`Cube ${cube.id} stocké dans le chaudron !`);
+          cube.isInCauldron = true; // Logique future
+        }
+        cube.isStored = true; // Pour l'instant, le comportement est le même que le sac.
+
         // On cherche le cube original correspondant par son ID
         const originalCube = this.cubes.find(c => c.id === cube.originalCubeId);
         if (originalCube) {
@@ -250,6 +261,7 @@ export default {
       const cube = this.discoveredCubes.find(c => c.id === cubeId);
       if (cube) {
         cube.isStored = false;
+        cube.isInCauldron = false;
         this.saveDiscoveredCubesState();
       }
     },

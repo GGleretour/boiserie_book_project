@@ -128,11 +128,20 @@ export default {
       window.removeEventListener('mouseup', this.stopDrag);
 
       // Vérifie si le cube est lâché sur l'inventaire (SpecialCube)
-      const inventoryEl = document.getElementById('special-cube-container');
-      if (inventoryEl) {
-        const rect = inventoryEl.getBoundingClientRect();
+      const specialCubeEl = document.getElementById('special-cube-container');
+      const cauldronEl = document.getElementById('ingredient-cauldron');
+
+      const checkDropZone = (element) => {
+        if (!element) return false;
+        const rect = element.getBoundingClientRect();
         if (!this.isInInventory && event.clientX >= rect.left && event.clientX <= rect.right &&
             event.clientY >= rect.top && event.clientY <= rect.bottom) {
+          return true;
+        }
+        return false;
+      };
+
+      if (checkDropZone(specialCubeEl) || checkDropZone(cauldronEl)) {
           this.$emit('stored', this.cubeId); // Emet un événement avec son ID
           return; // On arrête l'animation et la fonction
         } else if (this.isInInventory) {
@@ -140,7 +149,6 @@ export default {
           this.$emit('released', this.cubeId);
           return;
         }
-      }
 
       this.animate();
     },
