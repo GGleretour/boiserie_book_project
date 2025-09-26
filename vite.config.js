@@ -12,6 +12,7 @@ export default defineConfig({
   ],
   // Ce chemin de base sera utilisé pour le 'build' ET le 'preview'.
   // Le serveur de développement ('dev') le gérera correctement.
+  base: '/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
