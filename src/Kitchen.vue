@@ -35,16 +35,7 @@
         :style="displayZoneStyle"
         @click="releaseDisplayCube"
       >
-        <!-- Affiche le cube stocké, mais il est visuellement caché par le fond -->
-        <DiscoveredCube
-          v-if="kitchenDisplayCube"
-          :key="`kitchen-display-${kitchenDisplayCube.id}`"
-          :is-in-inventory="true"
-          :cube-id="kitchenDisplayCube.id"
-          :original-cube-id="kitchenDisplayCube.originalCubeId"
-          :img-src="kitchenDisplayCube.img_src"
-          @mousedown.stop
-        />
+
       </div>
     </div>
   </div>
