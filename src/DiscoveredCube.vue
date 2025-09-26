@@ -142,6 +142,10 @@ export default {
       const kitchenBagEl = document.getElementById('kitchen-bag-zone');
       const kitchenDisplayEl = document.getElementById('kitchen-display-zone');
       const kitchenReceptacleEl = document.getElementById('kitchen-receptacle-zone');
+      const kitchenOutilEl = document.getElementById('kitchen-outil-zone');
+      const kitchenRuneEl = document.getElementById('kitchen-rune-zone');
+      const kitchenCarburantEl = document.getElementById('kitchen-carburant-zone');
+
 
       const checkDropZone = (element, zoneName) => {
         if (!element) return false;
@@ -158,7 +162,10 @@ export default {
         checkDropZone(specialCubeEl, 'mainBag') ||
         checkDropZone(kitchenBagEl, 'kitchenBag') ||
         checkDropZone(kitchenDisplayEl, 'kitchenDisplay') ||
-        checkDropZone(kitchenReceptacleEl, 'kitchenReceptacle')
+        checkDropZone(kitchenReceptacleEl, 'kitchenReceptacle') ||
+        checkDropZone(kitchenOutilEl, 'kitchenOutil') ||
+        checkDropZone(kitchenRuneEl, 'kitchenRune') ||
+        checkDropZone(kitchenCarburantEl, 'kitchenCarburant')
       ) {
           return; // On arrête la fonction car le cube est stocké
         } else if (this.isInInventory) {

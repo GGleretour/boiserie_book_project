@@ -51,6 +51,39 @@
       >
 
       </div>
+      <!-- Zone 4 : La zone outil (avec gestion du drop) -->
+      <div
+        id="kitchen-outil-zone"
+        class="drop-zone kitchen-outil"
+        @dragover.prevent
+        @drop="$emit('drop-on-zone', 'kitchenOutil')"
+        :style="outilZoneStyle"
+        @click="releaseOutilCube"
+      >
+
+      </div>
+      <!-- Zone 5 : La zone rune (avec gestion du drop) -->
+      <div
+        id="kitchen-rune-zone"
+        class="drop-zone kitchen-rune"
+        @dragover.prevent
+        @drop="$emit('drop-on-zone', 'kitchenRune')"
+        :style="runeZoneStyle"
+        @click="releaseRuneCube"
+      >
+
+      </div>
+      <!-- Zone 6 : La zone carburant (avec gestion du drop) -->
+      <div
+        id="kitchen-carburant-zone"
+        class="drop-zone kitchen-carburant"
+        @dragover.prevent
+        @drop="$emit('drop-on-zone', 'kitchenCarburant')"
+        :style="carburantZoneStyle"
+        @click="releaseCarburantCube"
+      >
+      </div>
+
     </div>
   </div>
 </template>
@@ -76,10 +109,25 @@ export default {
       type: Object,
       default: null,
     },
+    kitchenOutilCube: {
+      type: Object,
+      default: null,
+    },
+    kitchenRuneCube: {
+      type: Object,
+      default: null,
+    },
+    kitchenCarburantCube: {
+      type: Object,
+      default: null,
+    },
   },
   computed: {
     displayZoneStyle() { return this.getZoneStyle(this.kitchenDisplayCube); },
     receptacleZoneStyle() { return this.getZoneStyle(this.kitchenReceptacleCube); },
+    outilZoneStyle() { return this.getZoneStyle(this.kitchenOutilCube); },
+    runeZoneStyle() { return this.getZoneStyle(this.kitchenRuneCube); },
+    carburantZoneStyle() { return this.getZoneStyle(this.kitchenCarburantCube); },
   },
   methods: {
     getZoneStyle(cube) {
@@ -96,6 +144,21 @@ export default {
     releaseReceptacleCube() {
       if (this.kitchenReceptacleCube) {
         this.$emit('release-discovered-cube', this.kitchenReceptacleCube.id);
+      }
+    },
+    releaseOutilCube() {
+      if (this.kitchenOutilCube) {
+        this.$emit('release-discovered-cube', this.kitchenOutilCube.id);
+      }
+    },
+    releaseRuneCube() {
+      if (this.kitchenRuneCube) {
+        this.$emit('release-discovered-cube', this.kitchenRuneCube.id);
+      }
+    },
+    releaseCarburantCube() {
+      if (this.kitchenCarburantCube) {
+        this.$emit('release-discovered-cube', this.kitchenCarburantCube.id);
       }
     },
   },
@@ -128,7 +191,7 @@ export default {
   width: 200px;
   height: 200px;
   top: 50px;
-  left: 20px;
+  left: 50% - 50px;
   background-color: rgba(0, 0, 0, 0.5);
   border: 2px solid #8B4513;
   color: white;
@@ -149,6 +212,31 @@ export default {
   height: 150px;
   bottom: 50px;
   right: 20px;
+  cursor: pointer;
+}
+
+.kitchen-outil {
+  width: 150px;
+  height: 150px;
+  bottom: 50px;
+  left: 20px;
+  cursor: pointer;
+}
+
+.kitchen-rune {
+  width: 150px;
+  height: 150px;
+  top: 50px;
+  left: 20px;
+  cursor: pointer;
+}
+
+.kitchen-carburant {
+  width: 150px;
+  height: 150px;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
   cursor: pointer;
 }
 

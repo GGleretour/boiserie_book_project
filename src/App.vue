@@ -56,9 +56,14 @@
     <Kitchen
       v-show="kitchenVisible"
       @close-book="receiveEmit"
+
       :kitchen-bag-cubes="kitchenBagCubes"
       :kitchen-display-cube="kitchenDisplayCube"
       :kitchen-receptacle-cube="kitchenReceptacleCube"
+      :kitchen-outil-cube="kitchenOutilCube"
+      :kitchen-rune-cube="kitchenRuneCube"
+      :kitchen-carburant-cube="kitchenCarburantCube"
+
       @release-discovered-cube="releaseDiscoveredCube"
       @drop-on-zone="storeDiscoveredCube"
     />
@@ -70,7 +75,7 @@
     <DiscoveredCube
       v-for="cube in discoveredCubes"
       :key="cube.id"
-      v-show="!cube.isStored && !cube.isInKitchenBag && !cube.isInKitchenDisplay && !cube.isInKitchenReceptacle"
+      v-show="!cube.isStored && !cube.isInKitchenBag && !cube.isInKitchenDisplay && !cube.isInKitchenReceptacle && !cube.isInKitchenOutil && !cube.isInKitchenRune && !cube.isInKitchenCarburant"
       :original-cube-id="cube.originalCubeId"
       :img-src="cube.img_src"
       :cube-id="cube.id"
@@ -134,6 +139,18 @@ export default {
     kitchenReceptacleCube() {
       // Trouve le cube pour la zone réceptacle
       return this.discoveredCubes.find(c => c.isInKitchenReceptacle);
+    },
+    kitchenOutilCube() {
+      // Trouve le cube pour la zone réceptacle
+      return this.discoveredCubes.find(c => c.isInKitchenOutil);
+    },
+    kitchenRuneCube() {
+      // Trouve le cube pour la zone réceptacle
+      return this.discoveredCubes.find(c => c.isInKitchenRune);
+    },
+    kitchenCarburantCube() {
+      // Trouve le cube pour la zone réceptacle
+      return this.discoveredCubes.find(c => c.isInKitchenCarburant);
     }
   },
   async created() {
@@ -188,7 +205,7 @@ export default {
       });
 
       // 2. Filtrer les cubes découverts : on ne garde que ceux qui sont stockés dans le sac.
-      const storedDiscovered = savedDiscoveredCubesData.filter(c => c.isStored || c.isInKitchenBag || c.isInKitchenDisplay || c.isInKitchenReceptacle);
+      const storedDiscovered = savedDiscoveredCubesData.filter(c => c.isStored || c.isInKitchenBag || c.isInKitchenDisplay || c.isInKitchenReceptacle || c.isInKitchenOutil || c.isInKitchenRune || c.isInKitchenCarburant);
       const storedOriginalIds = new Set(storedDiscovered.map(c => c.originalCubeId));
 
       // 3. Synchroniser le statut 'find' des cubes originaux avec les cubes découverts stockés.
@@ -245,7 +262,7 @@ export default {
         return; // On arrête la fonction pour ne pas créer de doublon
       }
       const newId = `dc-${Date.now()}`; // Crée un ID unique pour le DiscoveredCube
-      this.discoveredCubes.push({ id: newId, originalCubeId: cubeData.id, isStored: false, isInKitchenBag: false, isInKitchenDisplay: false, isInKitchenReceptacle: false, img_src: cubeData.img_src });
+      this.discoveredCubes.push({ id: newId, originalCubeId: cubeData.id, isStored: false, isInKitchenBag: false, isInKitchenDisplay: false, isInKitchenReceptacle: false, isInKitchenOutil: false, isInKitchenRune: false , isInKitchenCarburant:false ,img_src: cubeData.img_src });
       // On sauvegarde la liste chiffrée des cubes découverts
       this.saveDiscoveredCubesState();
       console.log('Nouveau DiscoveredCube créé !', newId);
@@ -258,6 +275,9 @@ export default {
         cube.isInKitchenBag = false;
         cube.isInKitchenDisplay = false;
         cube.isInKitchenReceptacle = false;
+        cube.isInKitchenOutil = false;
+        cube.isInKitchenRune = false;
+        cube.isInKitchenCarburant = false;
 
         if (zone === 'mainBag') {
           cube.isStored = true;
@@ -277,6 +297,27 @@ export default {
             currentReceptacleCube.isInKitchenReceptacle = false;
           }
           cube.isInKitchenReceptacle = true;
+        } else if (zone === 'kitchenOutil') {
+          // S'il y a déjà un cube dans la zone outil, on le libère
+          const currentOutilCube = this.discoveredCubes.find(c => c.isInKitchenOutil && c.id !== cube.id);
+          if (currentOutilCube) {
+            currentOutilCube.isInKitchenOutil = false;
+          }
+          cube.isInKitchenOutil = true;
+        } else if (zone === 'kitchenRune') {
+          // S'il y a déjà un cube dans la zone rune, on le libère
+          const currentRuneCube = this.discoveredCubes.find(c => c.isInKitchenRune && c.id !== cube.id);
+          if (currentRuneCube) {
+            currentRuneCube.isInKitchenRune = false;
+          }
+          cube.isInKitchenRune = true;
+        } else if (zone === 'kitchenCarburant') {
+          // S'il y a déjà un cube dans la zone carburant, on le libère
+          const currentCarburantCube = this.discoveredCubes.find(c => c.isInKitchenCarburant && c.id !== cube.id);
+          if (currentCarburantCube) {
+            currentCarburantCube.isInKitchenCarburant = false;
+          }
+          cube.isInKitchenCarburant = true;
         }
 
         // On cherche le cube original correspondant par son ID
@@ -295,6 +336,9 @@ export default {
         cube.isInKitchenBag = false;
         cube.isInKitchenDisplay = false;
         cube.isInKitchenReceptacle = false;
+        cube.isInKitchenOutil = false;
+        cube.isInKitchenRune = false;
+        cube.isInKitchenCarburant = false;
         this.saveDiscoveredCubesState();
       }
     },
