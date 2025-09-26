@@ -10,7 +10,6 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
-  base: '/boiserie_book_project/', // <--- IMPORTANT: Mettez le nom de votre dépôt ici
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
