@@ -28,7 +28,7 @@ export default {
     },
     imgSrc: {
       type: String,
-      default: './assets/ronge_bois_symbole.png' // Une image par défaut
+      default: 'assets/ronge_bois_symbole.png' // Une image par défaut
     },
     cubeId: {
       type: String,

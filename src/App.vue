@@ -1,13 +1,13 @@
 
 <template> 
   <EncryptedImage
-    src="/assets/background.png"
+    src="assets/background.png"
     class="background-app"
     alt="background"/>
   <header v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false">
     <EncryptedImage alt="logo_ronge_bois"
       class="logo"
-      src="/assets/ronge_bois_symbole.png"
+      src="assets/ronge_bois_symbole.png"
       width="250"
       height="auto"
       @click="showReadMe"
@@ -15,7 +15,7 @@
 
     <EncryptedImage alt="logo_petit_chaudron"
       class="logo"
-      src="/assets/petit_chaudron.png"
+      src="assets/petit_chaudron.png"
       width="250"
       height="auto"
       @click="showKitchen"
@@ -25,7 +25,7 @@
   <main>
     <div v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false" class="home-container">
       <EncryptedImage
-        src="/assets/book_boiserie.png"
+        src="assets/book_boiserie.png"
         alt="Book Cover"
         class="book-cover"
         width="400"
@@ -221,7 +221,7 @@ export default {
   methods: {
     async loadEncryptedCubes() {
       try {
-        const response = await fetch('/assets-encrypted/cubes.enc');
+        const response = await fetch('assets-encrypted/cubes.enc');
         const encryptedText = await response.text();
         const bytes = CryptoJS.AES.decrypt(encryptedText, SECRET_KEY);
         const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
