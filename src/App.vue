@@ -58,7 +58,9 @@
       @close-book="receiveEmit"
       :kitchen-bag-cubes="kitchenBagCubes"
       :kitchen-display-cube="kitchenDisplayCube"
+      :kitchen-receptacle-cube="kitchenReceptacleCube"
       @release-discovered-cube="releaseDiscoveredCube"
+      @drop-on-zone="storeDiscoveredCube"
     />
    <SpecialCube
       :cubes="cubes"
@@ -68,7 +70,7 @@
     <DiscoveredCube
       v-for="cube in discoveredCubes"
       :key="cube.id"
-      v-show="!cube.isStored && !cube.isInKitchenBag && !cube.isInKitchenDisplay"
+      v-show="!cube.isStored && !cube.isInKitchenBag && !cube.isInKitchenDisplay && !cube.isInKitchenReceptacle"
       :original-cube-id="cube.originalCubeId"
       :img-src="cube.img_src"
       :cube-id="cube.id"
@@ -128,6 +130,10 @@ export default {
       // Trouve le cube unique pour la deuxième zone (il ne peut y en avoir qu'un)
       // find() retourne le premier élément ou undefined, ce qui est parfait.
       return this.discoveredCubes.find(c => c.isInKitchenDisplay);
+    },
+    kitchenReceptacleCube() {
+      // Trouve le cube pour la zone réceptacle
+      return this.discoveredCubes.find(c => c.isInKitchenReceptacle);
     }
   },
   async created() {
@@ -182,7 +188,7 @@ export default {
       });
 
       // 2. Filtrer les cubes découverts : on ne garde que ceux qui sont stockés dans le sac.
-      const storedDiscovered = savedDiscoveredCubesData.filter(c => c.isStored || c.isInKitchenBag || c.isInKitchenDisplay);
+      const storedDiscovered = savedDiscoveredCubesData.filter(c => c.isStored || c.isInKitchenBag || c.isInKitchenDisplay || c.isInKitchenReceptacle);
       const storedOriginalIds = new Set(storedDiscovered.map(c => c.originalCubeId));
 
       // 3. Synchroniser le statut 'find' des cubes originaux avec les cubes découverts stockés.
@@ -239,7 +245,7 @@ export default {
         return; // On arrête la fonction pour ne pas créer de doublon
       }
       const newId = `dc-${Date.now()}`; // Crée un ID unique pour le DiscoveredCube
-      this.discoveredCubes.push({ id: newId, originalCubeId: cubeData.id, isStored: false, isInKitchenBag: false, isInKitchenDisplay: false, img_src: cubeData.img_src });
+      this.discoveredCubes.push({ id: newId, originalCubeId: cubeData.id, isStored: false, isInKitchenBag: false, isInKitchenDisplay: false, isInKitchenReceptacle: false, img_src: cubeData.img_src });
       // On sauvegarde la liste chiffrée des cubes découverts
       this.saveDiscoveredCubesState();
       console.log('Nouveau DiscoveredCube créé !', newId);
@@ -251,6 +257,7 @@ export default {
         cube.isStored = false;
         cube.isInKitchenBag = false;
         cube.isInKitchenDisplay = false;
+        cube.isInKitchenReceptacle = false;
 
         if (zone === 'mainBag') {
           cube.isStored = true;
@@ -263,6 +270,13 @@ export default {
             currentDisplayCube.isInKitchenDisplay = false;
           }
           cube.isInKitchenDisplay = true;
+        } else if (zone === 'kitchenReceptacle') {
+          // S'il y a déjà un cube dans la zone réceptacle, on le libère
+          const currentReceptacleCube = this.discoveredCubes.find(c => c.isInKitchenReceptacle && c.id !== cube.id);
+          if (currentReceptacleCube) {
+            currentReceptacleCube.isInKitchenReceptacle = false;
+          }
+          cube.isInKitchenReceptacle = true;
         }
 
         // On cherche le cube original correspondant par son ID
@@ -280,6 +294,7 @@ export default {
         cube.isStored = false;
         cube.isInKitchenBag = false;
         cube.isInKitchenDisplay = false;
+        cube.isInKitchenReceptacle = false;
         this.saveDiscoveredCubesState();
       }
     },

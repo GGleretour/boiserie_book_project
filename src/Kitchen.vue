@@ -32,8 +32,22 @@
       <div
         id="kitchen-display-zone"
         class="drop-zone kitchen-display"
+        @dragover.prevent
+        @drop="$emit('drop-on-zone', 'kitchenDisplay')"
         :style="displayZoneStyle"
         @click="releaseDisplayCube"
+      >
+
+      </div>
+
+      <!-- Zone 3 : La zone réceptacle (avec gestion du drop) -->
+      <div
+        id="kitchen-receptacle-zone"
+        class="drop-zone kitchen-receptacle"
+        @dragover.prevent
+        @drop="$emit('drop-on-zone', 'kitchenReceptacle')"
+        :style="receptacleZoneStyle"
+        @click="releaseReceptacleCube"
       >
 
       </div>
@@ -58,31 +72,30 @@ export default {
       type: Object,
       default: null,
     },
-  },
-  computed: {
-    displayZoneStyle() {
-      if (this.kitchenDisplayCube) {
-        // Quand un cube est présent, on utilise son image comme fond
-        return {
-          backgroundImage: `url(${this.kitchenDisplayCube.img_src})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        };
-      }
-      // Style par défaut
-      return {
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        border: '2px dashed #fff',
-      };
+    kitchenReceptacleCube: {
+      type: Object,
+      default: null,
     },
   },
+  computed: {
+    displayZoneStyle() { return this.getZoneStyle(this.kitchenDisplayCube); },
+    receptacleZoneStyle() { return this.getZoneStyle(this.kitchenReceptacleCube); },
+  },
   methods: {
+    getZoneStyle(cube) {
+      return cube ? { backgroundImage: `url(${cube.img_src})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '2px dashed #fff' };
+    },
     close() {
       this.$emit('close-book');
     },
     releaseDisplayCube() {
       if (this.kitchenDisplayCube) {
         this.$emit('release-discovered-cube', this.kitchenDisplayCube.id);
+      }
+    },
+    releaseReceptacleCube() {
+      if (this.kitchenReceptacleCube) {
+        this.$emit('release-discovered-cube', this.kitchenReceptacleCube.id);
       }
     },
   },
@@ -127,6 +140,14 @@ export default {
   width: 150px;
   height: 150px;
   top: 50px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.kitchen-receptacle {
+  width: 150px;
+  height: 150px;
+  bottom: 50px;
   right: 20px;
   cursor: pointer;
 }
