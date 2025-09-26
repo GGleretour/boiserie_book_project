@@ -64,6 +64,7 @@ export default {
       velocityY: (Math.random() - 0.5) * 5,
       isDragging: false,
       dragOffset: { x: 0, y: 0 },
+      animationFrameId: null, // Pour stocker l'ID de l'animation
     };
   },
   computed: {
@@ -91,6 +92,15 @@ export default {
       this.currentTop = parentRect.height / 2;
     }
     this.animate();
+  },
+  beforeUnmount() {
+    // On s'assure d'arrêter la boucle d'animation avant que le composant ne soit détruit.
+    // C'est la clé pour corriger l'erreur.
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+    window.removeEventListener('mousemove', this.onDrag);
+    window.removeEventListener('mouseup', this.stopDrag);
   },
   methods: {
     startDrag(event) {
@@ -129,21 +139,26 @@ export default {
 
       // Vérifie si le cube est lâché sur l'inventaire (SpecialCube)
       const specialCubeEl = document.getElementById('special-cube-container');
-      const cauldronEl = document.getElementById('ingredient-cauldron');
+      const kitchenBagEl = document.getElementById('kitchen-bag-zone');
+      const kitchenDisplayEl = document.getElementById('kitchen-display-zone');
 
-      const checkDropZone = (element) => {
+      const checkDropZone = (element, zoneName) => {
         if (!element) return false;
         const rect = element.getBoundingClientRect();
         if (!this.isInInventory && event.clientX >= rect.left && event.clientX <= rect.right &&
             event.clientY >= rect.top && event.clientY <= rect.bottom) {
-          return true;
+          this.$emit('stored', { cubeId: this.cubeId, zone: zoneName });
+          return true; // Le cube a été déposé
         }
         return false;
       };
 
-      if (checkDropZone(specialCubeEl) || checkDropZone(cauldronEl)) {
-          this.$emit('stored', this.cubeId); // Emet un événement avec son ID
-          return; // On arrête l'animation et la fonction
+      if (
+        checkDropZone(specialCubeEl, 'mainBag') ||
+        checkDropZone(kitchenBagEl, 'kitchenBag') ||
+        checkDropZone(kitchenDisplayEl, 'kitchenDisplay')
+      ) {
+          return; // On arrête la fonction car le cube est stocké
         } else if (this.isInInventory) {
           // Le cube est dans l'inventaire et est relâché dehors
           this.$emit('released', this.cubeId);
@@ -192,7 +207,7 @@ export default {
         }
       }
 
-      requestAnimationFrame(this.animate);
+      this.animationFrameId = requestAnimationFrame(this.animate);
     }
   }
 };

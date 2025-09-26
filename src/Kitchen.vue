@@ -1,5 +1,6 @@
 <template>
   <div id="kitchen_container">
+    <!-- Bouton de fermeture -->
     <div class="config-container">
       <button class="close-button" @click="close">Close</button>
     </div>
@@ -11,25 +12,39 @@
         width="600"
         height="auto"
       />
-      <div class="star-area">
-        <EncryptedImage
-          class="star-image"
-          src="/assets/star.png"
-          alt="star"
-        />
-        <!-- Le chaudron remplace le premier bouton -->
-        <IngredientCauldron v-if="cauldron" :style="cauldron.style" :cubes="cauldronCubes" />
 
-        <!-- Les autres boutons restent des boutons normaux -->
-        <button
-          v-for="button in regularButtons"
-          :key="button.id"
-          class="star-button"
-          :style="button.style"
-          @click="onButtonClick(button)"
-        >
-          <span class="button-icon">{{ button.icon }}</span>
-        </button>
+      <!-- Zone 1 : Le "sac" de la cuisine -->
+      <div id="kitchen-bag-zone" class="drop-zone kitchen-bag">
+        <p>Atelier</p>
+        <!-- Affiche les cubes stockés dans cette zone -->
+        <DiscoveredCube
+          v-for="cube in kitchenBagCubes"
+          :key="`kitchen-bag-${cube.id}`"
+          :is-in-inventory="true"
+          :cube-id="cube.id"
+          :original-cube-id="cube.originalCubeId"
+          :img-src="cube.img_src"
+          @mousedown.stop="$emit('release-discovered-cube', cube.id)"
+        />
+      </div>
+
+      <!-- Zone 2 : La zone d'affichage/remplacement -->
+      <div
+        id="kitchen-display-zone"
+        class="drop-zone kitchen-display"
+        :style="displayZoneStyle"
+        @click="releaseDisplayCube"
+      >
+        <!-- Affiche le cube stocké, mais il est visuellement caché par le fond -->
+        <DiscoveredCube
+          v-if="kitchenDisplayCube"
+          :key="`kitchen-display-${kitchenDisplayCube.id}`"
+          :is-in-inventory="true"
+          :cube-id="kitchenDisplayCube.id"
+          :original-cube-id="kitchenDisplayCube.originalCubeId"
+          :img-src="kitchenDisplayCube.img_src"
+          @mousedown.stop
+        />
       </div>
     </div>
   </div>
@@ -37,61 +52,47 @@
 
 <script>
 import EncryptedImage from './EncryptedImage.vue';
-import IngredientCauldron from './IngredientCauldron.vue';
+import DiscoveredCube from './DiscoveredCube.vue';
 
 export default {
   name: 'Kitchen',
-  components: { EncryptedImage, IngredientCauldron },
-  data() {
-    const radius = 200; // Rayon pour positionner les boutons
-    const center = { x: 50, y: 50 }; // Centre en pourcentage
-
-    // Données pour chaque bouton (icône, couleur, etc.)
-    const buttonData = [
-      { id: 1, icon: '🔥', name: 'Feu' },
-      { id: 2, icon: '💧', name: 'Eau' }, // Le premier est maintenant le chaudron
-      { id: 3, icon: '🍃', name: 'Terre' },
-      { id: 4, icon: '☀️', name: 'Lumière' },
-      { id: 5, icon: '🌙', name: 'Ombre' },
-    ];
-
-    // Angles pour une étoile à 5 branches (en degrés, 0° vers le haut)
-    const angles = [-90, -18, 54, 126, 198];
-
-    const buttons = angles.map((angle, index) => {
-      const angleRad = (angle * Math.PI) / 180;
-      // Le calcul de la position est ajusté pour être plus précis par rapport à la taille de l'étoile
-      const x = center.x + (radius / 300) * 50 * Math.cos(angleRad); // 300 est la largeur de l'étoile
-      const y = center.y + (radius / 285) * 50 * Math.sin(angleRad); // 285 est la hauteur approx. de l'étoile
-
-      return {
-        ...buttonData[index],
-        style: {
-          left: `${x}%`,
-          top: `${y}%`,
-        },
-      };
-    });
-
-    return {
-      // Sépare le chaudron des autres boutons
-      cauldron: buttons.find(b => b.id === 1),
-      regularButtons: buttons.filter(b => b.id !== 1),
-    }; // La virgule manquante était ici
-  },
+  components: { EncryptedImage, DiscoveredCube },
+  data() { return {}; },
   props: {
-    cauldronCubes: {
+    kitchenBagCubes: {
       type: Array,
-      default: () => [], // Le point-virgule superflu a été retiré ici
+      default: () => [],
+    },
+    kitchenDisplayCube: {
+      type: Object,
+      default: null,
+    },
+  },
+  computed: {
+    displayZoneStyle() {
+      if (this.kitchenDisplayCube) {
+        // Quand un cube est présent, on utilise son image comme fond
+        return {
+          backgroundImage: `url(${this.kitchenDisplayCube.img_src})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        };
+      }
+      // Style par défaut
+      return {
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        border: '2px dashed #fff',
+      };
     },
   },
   methods: {
     close() {
       this.$emit('close-book');
     },
-    onButtonClick(button) {
-      console.log(`Bouton '${button.name}' (ID: ${button.id}) cliqué !`);
-      // Logique pour les autres boutons
+    releaseDisplayCube() {
+      if (this.kitchenDisplayCube) {
+        this.$emit('release-discovered-cube', this.kitchenDisplayCube.id);
+      }
     },
   },
 };
@@ -113,36 +114,31 @@ export default {
   align-items: center;
 }
 
-.star-area {
+.drop-zone {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  border-radius: 10px;
+  box-sizing: border-box;
 }
 
-.star-image {
-  width: 300px; /* Ajustez la taille de l'étoile */
-  height: auto;
+.kitchen-bag {
+  width: 200px;
+  height: 200px;
+  top: 50px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 2px solid #8B4513;
+  color: white;
+  text-align: center;
+  padding-top: 10px;
 }
 
-.star-button {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+.kitchen-display {
+  width: 150px;
+  height: 150px;
+  top: 50px;
+  right: 20px;
   cursor: pointer;
-  border: 2px solid #c0a060;
-  background-color: #f0e0c0;
 }
-
-.button-icon {
-  font-size: 24px;
-  line-height: 1;
-}
-
 
 .config-container {
   display: flex;
