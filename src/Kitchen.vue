@@ -13,75 +13,78 @@
         height="auto"
       />
 
-      <!-- Zone 1 : Le "sac" de la cuisine -->
-      <div id="kitchen-bag-zone" class="drop-zone kitchen-bag">
-        <p>Atelier</p>
-        <!-- Affiche les cubes stockés dans cette zone -->
-        <DiscoveredCube
-          v-for="cube in kitchenBagCubes"
-          :key="`kitchen-bag-${cube.id}`"
-          :is-in-inventory="true"
-          :cube-id="cube.id"
-          :original-cube-id="cube.originalCubeId"
-          :img-src="cube.img_src"
-          @mousedown.stop="$emit('release-discovered-cube', cube.id)"
-        />
-      </div>
+      <!-- Conteneur carré pour la disposition en étoile -->
+      <div class="star-layout-container">
+        <!-- Zone 1 : Le "sac" de la cuisine -->
+        <div id="kitchen-bag-zone" class="drop-zone kitchen-bag">
+          <p>Atelier</p>
+          <!-- Affiche les cubes stockés dans cette zone -->
+          <DiscoveredCube
+            v-for="cube in kitchenBagCubes"
+            :key="`kitchen-bag-${cube.id}`"
+            :is-in-inventory="true"
+            :cube-id="cube.id"
+            :original-cube-id="cube.originalCubeId"
+            :img-src="cube.img_src"
+            @mousedown.stop="$emit('release-discovered-cube', cube.id)"
+          />
+        </div>
 
-      <!-- Zone 2 : La zone d'affichage/remplacement -->
-      <div
-        id="kitchen-display-zone"
-        class="drop-zone kitchen-display"
-        @dragover.prevent
-        @drop="$emit('drop-on-zone', 'kitchenDisplay')"
-        :style="displayZoneStyle"
-        @click="releaseDisplayCube"
-      >
+        <!-- Zone 2 : La zone d'affichage/remplacement -->
+        <div
+          id="kitchen-display-zone"
+          class="drop-zone kitchen-display"
+          @dragover.prevent
+          @drop="$emit('drop-on-zone', 'kitchenDisplay')"
+          :style="displayZoneStyle"
+          @click="releaseDisplayCube"
+        >
 
-      </div>
+        </div>
 
-      <!-- Zone 3 : La zone réceptacle (avec gestion du drop) -->
-      <div
-        id="kitchen-receptacle-zone"
-        class="drop-zone kitchen-receptacle"
-        @dragover.prevent
-        @drop="$emit('drop-on-zone', 'kitchenReceptacle')"
-        :style="receptacleZoneStyle"
-        @click="releaseReceptacleCube"
-      >
+        <!-- Zone 3 : La zone réceptacle (avec gestion du drop) -->
+        <div
+          id="kitchen-receptacle-zone"
+          class="drop-zone kitchen-receptacle"
+          @dragover.prevent
+          @drop="$emit('drop-on-zone', 'kitchenReceptacle')"
+          :style="receptacleZoneStyle"
+          @click="releaseReceptacleCube"
+        >
 
-      </div>
-      <!-- Zone 4 : La zone outil (avec gestion du drop) -->
-      <div
-        id="kitchen-outil-zone"
-        class="drop-zone kitchen-outil"
-        @dragover.prevent
-        @drop="$emit('drop-on-zone', 'kitchenOutil')"
-        :style="outilZoneStyle"
-        @click="releaseOutilCube"
-      >
+        </div>
+        <!-- Zone 4 : La zone outil (avec gestion du drop) -->
+        <div
+          id="kitchen-outil-zone"
+          class="drop-zone kitchen-outil"
+          @dragover.prevent
+          @drop="$emit('drop-on-zone', 'kitchenOutil')"
+          :style="outilZoneStyle"
+          @click="releaseOutilCube"
+        >
 
-      </div>
-      <!-- Zone 5 : La zone rune (avec gestion du drop) -->
-      <div
-        id="kitchen-rune-zone"
-        class="drop-zone kitchen-rune"
-        @dragover.prevent
-        @drop="$emit('drop-on-zone', 'kitchenRune')"
-        :style="runeZoneStyle"
-        @click="releaseRuneCube"
-      >
+        </div>
+        <!-- Zone 5 : La zone rune (avec gestion du drop) -->
+        <div
+          id="kitchen-rune-zone"
+          class="drop-zone kitchen-rune"
+          @dragover.prevent
+          @drop="$emit('drop-on-zone', 'kitchenRune')"
+          :style="runeZoneStyle"
+          @click="releaseRuneCube"
+        >
 
-      </div>
-      <!-- Zone 6 : La zone carburant (avec gestion du drop) -->
-      <div
-        id="kitchen-carburant-zone"
-        class="drop-zone kitchen-carburant"
-        @dragover.prevent
-        @drop="$emit('drop-on-zone', 'kitchenCarburant')"
-        :style="carburantZoneStyle"
-        @click="releaseCarburantCube"
-      >
+        </div>
+        <!-- Zone 6 : La zone carburant (avec gestion du drop) -->
+        <div
+          id="kitchen-carburant-zone"
+          class="drop-zone kitchen-carburant"
+          @dragover.prevent
+          @drop="$emit('drop-on-zone', 'kitchenCarburant')"
+          :style="carburantZoneStyle"
+          @click="releaseCarburantCube"
+        >
+        </div>
       </div>
 
     </div>
@@ -181,65 +184,75 @@ export default {
   align-items: center;
 }
 
+.star-layout-container {
+  position: absolute;
+  width: 450px; /* Taille du conteneur de la disposition */
+  height: 450px; /* Forcé en carré */
+  /* Les lignes suivantes centrent ce conteneur carré sur la page */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 .drop-zone {
   position: absolute;
   border-radius: 10px;
   box-sizing: border-box;
+  /* Centrage de l'élément sur ses coordonnées top/left */
+  transform: translate(-50%, -50%);
 }
 
 .kitchen-bag {
-  width: 200px;
-  height: 200px;
-  top: 50px;
-  left: 50% - 50px;
+  width: 100px;
+  height: 100px;
+  top: 10%; /* Pointe du haut */
+  left: 50%; 
   background-color: rgba(0, 0, 0, 0.5);
   border: 2px solid #8B4513;
   color: white;
   text-align: center;
-  padding-top: 10px;
+  padding: 5px;
+  font-size: 0.9em;
 }
 
 .kitchen-display {
-  width: 150px;
-  height: 150px;
-  top: 50px;
-  right: 20px;
+  width: 80px; /* Plus petit et au centre */
+  height: 80px;
+  top: 50%;
+  left: 50%;
   cursor: pointer;
 }
 
 .kitchen-receptacle {
-  width: 150px;
-  height: 150px;
-  bottom: 50px;
-  right: 20px;
+  width: 100px;
+  height: 100px;
+  top: 90%; /* Pointe bas-gauche */
+  left: 22%;
   cursor: pointer;
 }
 
 .kitchen-outil {
-  width: 150px;
-  height: 150px;
-  bottom: 50px;
-  left: 20px;
+  width: 100px;
+  height: 100px;
+  top: 35%; /* Pointe haut-droite */
+  left: 90%;
   cursor: pointer;
 }
 
 .kitchen-rune {
-  width: 150px;
-  height: 150px;
-  top: 50px;
-  left: 20px;
+  width: 100px;
+  height: 100px;
+  top: 35%; /* Pointe haut-gauche */
+  left: 10%;
   cursor: pointer;
 }
 
 .kitchen-carburant {
-  width: 150px;
-  height: 150px;
-  bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
+  top: 90%; /* Pointe bas-droite */
+  left: 78%;
   cursor: pointer;
 }
-
 .config-container {
   display: flex;
   justify-content: flex-start;
