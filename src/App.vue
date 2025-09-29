@@ -72,15 +72,15 @@
       :stored-discovered-cubes="storedDiscoveredCubes"
       @release-discovered-cube="releaseDiscoveredCube"
    />
-    <template v-for="cube in discoveredCubes" :key="cube.id">
-      <DiscoveredCube
-        v-if="!cube.isStored && !cube.isInKitchenBag && !cube.isInKitchenDisplay && !cube.isInKitchenReceptacle && !cube.isInKitchenOutil && !cube.isInKitchenRune && !cube.isInKitchenCarburant"
-        :original-cube-id="cube.originalCubeId"
-        :img-src="cube.img_src"
-        :cube-id="cube.id"
-        @stored="storeDiscoveredCube"
-      />
-    </template>
+    <!-- OPTIMISATION : Utiliser un seul v-for pour tous les cubes non stockés -->
+    <DiscoveredCube
+      v-for="cube in freeDiscoveredCubes"
+      :key="cube.id"
+      :original-cube-id="cube.originalCubeId"
+      :img-src="cube.img_src"
+      :cube-id="cube.id"
+      @stored="storeDiscoveredCube"
+    />
 </main>
 </template>
 
@@ -120,6 +120,10 @@ export default {
     };
   },
   computed: {
+    freeDiscoveredCubes() {
+      // Propriété calculée pour ne filtrer qu'une seule fois
+      return this.discoveredCubes.filter(c => !c.isStored && !c.isInKitchenBag && !c.isInKitchenDisplay && !c.isInKitchenReceptacle && !c.isInKitchenOutil && !c.isInKitchenRune && !c.isInKitchenCarburant);
+    },
     homeCubes() {
       // Affiche les cubes qui n'ont pas de page assignée (ceux de la page principale)
       return this.cubes.filter(cube => (cube.page === undefined || cube.page === null) && !cube.isInInventory);

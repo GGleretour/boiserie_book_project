@@ -109,12 +109,14 @@ export default {
       return this.imgSrc;
     }
   },
+  created() {
+    // --- Optimisation : Cache pour les dimensions du parent ---
+    this.parentRectCache = null;
+  },
   mounted() {
     // Si le cube est créé directement dans l'inventaire, on initialise sa position au centre.
     if (this.isInInventory) {
-      const parentRect = this.$el.parentElement.getBoundingClientRect();
-      this.currentLeft = parentRect.width / 2;
-      this.currentTop = parentRect.height / 2;
+      this.recenterInParent();
     }
     this.animate();
   },
@@ -128,6 +130,24 @@ export default {
     window.removeEventListener('mouseup', this.stopDrag);
   },
   methods: {
+    // --- NOUVELLE MÉTHODE D'OPTIMISATION ---
+    // Met à jour le cache des dimensions du parent.
+    updateParentRectCache() {
+      if (this.isInInventory && this.$el.parentElement) {
+        this.parentRectCache = this.$el.parentElement.getBoundingClientRect();
+      }
+    },
+
+    // --- NOUVELLE MÉTHODE ---
+    // Recalcule la position centrale du cube par rapport à son parent.
+    recenterInParent() {
+      if (this.isInInventory && this.$el.parentElement) {
+        const parentRect = this.$el.parentElement.getBoundingClientRect();
+        this.currentLeft = parentRect.width / 2;
+        this.currentTop = parentRect.height / 2;
+        this.updateParentRectCache(); // Met à jour le cache avec les bonnes dimensions
+      }
+    },
     startDrag(event) {
       event.preventDefault();
       this.isDragging = true;
@@ -192,6 +212,7 @@ export default {
         checkDropZone(kitchenRuneEl, 'kitchenRune') ||
         checkDropZone(kitchenCarburantEl, 'kitchenCarburant')
       ) {
+          this.updateParentRectCache(); // Met à jour le cache quand le cube est stocké
           return; // On arrête la fonction car le cube est stocké
         } else if (this.isInInventory) {
           // Le cube est dans l'inventaire et est relâché dehors
@@ -205,9 +226,16 @@ export default {
     animate() {
       if (this.isDragging) return;
 
+      // --- UTILISATION DU CACHE ---
+      // Si le cache n'existe pas (ex: au premier rendu), on le crée.
+      if (this.isInInventory && !this.parentRectCache) {
+        this.updateParentRectCache();
+      }
+      const parentHeight = this.isInInventory ? (this.parentRectCache ? this.parentRectCache.height : 0) : window.innerHeight;
+
       // --- OPTIMISATION ---
       // Si le cube est quasiment immobile, on arrête la boucle d'animation.
-      if (Math.abs(this.velocityX) < 0.1 && Math.abs(this.velocityY) < 0.1 && this.currentTop >= (this.isInInventory ? (this.inventoryFloor || this.$el.parentElement.getBoundingClientRect().height) : window.innerHeight) - (parseInt(this.height, 10) / 2) - 1) {
+      if (Math.abs(this.velocityX) < 0.1 && Math.abs(this.velocityY) < 0.1 && this.currentTop >= (this.inventoryFloor || parentHeight) - (parseInt(this.height, 10) / 2) - 1) {
         return; // Arrête la boucle
       }
 
@@ -216,7 +244,7 @@ export default {
       this.currentTop += this.velocityY;
 
       // Les limites de rebond dépendent de si le cube est dans l'inventaire ou non
-      const parentRect = this.isInInventory ? { width: this.inventoryFloorWidth || this.$el.parentElement.getBoundingClientRect().width, height: this.$el.parentElement.getBoundingClientRect().height } : { width: window.innerWidth, height: window.innerHeight };
+      const parentRect = this.isInInventory ? { width: this.inventoryFloorWidth || (this.parentRectCache ? this.parentRectCache.width : 0), height: parentHeight } : { width: window.innerWidth, height: window.innerHeight };
       const floorWidth = parentRect.width; // La largeur de la zone de rebond
       const floorHeight = parentRect.height;
 

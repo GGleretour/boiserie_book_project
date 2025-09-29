@@ -1,4 +1,5 @@
 <template>
+  <!-- Note: v-show est utilisé pour que les refs soient disponibles même quand le composant est caché -->
   <div id="kitchen_container">
     <!-- Bouton de fermeture -->
     <div class="config-container">
@@ -19,6 +20,7 @@
         <div id="kitchen-bag-zone" class="drop-zone kitchen-bag">
           <p>Atelier</p>
           <!-- Affiche les cubes stockés dans cette zone -->
+          <!-- Ajout d'une ref pour accéder aux instances des cubes -->
           <DiscoveredCube
             v-for="cube in kitchenBagCubes"
             :key="`kitchen-bag-${cube.id}`"
@@ -26,6 +28,7 @@
             :cube-id="cube.id"
             :original-cube-id="cube.originalCubeId"
             :img-src="cube.img_src"
+            ref="kitchenBagCubeRefs"
             :inventory-offset-left="85"
             :inventory-offset-right="85"
             :inventory-offset-top="85"
@@ -135,6 +138,20 @@ export default {
     outilZoneStyle() { return this.getZoneStyle(this.kitchenOutilCube); },
     runeZoneStyle() { return this.getZoneStyle(this.kitchenRuneCube); },
     carburantZoneStyle() { return this.getZoneStyle(this.kitchenCarburantCube); },
+  },
+  // --- NOUVEAU HOOK ---
+  updated() {
+    // nextTick attend que le DOM soit complètement mis à jour par Vue.
+    this.$nextTick(() => {
+      // On vérifie si les refs des cubes existent.
+      // this.$refs.kitchenBagCubeRefs sera un tableau car il est utilisé dans un v-for.
+      if (this.$refs.kitchenBagCubeRefs && this.$refs.kitchenBagCubeRefs.length) {
+        // On parcourt chaque instance de DiscoveredCube et on appelle sa méthode de recentrage.
+        this.$refs.kitchenBagCubeRefs.forEach(cubeComponent => {
+          cubeComponent.recenterInParent();
+        });
+      }
+    });
   },
   methods: {
     getZoneStyle(cube) {
