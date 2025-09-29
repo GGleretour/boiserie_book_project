@@ -72,15 +72,15 @@
       :stored-discovered-cubes="storedDiscoveredCubes"
       @release-discovered-cube="releaseDiscoveredCube"
    />
-    <DiscoveredCube
-      v-for="cube in discoveredCubes"
-      :key="cube.id"
-      v-show="!cube.isStored && !cube.isInKitchenBag && !cube.isInKitchenDisplay && !cube.isInKitchenReceptacle && !cube.isInKitchenOutil && !cube.isInKitchenRune && !cube.isInKitchenCarburant"
-      :original-cube-id="cube.originalCubeId"
-      :img-src="cube.img_src"
-      :cube-id="cube.id"
-      @stored="storeDiscoveredCube"
-    />
+    <template v-for="cube in discoveredCubes" :key="cube.id">
+      <DiscoveredCube
+        v-if="!cube.isStored && !cube.isInKitchenBag && !cube.isInKitchenDisplay && !cube.isInKitchenReceptacle && !cube.isInKitchenOutil && !cube.isInKitchenRune && !cube.isInKitchenCarburant"
+        :original-cube-id="cube.originalCubeId"
+        :img-src="cube.img_src"
+        :cube-id="cube.id"
+        @stored="storeDiscoveredCube"
+      />
+    </template>
 </main>
 </template>
 

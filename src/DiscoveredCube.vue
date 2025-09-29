@@ -180,6 +180,12 @@ export default {
     animate() {
       if (this.isDragging) return;
 
+      // --- OPTIMISATION ---
+      // Si le cube est quasiment immobile, on arrête la boucle d'animation.
+      if (Math.abs(this.velocityX) < 0.1 && Math.abs(this.velocityY) < 0.1 && this.currentTop >= (this.isInInventory ? (this.inventoryFloor || this.$el.parentElement.getBoundingClientRect().height) : window.innerHeight) - (parseInt(this.height, 10) / 2) - 1) {
+        return; // Arrête la boucle
+      }
+
       this.velocityY += GRAVITY;
       this.currentLeft += this.velocityX;
       this.currentTop += this.velocityY;
