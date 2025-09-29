@@ -18,9 +18,10 @@
     :cube-id="cube.id"
     :original-cube-id="cube.originalCubeId"
     :img-src="cube.img_src"
-    :inventory-floor-width="140"
-    :inventory-ceiling="10"
-    :inventory-floor="160"
+    :inventory-offset-left="80"
+    :inventory-offset-right="75"
+    :inventory-offset-top="95"
+    :inventory-offset-bottom="93"
     @released="$emit('release-discovered-cube', cube.id)"
     />
     <EncryptedImage

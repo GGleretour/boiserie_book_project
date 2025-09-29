@@ -16,7 +16,7 @@
 import EncryptedImage from './EncryptedImage.vue';
 // --- Constantes pour la physique de l'animation ---
 const GRAVITY = 0.3;
-const DAMPING = 0.8;
+const DAMPING = 0.99;
 
 export default {
   name: 'DiscoveredCube',
@@ -49,6 +49,31 @@ export default {
     inventoryFloor: {
       type: Number,
       default: null,
+    },
+    // NOUVELLES PROPS pour des limites asymétriques depuis le centre
+    inventoryOffsetLeft: {
+      type: Number,
+      default: null, // Distance du centre au mur GAUCHE
+    },
+    inventoryOffsetRight: {
+      type: Number,
+      default: null, // Distance du centre au mur DROIT
+    },
+    inventoryOffsetTop: {
+      type: Number,
+      default: null, // Distance du centre au mur HAUT (plafond)
+    },
+    inventoryOffsetBottom: {
+      type: Number,
+      default: null, // Distance du centre au mur BAS (sol)
+    },
+    inventoryCenterX: {
+      type: Number,
+      default: null, // Position X du centre de la zone de rebond
+    },
+    inventoryCenterY: {
+      type: Number,
+      default: null, // Position Y du centre de la zone de rebond
     }
   },
   data() {
@@ -198,27 +223,47 @@ export default {
       const halfWidth = parseInt(this.width, 10) / 2;
       const halfHeight = parseInt(this.height, 10) / 2;
 
-      const isGrounded = this.currentTop >= floorHeight - halfHeight;
+      // --- NOUVELLE LOGIQUE DE REBOND ASYMÉTRIQUE DEPUIS LE CENTRE ---
+      const hasCustomBounds = this.inventoryOffsetLeft !== null || this.inventoryOffsetRight !== null || this.inventoryOffsetTop !== null || this.inventoryOffsetBottom !== null;
 
-      // Rebond sur les murs (gauche/droite) de la fenêtre
-      if (this.currentLeft < halfWidth || this.currentLeft > floorWidth - halfWidth) {
-        this.velocityX *= -1 * DAMPING; // Inverse la vitesse
-        // Repositionne le cube juste à l'intérieur de la bordure pour éviter le "tunneling"
-        this.currentLeft = Math.max(halfWidth, Math.min(this.currentLeft, floorWidth - halfWidth));
-      }
+      if (this.isInInventory && hasCustomBounds) {
+        const centerX = this.inventoryCenterX !== null ? this.inventoryCenterX : parentRect.width / 2;
+        const centerY = this.inventoryCenterY !== null ? this.inventoryCenterY : parentRect.height / 2;
 
-      if (isGrounded) {
-        this.velocityX *= DAMPING; // Applique la friction au sol
-      }
-      // Rebond sur le sol et le plafond de la fenêtre
-      const effectiveFloor = this.isInInventory && this.inventoryFloor !== null ? this.inventoryFloor : floorHeight;
-      if (this.currentTop < (this.isInInventory ? this.inventoryCeiling : halfHeight) || this.currentTop > effectiveFloor - halfHeight) {
-        this.velocityY *= -1 * DAMPING; // Inverse la vitesse
-        // Repositionne le cube juste à l'intérieur de la bordure pour éviter le "tunneling"
-        if (this.currentTop > effectiveFloor - halfHeight) {
-          this.currentTop = effectiveFloor - halfHeight;
-        } else if (this.currentTop < halfHeight) {
-          this.currentTop = halfHeight;
+        // Rebond sur les murs gauche/droit
+        if (this.inventoryOffsetLeft !== null && this.currentLeft < (centerX - this.inventoryOffsetLeft) + halfWidth) {
+          this.velocityX *= -1 * DAMPING;
+          this.currentLeft = (centerX - this.inventoryOffsetLeft) + halfWidth;
+        }
+        if (this.inventoryOffsetRight !== null && this.currentLeft > (centerX + this.inventoryOffsetRight) - halfWidth) {
+          this.velocityX *= -1 * DAMPING;
+          this.currentLeft = (centerX + this.inventoryOffsetRight) - halfWidth;
+        }
+
+        // Rebond sur le plafond/sol
+        if (this.inventoryOffsetTop !== null && this.currentTop < (centerY - this.inventoryOffsetTop) + halfHeight) {
+          this.velocityY *= -1 * DAMPING;
+          this.currentTop = (centerY - this.inventoryOffsetTop) + halfHeight;
+        }
+        if (this.inventoryOffsetBottom !== null && this.currentTop > (centerY + this.inventoryOffsetBottom) - halfHeight) {
+          this.velocityY *= -1 * DAMPING;
+          this.currentTop = (centerY + this.inventoryOffsetBottom) - halfHeight;
+          this.velocityX *= DAMPING; // Friction au sol
+        }
+      } else {
+        // --- ANCIENNE LOGIQUE DE REBOND (pour le plein écran) ---
+        const isGrounded = this.currentTop >= floorHeight - halfHeight;
+        if (this.currentLeft < halfWidth || this.currentLeft > floorWidth - halfWidth) {
+          this.velocityX *= -1 * DAMPING;
+          this.currentLeft = Math.max(halfWidth, Math.min(this.currentLeft, floorWidth - halfWidth));
+        }
+        if (isGrounded) {
+          this.velocityX *= DAMPING;
+        }
+        const effectiveFloor = this.isInInventory && this.inventoryFloor !== null ? this.inventoryFloor : floorHeight;
+        if (this.currentTop < (this.isInInventory ? this.inventoryCeiling : halfHeight) || this.currentTop > effectiveFloor - halfHeight) {
+          this.velocityY *= -1 * DAMPING;
+          this.currentTop = Math.max((this.isInInventory ? this.inventoryCeiling : halfHeight), Math.min(this.currentTop, effectiveFloor - halfHeight));
         }
       }
 
