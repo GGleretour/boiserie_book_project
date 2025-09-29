@@ -16,7 +16,7 @@
 import EncryptedImage from './EncryptedImage.vue';
 // --- Constantes pour la physique de l'animation ---
 const GRAVITY = 0.3;
-const DAMPING = 0.99;
+const DAMPING = 0.80;
 
 export default {
   name: 'DiscoveredCube',
