@@ -51,7 +51,7 @@ export default {
       // Au clic, on marque le cube comme "trouvé" et on émet les événements.
       this.cubeData.find = true;
       this.$emit('state-changed');
-      this.$emit('discovered', { id: this.cubeData.id, img_src: this.cubeData.img_src });
+      this.$emit('discovered', { id: this.cubeData.id, img_src: this.cubeData.img_src, type: this.cubeData.type });
     },
   }
 };

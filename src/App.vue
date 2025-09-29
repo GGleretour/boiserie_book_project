@@ -266,7 +266,7 @@ export default {
         return; // On arrête la fonction pour ne pas créer de doublon
       }
       const newId = `dc-${Date.now()}`; // Crée un ID unique pour le DiscoveredCube
-      this.discoveredCubes.push({ id: newId, originalCubeId: cubeData.id, isStored: false, isInKitchenBag: false, isInKitchenDisplay: false, isInKitchenReceptacle: false, isInKitchenOutil: false, isInKitchenRune: false , isInKitchenCarburant:false ,img_src: cubeData.img_src });
+      this.discoveredCubes.push({ id: newId, originalCubeId: cubeData.id, isStored: false, isInKitchenBag: false, isInKitchenDisplay: false, isInKitchenReceptacle: false, isInKitchenOutil: false, isInKitchenRune: false , isInKitchenCarburant:false ,img_src: cubeData.img_src , type: cubeData.type });
       // On sauvegarde la liste chiffrée des cubes découverts
       this.saveDiscoveredCubesState();
       console.log('Nouveau DiscoveredCube créé !', newId);
@@ -274,6 +274,9 @@ export default {
     storeDiscoveredCube({ cubeId, zone }) {
       const cube = this.discoveredCubes.find(c => c.id === cubeId);
       if (cube) {
+        if (zone !== 'mainBag' && cube.type !== zone) {
+          return;
+        }
         // On s'assure que le cube n'est dans aucune autre zone avant de l'assigner
         cube.isStored = false;
         cube.isInKitchenBag = false;
