@@ -34,3 +34,4 @@ coverage
 .env.*
 
 # Fichier de configuration des cubes en clair
+src/cubes.js
