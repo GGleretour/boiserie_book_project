@@ -1,87 +1,90 @@
 
 <template> 
-  <EncryptedImage
-    src="assets/background.png"
-    class="background-app"
-    alt="background"/>
-  <header v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false">
-    <EncryptedImage alt="logo_ronge_bois"
-      class="logo"
-      src="assets/ronge_bois_symbole.png"
-      width="250"
-      height="auto"
-      @click="showReadMe"
-    />
-
-    <EncryptedImage alt="logo_petit_chaudron"
-      class="logo"
-      src="assets/petit_chaudron.png"
-      width="250"
-      height="auto"
-      @click="showKitchen"
-    />
-  </header>
-
-  <main>
-    <div v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false" class="home-container">
-      <EncryptedImage
-        src="assets/book_boiserie.png"
-        alt="Book Cover"
-        class="book-cover"
-        width="400"
-        height="600"
-        @click="showPages"
+  <LoadingScreen v-if="isLoading" />
+  <div v-else>
+    <EncryptedImage
+      src="assets/background.png"
+      class="background-app"
+      alt="background"/>
+    <header v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false">
+      <EncryptedImage alt="logo_ronge_bois"
+        class="logo"
+        src="assets/ronge_bois_symbole.png"
+        width="250"
+        height="auto"
+        @click="showReadMe"
       />
-      <Cube 
-        v-for="cube in homeCubes"
-        :key="cube.id" 
-        :cube-data="cube"
+
+      <EncryptedImage alt="logo_petit_chaudron"
+        class="logo"
+        src="assets/petit_chaudron.png"
+        width="250"
+        height="auto"
+        @click="showKitchen"
+      />
+    </header>
+
+    <main>
+      <div v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false" class="home-container">
+        <EncryptedImage
+          src="assets/book_boiserie.png"
+          alt="Book Cover"
+          class="book-cover"
+          width="400"
+          height="600"
+          @click="showPages"
+        />
+        <Cube 
+          v-for="cube in homeCubes"
+          :key="cube.id" 
+          :cube-data="cube"
+          @discovered="spawnDiscoveredCube"
+          @state-changed="saveCubesState"
+        />
+      </div>
+      <BookPages
+        v-show="pagesVisible"
+        @close-book="receiveEmit"
+        @page-changed="updateCurrentBookPage"
         @discovered="spawnDiscoveredCube"
+        :cubes="cubes"
         @state-changed="saveCubesState"
+        :current-book-page="currentBookPage"
       />
-    </div>
-    <BookPages
-      v-show="pagesVisible"
-      @close-book="receiveEmit"
-      @page-changed="updateCurrentBookPage"
-      @discovered="spawnDiscoveredCube"
-      :cubes="cubes"
-      @state-changed="saveCubesState"
-      :current-book-page="currentBookPage"
-    />
-    <ReadMe
-      v-show="readMeVisible"
-      @close-book="receiveEmit"
-    />
-    <Kitchen
-      v-show="kitchenVisible"
-      @close-book="receiveEmit"
+      <ReadMe
+        v-show="readMeVisible"
+        @close-book="receiveEmit"
+      />
+      <Kitchen
+        v-show="kitchenVisible"
+        @close-book="receiveEmit"
 
-      :kitchen-bag-cubes="kitchenBagCubes"
-      :kitchen-display-cube="kitchenDisplayCube"
-      :kitchen-receptacle-cube="kitchenReceptacleCube"
-      :kitchen-outil-cube="kitchenOutilCube"
-      :kitchen-rune-cube="kitchenRuneCube"
-      :kitchen-carburant-cube="kitchenCarburantCube"
+        :kitchen-bag-cubes="kitchenBagCubes"
+        :kitchen-display-cube="kitchenDisplayCube"
+        :kitchen-receptacle-cube="kitchenReceptacleCube"
+        :kitchen-outil-cube="kitchenOutilCube"
+        :kitchen-rune-cube="kitchenRuneCube"
+        :kitchen-carburant-cube="kitchenCarburantCube"
 
-      @release-discovered-cube="releaseDiscoveredCube"
-      @drop-on-zone="storeDiscoveredCube"
+        @release-discovered-cube="releaseDiscoveredCube"
+        @drop-on-zone="storeDiscoveredCube"
+      />
+    <SpecialCube
+        :cubes="cubes"
+        :stored-discovered-cubes="storedDiscoveredCubes"
+        @release-discovered-cube="releaseDiscoveredCube"
     />
-   <SpecialCube
-      :cubes="cubes"
-      :stored-discovered-cubes="storedDiscoveredCubes"
-      @release-discovered-cube="releaseDiscoveredCube"
-   />
-    <!-- OPTIMISATION : Utiliser un seul v-for pour tous les cubes non stockés -->
-    <DiscoveredCube
-      v-for="cube in freeDiscoveredCubes"
-      :key="cube.id"
-      :original-cube-id="cube.originalCubeId"
-      :img-src="cube.img_src"
-      :cube-id="cube.id"
-      @stored="storeDiscoveredCube"
-    />
-</main>
+      <!-- OPTIMISATION : Utiliser un seul v-for pour tous les cubes non stockés -->
+      <DiscoveredCube
+        v-for="cube in freeDiscoveredCubes"
+        :key="cube.id"
+        :original-cube-id="cube.originalCubeId"
+        :img-src="cube.img_src"
+        :cube-id="cube.id"
+        @stored="storeDiscoveredCube"
+      />
+  </main>
+</div>
 </template>
 
 <script> 
@@ -93,6 +96,10 @@ import SpecialCube from './SpecialCube.vue';
 import DiscoveredCube from './DiscoveredCube.vue';
 import EncryptedImage from './EncryptedImage.vue';
 import CryptoJS from 'crypto-js';
+
+import LoadingScreen from './LoadingScreen.vue';
+import { preloadImages } from './image-service.js';
+import { pageImages } from './pages.js';
 
 // Récupère la clé secrète depuis les variables d'environnement.
 const SECRET_KEY = import.meta.env.VITE_CRYPTO_SECRET_KEY;
@@ -106,10 +113,12 @@ export default {
     SpecialCube,
     EncryptedImage,
     DiscoveredCube,
+    LoadingScreen,
   },
   data()
   {
     return {
+      isLoading: true,
       pagesVisible: false,
       readMeVisible: false,
       kitchenVisible: false,
@@ -158,6 +167,16 @@ export default {
     }
   },
   async created() {
+    // Lancer le préchargement des images et attendre qu'il soit terminé
+    const allImages = [
+      ...pageImages,
+      'assets/background.png',
+      'assets/ronge_bois_symbole.png',
+      'assets/petit_chaudron.png',
+      'assets/book_boiserie.png',
+    ];
+    await preloadImages(allImages);
+
     // Charge et déchiffre la configuration des cubes
     const cubesinfos = await this.loadEncryptedCubes();
     if (cubesinfos) {
@@ -221,6 +240,7 @@ export default {
       // 4. Appliquer l'état filtré et mis à jour aux cubes découverts du composant.
       this.discoveredCubes = storedDiscovered;
     }
+    this.isLoading = false;
   },
   methods: {
     async loadEncryptedCubes() {

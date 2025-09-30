@@ -62,13 +62,17 @@ export async function getDecryptedImage(src) {
 }
 
 /**
- * Précharge (déchiffre et met en cache) une liste d'images sans attendre le résultat.
+ * Précharge (déchiffre et met en cache) une liste d'images et attend que tout soit terminé.
  * @param {string[]} srcs - Un tableau d'URLs d'images (chiffrées ou non).
+ * @returns {Promise<void>} - Une promesse qui se résout quand toutes les images sont chargées.
  */
 export function preloadImages(srcs) {
-  srcs.forEach(src => {
+  const promises = srcs.map(src => {
     if (src && !imageCache.has(src)) {
-      getDecryptedImage(src); // On lance le déchiffrement, mais on n'attend pas la fin
+      return getDecryptedImage(src);
     }
+    return Promise.resolve(); // Retourne une promesse résolue pour les images déjà en cache ou invalides
   });
+
+  return Promise.all(promises);
 }
