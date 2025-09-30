@@ -2,6 +2,7 @@
 <template> 
   <LoadingScreen v-if="isLoading" />
   <template v-else>
+    <ResultViewer v-model:visible="resultViewerVisible" :img-src="resultViewerImgSrc" @retrieve="handleRetrieveResult" />
     <EncryptedImage
       src="assets/background.png"
       class="background-app"
@@ -69,6 +70,7 @@
 
         @release-discovered-cube="releaseDiscoveredCube"
         @drop-on-zone="storeDiscoveredCube"
+        @open-result-viewer="handleOpenResultViewer"
       />
     <SpecialCube
         :cubes="cubes"
@@ -97,6 +99,7 @@ import SpecialCube from './SpecialCube.vue';
 import DiscoveredCube from './DiscoveredCube.vue';
 import EncryptedImage from './EncryptedImage.vue';
 import CryptoJS from 'crypto-js';
+import ResultViewer from './ResultViewer.vue';
 
 import LoadingScreen from './LoadingScreen.vue';
 import { preloadImages } from './image-service.js';
@@ -116,6 +119,7 @@ export default {
     EncryptedImage,
     DiscoveredCube,
     LoadingScreen,
+    ResultViewer,
   },
   data()
   {
@@ -128,6 +132,9 @@ export default {
       currentBookPage: -1, // -1 signifie que le livre est fermé
       // Gère l'état des cubes découverts
       discoveredCubes: [],
+      // Pour la visionneuse de résultat
+      resultViewerVisible: false,
+      resultViewerImgSrc: null,
     };
   },
   computed: {
@@ -357,6 +364,16 @@ export default {
         }
         this.saveDiscoveredCubesState();
         this.checkRecipes(); // On vérifie les recettes après chaque ajout
+      }
+    },
+    handleOpenResultViewer(cubeData) {
+      this.resultViewerImgSrc = cubeData.img_src;
+      this.resultViewerVisible = true;
+    },
+    handleRetrieveResult() {
+      if (this.kitchenDisplayCube) {
+        // On utilise la méthode existante pour libérer le cube de sa zone
+        this.releaseDiscoveredCube(this.kitchenDisplayCube.id);
       }
     },
     releaseDiscoveredCube(cubeId) {

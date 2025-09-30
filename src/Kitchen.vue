@@ -44,7 +44,7 @@
           @dragover.prevent
           @drop="$emit('drop-on-zone', 'kitchenDisplay')"
           :style="displayZoneStyle"
-          @click="releaseDisplayCube"
+          @click="handleDisplayClick"
         >
 
         </div>
@@ -147,9 +147,15 @@ export default {
     close() {
       this.$emit('close-book');
     },
-    releaseDisplayCube() {
+    handleDisplayClick() {
       if (this.kitchenDisplayCube) {
-        this.$emit('release-discovered-cube', this.kitchenDisplayCube.id);
+        if (this.kitchenDisplayCube.type === 'result') {
+          // Si c'est un résultat, on ouvre la visionneuse
+          this.$emit('open-result-viewer', this.kitchenDisplayCube);
+        } else {
+          // Sinon, on relâche le cube (comportement précédent)
+          this.$emit('release-discovered-cube', this.kitchenDisplayCube.id);
+        }
       }
     },
     releaseReceptacleCube() {
