@@ -100,6 +100,7 @@ import CryptoJS from 'crypto-js';
 
 import LoadingScreen from './LoadingScreen.vue';
 import { preloadImages } from './image-service.js';
+import { recipes } from './recipes.js';
 import { pageImages } from './pages.js';
 
 // Récupère la clé secrète depuis les variables d'environnement.
@@ -313,15 +314,11 @@ export default {
 
         if (zone === 'mainBag') {
           cube.isStored = true;
+        } else if (zone === 'kitchenDisplay') {
+          // La zone Display n'est pas une zone de drop, on ne fait rien.
+          return;
         } else if (zone === 'kitchenBag') {
           cube.isInKitchenBag = true;
-        } else if (zone === 'kitchenDisplay') {
-          // S'il y a déjà un cube dans la zone d'affichage, on le libère
-          const currentDisplayCube = this.discoveredCubes.find(c => c.isInKitchenDisplay && c.id !== cube.id);
-          if (currentDisplayCube) {
-            currentDisplayCube.isInKitchenDisplay = false;
-          }
-          cube.isInKitchenDisplay = true;
         } else if (zone === 'kitchenReceptacle') {
           // S'il y a déjà un cube dans la zone réceptacle, on le libère
           const currentReceptacleCube = this.discoveredCubes.find(c => c.isInKitchenReceptacle && c.id !== cube.id);
@@ -359,6 +356,7 @@ export default {
           this.saveCubesState();
         }
         this.saveDiscoveredCubesState();
+        this.checkRecipes(); // On vérifie les recettes après chaque ajout
       }
     },
     releaseDiscoveredCube(cubeId) {
@@ -383,6 +381,55 @@ export default {
       const stringifiedData = JSON.stringify(this.discoveredCubes);
       const encryptedData = CryptoJS.AES.encrypt(stringifiedData, SECRET_KEY).toString();
       localStorage.setItem('discoveredCubes', encryptedData);
+    },
+    checkRecipes() {
+      const currentIngredients = {
+        kitchenReceptacle: this.kitchenReceptacleCube ? this.kitchenReceptacleCube.originalCubeId : null,
+        // Pour l'atelier, on récupère les IDs de tous les cubes présents
+        kitchenBag: this.discoveredCubes.filter(c => c.isInKitchenBag).map(c => c.originalCubeId),
+        kitchenOutil: this.kitchenOutilCube ? this.kitchenOutilCube.originalCubeId : null,
+        kitchenRune: this.kitchenRuneCube ? this.kitchenRuneCube.originalCubeId : null,
+        kitchenCarburant: this.kitchenCarburantCube ? this.kitchenCarburantCube.originalCubeId : null,
+      };
+
+      for (const recipe of recipes) {
+        const { ingredients, result } = recipe;
+
+        // Vérification des ingrédients simples (un seul par zone)
+        const receptacleMatch = ingredients.kitchenReceptacle === currentIngredients.kitchenReceptacle;
+        const outilMatch = ingredients.kitchenOutil === currentIngredients.kitchenOutil;
+        const runeMatch = ingredients.kitchenRune === currentIngredients.kitchenRune;
+        const carburantMatch = ingredients.kitchenCarburant === currentIngredients.kitchenCarburant;
+
+        // Vérification pour la zone 'kitchenBag' qui peut avoir plusieurs ingrédients
+        // On vérifie si tous les ingrédients requis sont présents, peu importe l'ordre
+        const bagMatch = ingredients.kitchenBag.length === currentIngredients.kitchenBag.length &&
+                                ingredients.kitchenBag.every(ing => currentIngredients.kitchenBag.includes(ing));
+
+        if (receptacleMatch && outilMatch && runeMatch && carburantMatch && bagMatch) {
+          console.log(`Recette "${recipe.name}" réussie !`);
+
+          // 1. Retirer les ingrédients de la cuisine
+          const ingredientCubes = this.discoveredCubes.filter(c =>
+            c.isInKitchenReceptacle || c.isInKitchenBag || c.isInKitchenOutil || c.isInKitchenRune || c.isInKitchenCarburant
+          );
+          // On supprime les cubes utilisés de la liste principale
+          this.discoveredCubes = this.discoveredCubes.filter(c => !ingredientCubes.includes(c));
+
+          // 2. Créer le cube résultat et le placer dans la zone 'display'
+          const newId = `dc-${Date.now()}`;
+          this.discoveredCubes.push({
+            id: newId,
+            originalCubeId: result.originalCubeId,
+            img_src: result.img_src,
+            type: result.type,
+            isInKitchenDisplay: true, // Placé directement dans la zone de résultat
+          });
+
+          this.saveDiscoveredCubesState();
+          return; // Arrêter après avoir trouvé une recette correspondante
+        }
+      }
     },
   },
 };
