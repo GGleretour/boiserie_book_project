@@ -30,9 +30,9 @@ export async function getDecryptedImage(src) {
     return imageCache.get(src);
   }
 
-  // 2. Vérifier si l'image est chiffrée (.enc)
-  if (src.endsWith('.enc')) {
-    try {
+  try {
+    // 2. Vérifier si l'image est chiffrée (.enc)
+    if (src.endsWith('.enc')) {
       const response = await fetch(src);
       const encryptedBase64 = await response.text();
       const bytes = CryptoJS.AES.decrypt(encryptedBase64, SECRET_KEY);
@@ -45,19 +45,22 @@ export async function getDecryptedImage(src) {
       const blob = base64ToBlob(decryptedBase64, mimeType);
       const objectUrl = URL.createObjectURL(blob);
 
-      // 3. Mettre en cache le résultat déchiffré (Object URL)
+      // Mettre en cache le résultat déchiffré (Object URL)
       imageCache.set(src, objectUrl);
       return objectUrl;
+    } else {
+      // Pour les images non chiffrées, on les précharge aussi en créant un Object URL.
+      const response = await fetch(src);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
 
-    } catch (error) {
-      console.error(`Erreur lors du déchiffrement de l'image ${src}:`, error);
-      return ''; // Retourner une image vide ou de fallback en cas d'erreur
+      // Mettre en cache l'Object URL
+      imageCache.set(src, objectUrl);
+      return objectUrl;
     }
-  } else {
-    // Si l'image n'est pas chiffrée, la retourner directement et la mettre en cache.
-    // Le navigateur gérera le chargement de cette URL normale.
-    imageCache.set(src, src);
-    return src;
+  } catch (error) {
+    console.error(`Erreur lors du chargement ou déchiffrement de l'image ${src}:`, error);
+    return ''; // Retourner une image vide ou de fallback en cas d'erreur
   }
 }
 
