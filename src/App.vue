@@ -1,7 +1,7 @@
 
 <template> 
   <LoadingScreen v-if="isLoading" />
-  <div v-else>
+  <template v-else>
     <EncryptedImage
       src="assets/background.png"
       class="background-app"
@@ -84,7 +84,7 @@
         @stored="storeDiscoveredCube"
       />
   </main>
-</div>
+</template>
 </template>
 
 <script> 
