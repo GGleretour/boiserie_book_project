@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "npm run cubes:encrypt && vite build",
+    "build": "npm run cubes:decrypt && vite build",
     "preview": "vite preview",
     "cubes:encrypt": "node scripts/manage-cubes.js encrypt",
     "cubes:decrypt": "node scripts/manage-cubes.js decrypt"

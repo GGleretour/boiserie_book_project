@@ -250,6 +250,10 @@ export default {
         const encryptedText = await response.text();
         const bytes = CryptoJS.AES.decrypt(encryptedText, SECRET_KEY);
         const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+        if (!decryptedText) {
+          console.error("Le fichier de configuration des cubes est vide après déchiffrement.");
+          return null;
+        }
         const executableCode = decryptedText.replace('export ', '');
         // Le texte est un module JS, on doit extraire le tableau.
         // C'est une astuce qui utilise le constructeur de fonction pour évaluer le code.
