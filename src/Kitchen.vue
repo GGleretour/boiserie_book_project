@@ -107,6 +107,10 @@ export default {
   components: { EncryptedImage, DiscoveredCube },
   data() { return {}; },
   props: {
+    isVisible: {
+      type: Boolean,
+      default: false,
+    },
     kitchenBagCubes: {
       type: Array,
       default: () => [],
@@ -132,6 +136,21 @@ export default {
       default: null,
     },
   },
+  watch: {
+    isVisible(newValue) {
+      if (newValue) {
+        this.$nextTick(() => {
+          if (this.$refs.kitchenBagCubeRefs) {
+            this.$refs.kitchenBagCubeRefs.forEach(cube => {
+              if (cube && typeof cube.recenterInParent === 'function') {
+                cube.recenterInParent();
+              }
+            });
+          }
+        });
+      }
+    }
+  },
   computed: {
     displayZoneStyle() { return this.getZoneStyle(this.kitchenDisplayCube); },
     receptacleZoneStyle() { return this.getZoneStyle(this.kitchenReceptacleCube); },
@@ -139,20 +158,7 @@ export default {
     runeZoneStyle() { return this.getZoneStyle(this.kitchenRuneCube); },
     carburantZoneStyle() { return this.getZoneStyle(this.kitchenCarburantCube); },
   },
-  // --- NOUVEAU HOOK ---
-  updated() {
-    // nextTick attend que le DOM soit complètement mis à jour par Vue.
-    this.$nextTick(() => {
-      // On vérifie si les refs des cubes existent.
-      // this.$refs.kitchenBagCubeRefs sera un tableau car il est utilisé dans un v-for.
-      if (this.$refs.kitchenBagCubeRefs && this.$refs.kitchenBagCubeRefs.length) {
-        // On parcourt chaque instance de DiscoveredCube et on appelle sa méthode de recentrage.
-        this.$refs.kitchenBagCubeRefs.forEach(cubeComponent => {
-          cubeComponent.recenterInParent();
-        });
-      }
-    });
-  },
+  
   methods: {
     getZoneStyle(cube) {
       return cube ? { backgroundImage: `url(${cube.img_src})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '2px dashed #fff' };

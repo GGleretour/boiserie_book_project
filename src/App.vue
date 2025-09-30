@@ -57,6 +57,7 @@
       />
       <Kitchen
         v-show="kitchenVisible"
+        :is-visible="kitchenVisible"
         @close-book="receiveEmit"
 
         :kitchen-bag-cubes="kitchenBagCubes"

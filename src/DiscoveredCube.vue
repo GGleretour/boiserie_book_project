@@ -109,6 +109,17 @@ export default {
       return this.imgSrc;
     }
   },
+  watch: {
+    isInInventory(newValue, oldValue) {
+      // Si le cube vient d'entrer dans un inventaire
+      if (newValue === true && oldValue === false) {
+        // On attend que le DOM soit mis à jour pour que le parentElement soit le bon
+        this.$nextTick(() => {
+          this.recenterInParent();
+        });
+      }
+    }
+  },
   created() {
     // --- Optimisation : Cache pour les dimensions du parent ---
     this.parentRectCache = null;
@@ -116,7 +127,9 @@ export default {
   mounted() {
     // Si le cube est créé directement dans l'inventaire, on initialise sa position au centre.
     if (this.isInInventory) {
-      this.recenterInParent();
+      this.$nextTick(() => {
+        this.recenterInParent();
+      });
     }
     this.animate();
   },
