@@ -107,10 +107,6 @@ export default {
   components: { EncryptedImage, DiscoveredCube },
   data() { return {}; },
   props: {
-    isVisible: {
-      type: Boolean,
-      default: false,
-    },
     kitchenBagCubes: {
       type: Array,
       default: () => [],
@@ -135,21 +131,6 @@ export default {
       type: Object,
       default: null,
     },
-  },
-  watch: {
-    isVisible(newValue) {
-      if (newValue) {
-        this.$nextTick(() => {
-          if (this.$refs.kitchenBagCubeRefs) {
-            this.$refs.kitchenBagCubeRefs.forEach(cube => {
-              if (cube && typeof cube.recenterInParent === 'function') {
-                cube.recenterInParent();
-              }
-            });
-          }
-        });
-      }
-    }
   },
   computed: {
     displayZoneStyle() { return this.getZoneStyle(this.kitchenDisplayCube); },
