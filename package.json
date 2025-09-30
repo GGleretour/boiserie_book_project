@@ -7,7 +7,7 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run cubes:decrypt && vite",
     "build": "npm run cubes:decrypt && vite build",
     "preview": "vite preview",
     "cubes:encrypt": "node scripts/manage-cubes.js encrypt",
