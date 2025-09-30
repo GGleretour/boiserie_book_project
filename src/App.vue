@@ -307,7 +307,7 @@ export default {
     storeDiscoveredCube({ cubeId, zone }) {
       const cube = this.discoveredCubes.find(c => c.id === cubeId);
       if (cube) {
-        if (zone !== 'mainBag' && cube.type !== zone) {
+        if (zone !== 'mainBag' && zone !== 'kitchenDisplay' && cube.type !== zone) {
           return;
         }
         // On s'assure que le cube n'est dans aucune autre zone avant de l'assigner
@@ -322,8 +322,17 @@ export default {
         if (zone === 'mainBag') {
           cube.isStored = true;
         } else if (zone === 'kitchenDisplay') {
-          // La zone Display n'est pas une zone de drop, on ne fait rien.
-          return;
+          // On autorise le drop uniquement si le cube est de type 'result'
+          // On autorise le drop uniquement si le cube est de type 'result'
+          if (cube.type === 'result') {
+            // S'il y a déjà un cube dans la zone, on le libère
+            const currentDisplayCube = this.discoveredCubes.find(c => c.isInKitchenDisplay && c.id !== cube.id);
+            if (currentDisplayCube) {
+              currentDisplayCube.isInKitchenDisplay = false;
+            }
+            cube.isInKitchenDisplay = true;
+          }
+          // Si ce n'est pas un 'result', on ne fait rien (le drop est ignoré)
         } else if (zone === 'kitchenBag') {
           cube.isInKitchenBag = true;
         } else if (zone === 'kitchenReceptacle') {
