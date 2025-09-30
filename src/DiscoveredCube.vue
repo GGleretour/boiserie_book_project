@@ -79,8 +79,8 @@ export default {
   data() {
     return {
       // --- Données de l'élément ---
-      width: '100px',
-      height: '100px',
+      width: '125px',
+      height: '125px',
 
       // --- État de la physique et du déplacement ---
       currentLeft: window.innerWidth / 2,
@@ -97,8 +97,8 @@ export default {
       return {
         left: `${this.currentLeft}px`,
         top: `${this.currentTop}px`,
-        width: this.isInInventory ? `${parseInt(this.width, 10) / 3}px` : this.width,
-        height: this.isInInventory ? `${parseInt(this.height, 10) / 3}px` : this.height,
+        width: this.isInInventory ? `${parseInt(this.width, 10) / 4}px` : this.width,
+        height: this.isInInventory ? `${parseInt(this.height, 10) / 4}px` : this.height,
         cursor: this.isDragging ? 'grabbing' : 'grab',
         position: this.isInInventory ? 'absolute' : 'fixed',
         transform: 'translate(-50%, -50%)',

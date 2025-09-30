@@ -29,10 +29,10 @@
             :original-cube-id="cube.originalCubeId"
             :img-src="cube.img_src"
             ref="kitchenBagCubeRefs"
-            :inventory-offset-left="85"
-            :inventory-offset-right="85"
-            :inventory-offset-top="85"
-            :inventory-offset-bottom="85"
+            :inventory-offset-left="97"
+            :inventory-offset-right="97"
+            :inventory-offset-top="97"
+            :inventory-offset-bottom="97"
             @mousedown.stop="$emit('release-discovered-cube', cube.id)"
           />
         </div>
