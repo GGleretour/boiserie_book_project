@@ -17,8 +17,8 @@
       <!-- Conteneur carré pour la disposition en étoile -->
       <div class="star-layout-container">
         <!-- Zone 1 : Le "sac" de la cuisine -->
-        <div id="kitchen-bag-zone" class="drop-zone kitchen-bag">
-          <p>Atelier</p>
+        <div id="kitchen-bag-zone" class="drop-zone kitchen-bag" >
+          <p>ingredients</p>
           <!-- Affiche les cubes stockés dans cette zone -->
           <!-- Ajout d'une ref pour accéder aux instances des cubes -->
           <DiscoveredCube
@@ -46,8 +46,9 @@
           :style="displayZoneStyle"
           @click="handleDisplayClick"
         >
-
-        </div>
+        <p>Brumage</p>
+        
+      </div>
 
         <!-- Zone 3 : La zone réceptacle (avec gestion du drop) -->
         <div
@@ -58,6 +59,7 @@
           :style="receptacleZoneStyle"
           @click="releaseReceptacleCube"
         >
+          <p>Receptacle</p>
 
         </div>
         <!-- Zone 4 : La zone outil (avec gestion du drop) -->
@@ -69,6 +71,7 @@
           :style="outilZoneStyle"
           @click="releaseOutilCube"
         >
+          <p>Outils</p>
 
         </div>
         <!-- Zone 5 : La zone rune (avec gestion du drop) -->
@@ -80,6 +83,7 @@
           :style="runeZoneStyle"
           @click="releaseRuneCube"
         >
+          <p>Rune</p>
 
         </div>
         <!-- Zone 6 : La zone carburant (avec gestion du drop) -->
@@ -91,6 +95,7 @@
           :style="carburantZoneStyle"
           @click="releaseCarburantCube"
         >
+          <p>Carburant</p>
         </div>
       </div>
 
@@ -133,16 +138,22 @@ export default {
     },
   },
   computed: {
-    displayZoneStyle() { return this.getZoneStyle(this.kitchenDisplayCube); },
-    receptacleZoneStyle() { return this.getZoneStyle(this.kitchenReceptacleCube); },
-    outilZoneStyle() { return this.getZoneStyle(this.kitchenOutilCube); },
-    runeZoneStyle() { return this.getZoneStyle(this.kitchenRuneCube); },
-    carburantZoneStyle() { return this.getZoneStyle(this.kitchenCarburantCube); },
+    displayZoneStyle() { return this.getZoneStyle(this.kitchenDisplayCube, 'assets/block_B_vide.png'); },
+    receptacleZoneStyle() { return this.getZoneStyle(this.kitchenReceptacleCube, 'assets/block_R_vide.png'); },
+    outilZoneStyle() { return this.getZoneStyle(this.kitchenOutilCube, 'assets/block_O_vide.png'); },
+    runeZoneStyle() { return this.getZoneStyle(this.kitchenRuneCube, 'assets/block_r_vide.png'); },
+    carburantZoneStyle() { return this.getZoneStyle(this.kitchenCarburantCube, 'assets/block_C_vide.png'); },
   },
   
   methods: {
-    getZoneStyle(cube) {
-      return cube ? { backgroundImage: `url(${cube.img_src})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '2px dashed #fff' };
+    getZoneStyle(cube, path) {
+      if (cube) {
+        return { backgroundImage: `url(${cube.img_src})`, backgroundSize: 'cover', backgroundPosition: 'center', border: 'none' };
+      }
+      // Style par défaut avec une image de fond pour les zones vides
+      const defaultEmptyImage = 'assets/block_vide.png';
+      //return {backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '2px dashed #fff' };
+      return { backgroundImage: `url(${path})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' };
     },
     close() {
       this.$emit('close-book');
@@ -216,31 +227,41 @@ export default {
 }
 
 .kitchen-bag {
-  width: 100px;
-  height: 100px;
-  top: 10%; /* Pointe du haut */
+  width: 160px;
+  height: 160px;
+  top: 5%; /* Pointe du haut */
   left: 50%; 
-  background-color: rgba(0, 0, 0, 0.5);
-  border: 2px solid #8B4513;
   color: white;
   text-align: center;
-  padding: 5px;
+  padding: 10px;
   font-size: 0.9em;
+  background-image: url('assets/block_I_vide.png');
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
 }
 
 .kitchen-display {
-  width: 80px; /* Plus petit et au centre */
-  height: 80px;
+  width: 100px; /* Plus petit et au centre */
+  height: 100px;
   top: 50%;
   left: 50%;
+  color: white;
+  text-align: center;
+  padding: 6px;
+  font-size: 0.7em;
   cursor: pointer;
 }
 
 .kitchen-receptacle {
   width: 100px;
   height: 100px;
-  top: 90%; /* Pointe bas-gauche */
+  top: 80%; /* Pointe bas-gauche */
   left: 22%;
+  color: white;
+  text-align: center;
+  padding: 6px;
+  font-size: 0.7em;
   cursor: pointer;
 }
 
@@ -249,6 +270,10 @@ export default {
   height: 100px;
   top: 35%; /* Pointe haut-droite */
   left: 90%;
+  color: white;
+  text-align: center;
+  padding: 6px;
+  font-size: 0.7em;
   cursor: pointer;
 }
 
@@ -257,14 +282,22 @@ export default {
   height: 100px;
   top: 35%; /* Pointe haut-gauche */
   left: 10%;
+  color: white;
+  text-align: center;
+  padding: 6px;
+  font-size: 0.7em;
   cursor: pointer;
 }
 
 .kitchen-carburant {
   width: 100px;
   height: 100px;
-  top: 90%; /* Pointe bas-droite */
+  top: 80%; /* Pointe bas-droite */
   left: 78%;
+  color: white;
+  text-align: center;
+  padding: 6px;
+  font-size: 0.7em;
   cursor: pointer;
 }
 .config-container {
