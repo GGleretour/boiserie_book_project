@@ -17,7 +17,7 @@
       <!-- Conteneur carré pour la disposition en étoile -->
       <div class="star-layout-container">
         <!-- Zone 1 : Le "sac" de la cuisine -->
-        <div id="kitchen-bag-zone" class="drop-zone kitchen-bag" >
+        <div id="kitchen-bag-zone" class="drop-zone kitchen-bag" :style="bagZoneStyle">
           <p>ingredients</p>
           <!-- Affiche les cubes stockés dans cette zone -->
           <!-- Ajout d'une ref pour accéder aux instances des cubes -->
@@ -136,15 +136,28 @@ export default {
       type: Object,
       default: null,
     },
+    isVisible: {
+      type: Boolean,
+    },
   },
   computed: {
+    bagZoneStyle() { return { backgroundImage: `url('assets/block_I_vide.png')`, backgroundSize: 'cover', backgroundPosition: 'center' }; },
     displayZoneStyle() { return this.getZoneStyle(this.kitchenDisplayCube, 'assets/block_B_vide.png'); },
     receptacleZoneStyle() { return this.getZoneStyle(this.kitchenReceptacleCube, 'assets/block_R_vide.png'); },
     outilZoneStyle() { return this.getZoneStyle(this.kitchenOutilCube, 'assets/block_O_vide.png'); },
     runeZoneStyle() { return this.getZoneStyle(this.kitchenRuneCube, 'assets/block_r_vide.png'); },
     carburantZoneStyle() { return this.getZoneStyle(this.kitchenCarburantCube, 'assets/block_C_vide.png'); },
   },
-  
+  watch: {
+    isVisible(newValue) {
+      if (newValue) {
+        // Lorsque la cuisine devient visible, on force le repositionnement des cubes.
+        this.$nextTick(() => {
+          this.$refs.kitchenBagCubeRefs?.forEach(cube => cube.recenterInParent());
+        });
+      }
+    }
+  },
   methods: {
     getZoneStyle(cube, path) {
       if (cube) {
@@ -235,9 +248,6 @@ export default {
   text-align: center;
   padding: 10px;
   font-size: 0.9em;
-  background-image: url('assets/block_I_vide.png');
-  background-size: cover;
-  background-position: center;
   cursor: pointer;
 }
 
