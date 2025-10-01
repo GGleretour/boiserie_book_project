@@ -248,7 +248,7 @@ export default {
 
       // --- OPTIMISATION ---
       // Si le cube est quasiment immobile, on arrête la boucle d'animation.
-      if (Math.abs(this.velocityX) < 0.1 && Math.abs(this.velocityY) < 0.1 && this.currentTop >= (this.inventoryFloor || parentHeight) - (parseInt(this.height, 10) / 2) - 1) {
+      if (Math.abs(this.velocityX) < 0.01 && Math.abs(this.velocityY) < 0.01 && this.currentTop >= (this.inventoryFloor || parentHeight) - (parseInt(this.height, 10) / 2) - 1) {
         return; // Arrête la boucle
       }
 
