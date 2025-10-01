@@ -5,6 +5,13 @@
     @mousedown.stop="startDrag"
   >
     <EncryptedImage
+      v-if="isPinned"
+      src="assets/clou.png"
+      alt="Clou"
+      class="nail-image"
+      :style="clouStyle"
+    />
+    <EncryptedImage
       alt="discovered-cube"
       :src="encryptedImgSrc"
       draggable="false"
@@ -90,16 +97,18 @@ export default {
       isDragging: false,
       dragOffset: { x: 0, y: 0 },
       animationFrameId: null, // Pour stocker l'ID de l'animation
+      isPinned: false, // Nouvel état pour savoir si le cube est "cloué"
     };
   },
   computed: {
+    clouStyle() { return { width: '40px', height: '40px', top: '1px', right: '45px'}; },
     cubeStyle() {
       return {
         left: `${this.currentLeft}px`,
         top: `${this.currentTop}px`,
         width: this.isInInventory ? `${parseInt(this.width, 10) / 4}px` : this.width,
         height: this.isInInventory ? `${parseInt(this.height, 10) / 4}px` : this.height,
-        cursor: this.isDragging ? 'grabbing' : 'grab',
+        cursor: this.isPinned ? 'pointer' : (this.isDragging ? 'grabbing' : 'grab'),
         position: this.isInInventory ? 'absolute' : 'fixed',
         transform: 'translate(-50%, -50%)',
       };
@@ -162,6 +171,12 @@ export default {
       }
     },
     startDrag(event) {
+      // Si le cube est cloué, un clic (gauche ou droit) le décloue
+      if (this.isPinned) {
+        this.isPinned = false;
+        this.animate(); // On relance l'animation
+        return;
+      }
       event.preventDefault();
       this.isDragging = true;
       document.body.classList.add('no-select');
@@ -174,6 +189,7 @@ export default {
 
       window.addEventListener('mousemove', this.onDrag);
       window.addEventListener('mouseup', this.stopDrag);
+      window.addEventListener('contextmenu', this.pinCube); // Ajout du listener pour le clic droit
     },
 
     onDrag(event) {
@@ -194,6 +210,7 @@ export default {
 
       window.removeEventListener('mousemove', this.onDrag);
       window.removeEventListener('mouseup', this.stopDrag);
+      window.removeEventListener('contextmenu', this.pinCube); // On nettoie le listener
 
       // Vérifie si le cube est lâché sur l'inventaire (SpecialCube)
       const specialCubeEl = document.getElementById('special-cube-container');
@@ -233,11 +250,23 @@ export default {
           return;
         }
 
+      // Si le cube a été cloué, on ne relance pas l'animation
+      if (this.isPinned) {
+        return;
+      }
+
       this.animate();
     },
 
+    pinCube(event) {
+      event.preventDefault(); // Empêche le menu contextuel de s'ouvrir
+      this.isPinned = true;
+      // On simule l'arrêt du drag
+      this.stopDrag(event);
+    },
+
     animate() {
-      if (this.isDragging) return;
+      if (this.isDragging || this.isPinned) return;
 
       // --- UTILISATION DU CACHE ---
       // Si le cache n'existe pas (ex: au premier rendu), on le crée.
@@ -320,6 +349,15 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.nail-image {
+  position: absolute;
+  width: 35%;
+  height: 35%;
+  z-index: 10; /* Pour être au-dessus de l'image du cube */
+  pointer-events: none; /* Pour ne pas interférer avec les clics */
+  filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.5));
 }
 
 .discovered-cube-container img {
