@@ -9,16 +9,16 @@
       <RecipePage 
         v-model:pageData="pages[currentPage].left"
         :cubes="leftPageCubes"
-        :page-width="640"
-        :page-height="920" 
+        :page-width="400"
+        :page-height="600" 
         @discovered="$emit('discovered', $event)"
       />
       <!-- Page de Droite -->
       <RecipePage 
         v-model:pageData="pages[currentPage].right"
         :cubes="rightPageCubes"
-        :page-width="640"
-        :page-height="920"
+        :page-width="400"
+        :page-height="600"
         @discovered="$emit('discovered', $event)"
       />
     </div>

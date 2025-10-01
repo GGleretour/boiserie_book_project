@@ -8,7 +8,7 @@
     <div class="content-wrapper">
       <EncryptedImage
         id="kitchen_page"
-        src="assets/page.png"
+        src="assets/page_semi_vide.png"
         alt="kitchen page"
         width="600"
         height="auto"

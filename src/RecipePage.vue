@@ -52,7 +52,7 @@ export default {
 
 .page-image {
   width: 600px;
-  height: auto;
+  height: 900px;
   display: block;
 }
 </style>
