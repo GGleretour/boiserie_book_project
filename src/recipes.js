@@ -4,7 +4,7 @@ export const recipes = [
     result: {
       // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
       originalCubeId: 'poto-bois',
-      img_src: 'assets/poto_bois.png',
+      img_src: 'assets/page_cake_olivier_2.png',
       type: 'result', // Un type spécifique pour les objets fabriqués
     },
     ingredients: {
