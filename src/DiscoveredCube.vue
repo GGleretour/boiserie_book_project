@@ -178,6 +178,13 @@ export default {
         return;
       }
       event.preventDefault();
+
+      // Si c'est un clic droit, on appelle directement pinCube et on arrête.
+      if (event.button === 2) {
+        this.pinCube(event);
+        return;
+      }
+
       this.isDragging = true;
       document.body.classList.add('no-select');
 
@@ -189,7 +196,6 @@ export default {
 
       window.addEventListener('mousemove', this.onDrag);
       window.addEventListener('mouseup', this.stopDrag);
-      window.addEventListener('contextmenu', this.pinCube); // Ajout du listener pour le clic droit
     },
 
     onDrag(event) {
@@ -210,7 +216,6 @@ export default {
 
       window.removeEventListener('mousemove', this.onDrag);
       window.removeEventListener('mouseup', this.stopDrag);
-      window.removeEventListener('contextmenu', this.pinCube); // On nettoie le listener
 
       // Vérifie si le cube est lâché sur l'inventaire (SpecialCube)
       const specialCubeEl = document.getElementById('special-cube-container');
@@ -260,9 +265,10 @@ export default {
 
     pinCube(event) {
       event.preventDefault(); // Empêche le menu contextuel de s'ouvrir
+      if (this.isDragging) {
+        this.stopDrag(event);
+      }
       this.isPinned = true;
-      // On simule l'arrêt du drag
-      this.stopDrag(event);
     },
 
     animate() {

@@ -1,5 +1,5 @@
 
-<template> 
+<template>
   <LoadingScreen v-if="isLoading" />
   <template v-else>
     <ResultViewer v-model:visible="resultViewerVisible" :img-src="resultViewerImgSrc" @retrieve="handleRetrieveResult" />
@@ -90,7 +90,7 @@
 </template>
 </template>
 
-<script> 
+<script>
 import BookPages from './BookPages.vue';
 import ReadMe from './ReadMe.vue';
 import Kitchen from './Kitchen.vue';
@@ -250,6 +250,12 @@ export default {
 
     // 6. Finalement, masquer l'écran de chargement.
     this.isLoading = false;
+
+    // Ajoute un écouteur global pour désactiver le menu contextuel du clic droit
+    // sur l'ensemble de l'application.
+    this.$nextTick(() => {
+      document.addEventListener('contextmenu', event => event.preventDefault());
+    });
   },
   methods: {
     async loadEncryptedCubes() {
