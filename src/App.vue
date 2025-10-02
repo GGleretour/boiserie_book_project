@@ -3,6 +3,7 @@
   <LoadingScreen v-if="isLoading" />
   <template v-else>
     <ResultViewer v-model:visible="resultViewerVisible" :img-src="resultViewerImgSrc" @retrieve="handleRetrieveResult" />
+    <Glossary :cubes="cubes" @spawn-from-glossary="spawnDiscoveredCube" />
     <EncryptedImage
       src="assets/background.png"
       class="background-app"
@@ -100,6 +101,7 @@ import DiscoveredCube from './DiscoveredCube.vue';
 import EncryptedImage from './EncryptedImage.vue';
 import CryptoJS from 'crypto-js';
 import ResultViewer from './ResultViewer.vue';
+import Glossary from './Glossary.vue';
 
 import LoadingScreen from './LoadingScreen.vue';
 import { preloadImages } from './image-service.js';
@@ -119,6 +121,7 @@ export default {
     EncryptedImage,
     DiscoveredCube,
     LoadingScreen,
+    Glossary,
     ResultViewer,
   },
   data()
@@ -218,41 +221,38 @@ export default {
         } catch (e) { console.error("Erreur de déchiffrement pour 'discoveredCubes'", e); }
       }
 
-      let savedOriginalsFindStatus = new Map();
+      const savedOriginalsFindStatus = new Map();
       let savedDiscoveredCubesData = [];
 
+      // 1. Charger l'état 'find' des cubes originaux sauvegardés.
       if (savedCubesString) {
         const parsedSavedCubes = JSON.parse(savedCubesString);
         parsedSavedCubes.forEach(cube => {
           if (cube && cube.id) savedOriginalsFindStatus.set(cube.id, cube.find);
         });
       }
-
+      
+      // 2. Appliquer cet état 'find' aux cubes fraîchement chargés.
+      this.cubes.forEach(cube => {
+        cube.find = savedOriginalsFindStatus.get(cube.id) || false;
+      });
+      
+      // 3. Charger les cubes découverts qui sont dans les inventaires.
       if (savedDiscoveredCubesString) {
         savedDiscoveredCubesData = JSON.parse(savedDiscoveredCubesString);
       }
 
-      this.cubes.forEach(cube => {
-        if (savedOriginalsFindStatus.has(cube.id)) {
-          cube.find = savedOriginalsFindStatus.get(cube.id);
-        }
-      });
-
       const storedDiscovered = savedDiscoveredCubesData.filter(c => c.isStored || c.isInKitchenBag || c.isInKitchenDisplay || c.isInKitchenReceptacle || c.isInKitchenOutil || c.isInKitchenRune || c.isInKitchenCarburant);
       const storedOriginalIds = new Set(storedDiscovered.map(c => c.originalCubeId));
 
-      this.cubes.forEach(cube => {
-        cube.find = storedOriginalIds.has(cube.id);
-      });
-
+      // 4. Restaurer les cubes qui sont dans les inventaires (sans recréer les cubes "libres").
       this.discoveredCubes = storedDiscovered;
     }
 
-    // 6. Finalement, masquer l'écran de chargement.
+    // 5. Finalement, masquer l'écran de chargement.
     this.isLoading = false;
 
-    // Ajoute un écouteur global pour désactiver le menu contextuel du clic droit
-    // sur l'ensemble de l'application.
+    // Ajoute un écouteur global pour désactiver le menu contextuel du clic droit.
     this.$nextTick(() => {
       document.addEventListener('contextmenu', event => event.preventDefault());
     });
@@ -298,14 +298,16 @@ export default {
       this.currentBookPage = pageIndex;
     },
     spawnDiscoveredCube(cubeData) {
-      // Vérifie si un cube découvert lié à cet ID original existe déjà
-      const alreadyExists = this.discoveredCubes.some(c => c.originalCubeId === cubeData.id);
-      if (alreadyExists) {
-        console.log('Ce cube a déjà été découvert, on ne le recrée pas.');
-        return; // On arrête la fonction pour ne pas créer de doublon
-      }
       const newId = `dc-${Date.now()}`; // Crée un ID unique pour le DiscoveredCube
       this.discoveredCubes.push({ id: newId, originalCubeId: cubeData.id, isStored: false, isInKitchenBag: false, isInKitchenDisplay: false, isInKitchenReceptacle: false, isInKitchenOutil: false, isInKitchenRune: false , isInKitchenCarburant:false ,img_src: cubeData.img_src , type: cubeData.type });
+      
+      // Marque le cube original comme "trouvé"
+      const originalCube = this.cubes.find(c => c.id === cubeData.id);
+      if (originalCube) {
+        originalCube.find = true;
+        this.saveCubesState(); // Sauvegarde l'état des cubes originaux (avec le nouveau 'find')
+      }
+
       // On sauvegarde la liste chiffrée des cubes découverts
       this.saveDiscoveredCubesState();
       console.log('Nouveau DiscoveredCube créé !', newId);
