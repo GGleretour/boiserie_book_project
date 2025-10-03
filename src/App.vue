@@ -147,7 +147,7 @@ export default {
     },
     homeCubes() {
       // Affiche les cubes qui n'ont pas de page assignée (ceux de la page principale)
-      return this.cubes.filter(cube => (cube.page === undefined || cube.page === null) && !cube.isInInventory);
+      return this.cubes.filter(cube => (cube.page === undefined || cube.page === null) && !cube.isInInventory && cube.disp);
     },
     storedDiscoveredCubes() {
       return this.discoveredCubes.filter(c => c.isStored);
@@ -459,6 +459,13 @@ export default {
             type: result.type,
             isInKitchenDisplay: true, // Placé directement dans la zone de résultat
           });
+
+          // Marque le cube original comme "trouvé"
+          const originalCube = this.cubes.find(c => c.id === result.originalCubeId);
+          if (originalCube) {
+            originalCube.find = true;
+            this.saveCubesState(); // Sauvegarde l'état des cubes originaux (avec le nouveau 'find')
+          }
 
           this.saveDiscoveredCubesState();
           return; // Arrêter après avoir trouvé une recette correspondante

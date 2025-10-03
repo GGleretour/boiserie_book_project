@@ -19,8 +19,8 @@ export const recipes = [
   {
     name: 'olivier_cake',
     result: {
-      // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
-      originalCubeId: 'poto-bois',
+      // L'ID du cube original 'olivier_cake' qui doit exister dans cubes.js
+      originalCubeId: 'olivier_cake',
       img_src: 'assets/page_cake_olivier_1.png',
       type: 'result', // Un type spécifique pour les objets fabriqués
     },
