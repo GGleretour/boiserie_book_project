@@ -181,7 +181,9 @@ export default {
 
       // Si c'est un clic droit, on appelle directement pinCube et on arrête.
       if (event.button === 2) {
-        this.pinCube(event);
+        if (!this.isInInventory) {
+          this.pinCube(event);
+        }
         return;
       }
 
@@ -351,7 +353,7 @@ export default {
 
 <style scoped>
 .discovered-cube-container {
-  z-index: 998; /* Juste en dessous du special-cube-container */
+  z-index: 500; /* Juste en dessous du special-cube-container */
   display: flex;
   align-items: center;
   justify-content: center;

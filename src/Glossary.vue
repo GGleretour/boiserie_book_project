@@ -62,7 +62,7 @@ export default {
   left: 0;
   transform: translate(-74%, -50%);
   transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Effet rebondissant */
-  z-index: 1000;
+  z-index: 400;
   display: flex;
   align-items: center;
 }
