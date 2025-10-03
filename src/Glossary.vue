@@ -129,7 +129,7 @@ export default {
 }
 
 .cube-image.not-discovered {
-  filter: grayscale(1) brightness(0.4);
+  filter: grayscale(1) brightness(0.1);
   cursor: not-allowed;
 }
 </style>
