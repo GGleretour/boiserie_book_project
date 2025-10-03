@@ -101,15 +101,15 @@ export default {
 
 .cubes-grid {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 32%;
+  left: 36%;
   transform: translate(-50%, -50%);
   width: 80%; /* Ajustez pour correspondre à la zone de grille sur votre image */
   height: 70%; /* Ajustez pour correspondre à la zone de grille sur votre image */
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(55px, 2fr)); /* Crée des colonnes flexibles */
+  grid-template-columns: repeat(auto-fill, minmax(39px, 2fr)); /* Crée des colonnes flexibles */
   gap: 0px;
-  padding: 0px;
+  padding: 90px;
   overflow-y: auto;
 }
 
