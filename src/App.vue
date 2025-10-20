@@ -180,6 +180,7 @@ export default {
   },
   async created() {
     // 1. Charger et déchiffrer la configuration des cubes en premier.
+    /** @type {import('./types.js').CubeInfo[] | null} */
     const cubesinfos = await this.loadEncryptedCubes();
 
     // 2. Extraire les chemins des images des cubes.

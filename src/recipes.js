@@ -10,11 +10,12 @@ export const recipes = [
     ingredients: {
       // Les IDs des cubes originaux requis pour la recette
       kitchenReceptacle: 'petit_chaudron', // Le chaudron va dans la zone "réceptacle"
-      kitchenBag: [, 'glachon', 'pomme'], // Les ingrédients vont dans "l'atelier"
+      kitchenBag: ['glachon', 'pomme'], // Les ingrédients vont dans "l'atelier"
       kitchenOutil: 'louche',
       kitchenRune: 'rune_louche',
       kitchenCarburant: 'charbon',
     },
+    secret: [''] //les nom/id des cubes secret qui peuvent désormais être trouvé
   },
   {
     name: 'olivier_cake',
