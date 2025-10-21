@@ -3,7 +3,7 @@
     <div class="glossary-handle" @click="toggleGlossary">
     </div>
     <div class="glossary-content">
-      <EncryptedImage src="assets/planche_a_glossaire.png" alt="Planche du glossaire" class="glossary-background" />
+      <EncryptedImage src="assets/sprite/planche_a_glossaire.png" alt="Planche du glossaire" class="glossary-background" />
       <div class="cubes-grid">
         <div
           v-for="cube in cubes"

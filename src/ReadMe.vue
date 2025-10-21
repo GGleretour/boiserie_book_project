@@ -5,7 +5,7 @@
       </div>
     <EncryptedImage
         id="readme_page"
-        src="assets/page_semi_vide.png"
+        src="assets/page/page_vide_from_book.png"
         alt="read me page"
         width="600"
         height="auto"

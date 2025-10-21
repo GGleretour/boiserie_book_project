@@ -65,6 +65,12 @@ export default {
   transform: translate(-50%, -50%);
 }
 
+.cube-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill; /* Ou 'fill' si vous voulez que l'image s'étire pour remplir le conteneur */
+}
+
 /*
   Cette règle est ajoutée globalement via JavaScript pendant le drag.
   Elle empêche le surlignage du texte et des images.

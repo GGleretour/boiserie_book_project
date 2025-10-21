@@ -6,7 +6,7 @@
   >
     <EncryptedImage
       alt="special-cube_back"
-      src="assets/sac_de_jute_2.png"
+      src="assets/sprite/sac_de_jute_2.png"
       draggable="false"
       class="background-img"
     />
@@ -26,7 +26,7 @@
     />
     <EncryptedImage
       alt="special-cub-front"
-      src="assets/sac_de_jute_1.png"
+      src="assets/sprite/sac_de_jute_1.png"
       draggable="false"
       class="background-img_2"
     />

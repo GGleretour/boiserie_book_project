@@ -8,7 +8,7 @@
     <div class="content-wrapper">
       <EncryptedImage
         id="kitchen_page"
-        src="assets/page_semi_vide.png"
+        src="assets/page/page_vide_from_book.png"
         alt="kitchen page"
         width="600"
         height="auto"
@@ -104,13 +104,25 @@
 </template>
 
 <script>
+import { getDecryptedImage } from './image-service.js';
 import EncryptedImage from './EncryptedImage.vue';
 import DiscoveredCube from './DiscoveredCube.vue';
 
 export default {
   name: 'Kitchen',
   components: { EncryptedImage, DiscoveredCube },
-  data() { return {}; },
+  data() {
+    return {
+      decryptedZoneImages: {
+        display: null,
+        receptacle: null,
+        outil: null,
+        rune: null,
+        carburant: null,
+        bag: null,
+      },
+    };
+  },
   props: {
     kitchenBagCubes: {
       type: Array,
@@ -141,32 +153,53 @@ export default {
     },
   },
   computed: {
-    bagZoneStyle() { return { backgroundImage: `url('assets/block_I_vide.png')`, backgroundSize: 'cover', backgroundPosition: 'center' }; },
-    displayZoneStyle() { return this.getZoneStyle(this.kitchenDisplayCube, 'assets/block_B_vide.png'); },
-    receptacleZoneStyle() { return this.getZoneStyle(this.kitchenReceptacleCube, 'assets/block_R_vide.png'); },
-    outilZoneStyle() { return this.getZoneStyle(this.kitchenOutilCube, 'assets/block_O_vide.png'); },
-    runeZoneStyle() { return this.getZoneStyle(this.kitchenRuneCube, 'assets/block_r_vide.png'); },
-    carburantZoneStyle() { return this.getZoneStyle(this.kitchenCarburantCube, 'assets/block_C_vide.png'); },
+    bagZoneStyle() { return this.getZoneStyle(null, 'bag', 'assets/block/block_I_vide.png'); },
+    displayZoneStyle() { return this.getZoneStyle(this.kitchenDisplayCube, 'display', 'assets/block/block_B_vide.png'); },
+    receptacleZoneStyle() { return this.getZoneStyle(this.kitchenReceptacleCube, 'receptacle', 'assets/block/block_Re_vide.png'); },
+    outilZoneStyle() { return this.getZoneStyle(this.kitchenOutilCube, 'outil', 'assets/block/block_O_vide.png'); },
+    runeZoneStyle() { return this.getZoneStyle(this.kitchenRuneCube, 'rune', 'assets/block/block_ru_vide.png'); },
+    carburantZoneStyle() { return this.getZoneStyle(this.kitchenCarburantCube, 'carburant', 'assets/block/block_C_vide.png'); },
   },
   watch: {
     isVisible(newValue) {
-      if (newValue) {
+      if (newValue && !this.decryptedZoneImages.bag) {
+        // Charge l'image de fond du sac d'ingrédients la première fois que la cuisine est visible
+        this.updateDecryptedImage(null, 'bag', 'assets/block/block_I_vide.png');
+
         // Lorsque la cuisine devient visible, on force le repositionnement des cubes.
         this.$nextTick(() => {
           this.$refs.kitchenBagCubeRefs?.forEach(cube => cube.recenterInParent());
         });
       }
-    }
+    },
+    kitchenDisplayCube: { handler(newCube) { this.updateDecryptedImage(newCube, 'display', 'assets/block/block_B_vide.png'); }, immediate: true },
+    kitchenReceptacleCube: { handler(newCube) { this.updateDecryptedImage(newCube, 'receptacle', 'assets/block/block_Re_vide.png'); }, immediate: true },
+    kitchenOutilCube: { handler(newCube) { this.updateDecryptedImage(newCube, 'outil', 'assets/block/block_O_vide.png'); }, immediate: true },
+    kitchenRuneCube: { handler(newCube) { this.updateDecryptedImage(newCube, 'rune', 'assets/block/block_ru_vide.png'); }, immediate: true },
+    kitchenCarburantCube: { handler(newCube) { this.updateDecryptedImage(newCube, 'carburant', 'assets/block/block_C_vide.png'); }, immediate: true },
   },
   methods: {
-    getZoneStyle(cube, path) {
-      if (cube) {
-        return { backgroundImage: `url(${cube.img_src})`, backgroundSize: 'cover', backgroundPosition: 'center', border: 'none' };
+    async updateDecryptedImage(cube, zoneKey, defaultPath) {
+      const path = cube ? cube.img_src : defaultPath;
+      if (path) {
+        this.decryptedZoneImages[zoneKey] = await getDecryptedImage(path);
+      } else {
+        this.decryptedZoneImages[zoneKey] = null;
       }
-      // Style par défaut avec une image de fond pour les zones vides
-      const defaultEmptyImage = 'assets/block_vide.png';
-      //return {backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '2px dashed #fff' };
-      return { backgroundImage: `url(${path})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' };
+    },
+    getZoneStyle(cube, zoneKey, defaultPath) {
+      const imageUrl = this.decryptedZoneImages[zoneKey] || '';
+      const finalStyle = {
+        backgroundImage: `url(${imageUrl})`,
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      };
+      if (cube) {
+        finalStyle.backgroundSize = 'cover';
+        finalStyle.border = 'none';
+      }
+      return finalStyle;
     },
     close() {
       this.$emit('close-book');

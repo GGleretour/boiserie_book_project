@@ -11,7 +11,9 @@
     "build": "npm run cubes:decrypt && vite build",
     "preview": "vite preview",
     "cubes:encrypt": "node scripts/manage-cubes.js encrypt",
-    "cubes:decrypt": "node scripts/manage-cubes.js decrypt"
+    "cubes:decrypt": "node scripts/manage-cubes.js decrypt",
+    "image:encrypt": "node scripts/encrypt-image.js",
+    "image:decrypt": "node scripts/decrypt-images.js"
   },
   "dependencies": {
     "crypto-js": "^4.2.0",

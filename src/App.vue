@@ -5,13 +5,13 @@
     <ResultViewer v-model:visible="resultViewerVisible" :img-src="resultViewerImgSrc" @retrieve="handleRetrieveResult" />
     <Glossary :cubes="cubes" @spawn-from-glossary="spawnDiscoveredCube" />
     <EncryptedImage
-      src="assets/background.png"
+      src="assets/sprite/background.png"
       class="background-app"
       alt="background"/>
     <header v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false">
       <EncryptedImage alt="logo_ronge_bois"
         class="logo"
-        src="assets/ronge_bois_symbole.png"
+        src="assets/sprite/ronge_bois_symbole.png"
         width="250"
         height="auto"
         @click="showReadMe"
@@ -19,7 +19,7 @@
 
       <EncryptedImage alt="logo_petit_chaudron"
         class="logo"
-        src="assets/petit_chaudron.png"
+        src="assets/sprite/petit_chaudron.png"
         width="250"
         height="auto"
         @click="showKitchen"
@@ -29,7 +29,7 @@
     <main>
       <div v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false" class="home-container">
         <EncryptedImage
-          src="assets/book_boiserie.png"
+          src="assets/sprite/book_boiserie.png"
           alt="Book Cover"
           class="book-cover"
           width="400"
@@ -186,13 +186,29 @@ export default {
     // 2. Extraire les chemins des images des cubes.
     const cubeImagePaths = cubesinfos ? cubesinfos.map(cube => cube.img_src).filter(Boolean) : [];
 
+    // Liste des images statiques de l'interface à précharger
+    const staticUIImages = [
+      // App.vue
+      'assets/sprite/background.png',
+      'assets/sprite/ronge_bois_symbole.png',
+      'assets/sprite/petit_chaudron.png',
+      'assets/sprite/book_boiserie.png',
+      // BookPages.vue
+      'assets/sprite/arrow.png',
+      // Kitchen.vue (images de fond des zones)
+      'assets/block/block_I_vide.png',
+      'assets/block/block_B_vide.png',
+      'assets/block/block_Re_vide.png',
+      'assets/block/block_O_vide.png',
+      'assets/block/block_ru_vide.png',
+      'assets/block/block_C_vide.png',
+      'assets/loading_the_castor.gif'
+    ];
+
     // 3. Créer une liste complète de toutes les images à précharger.
     const allImages = [
       ...pageImages,
-      'assets/background.png',
-      'assets/ronge_bois_symbole.png',
-      'assets/petit_chaudron.png',
-      'assets/book_boiserie.png',
+      ...staticUIImages,
       ...cubeImagePaths, // Ajouter les images des cubes
     ];
 
@@ -222,20 +238,30 @@ export default {
         } catch (e) { console.error("Erreur de déchiffrement pour 'discoveredCubes'", e); }
       }
 
-      const savedOriginalsFindStatus = new Map();
+      const savedOriginalsState = new Map();
       let savedDiscoveredCubesData = [];
 
-      // 1. Charger l'état 'find' des cubes originaux sauvegardés.
+      // 1. Charger l'état ('find' et 'disp') des cubes originaux sauvegardés.
       if (savedCubesString) {
         const parsedSavedCubes = JSON.parse(savedCubesString);
         parsedSavedCubes.forEach(cube => {
-          if (cube && cube.id) savedOriginalsFindStatus.set(cube.id, cube.find);
+          if (cube && cube.id) {
+            savedOriginalsState.set(cube.id, { find: cube.find, disp: cube.disp });
+          }
         });
       }
       
-      // 2. Appliquer cet état 'find' aux cubes fraîchement chargés.
+      // 2. Appliquer cet état ('find' et 'disp') aux cubes fraîchement chargés.
       this.cubes.forEach(cube => {
-        cube.find = savedOriginalsFindStatus.get(cube.id) || false;
+        const savedState = savedOriginalsState.get(cube.id);
+        if (savedState) {
+          cube.find = savedState.find || false;
+          // On ne modifie 'disp' que s'il est explicitement 'true' dans la sauvegarde.
+          // Cela évite de cacher un cube qui devrait être visible par défaut.
+          if (savedState.disp === true) {
+            cube.disp = true;
+          }
+        }
       });
       
       // 3. Charger les cubes découverts qui sont dans les inventaires.
@@ -428,7 +454,7 @@ export default {
       };
 
       for (const recipe of recipes) {
-        const { ingredients, result } = recipe;
+        const { ingredients, result, secret, discover } = recipe;
 
         // Vérification des ingrédients simples (un seul par zone)
         const receptacleMatch = ingredients.kitchenReceptacle === currentIngredients.kitchenReceptacle;
@@ -468,6 +494,31 @@ export default {
             this.saveCubesState(); // Sauvegarde l'état des cubes originaux (avec le nouveau 'find')
           }
 
+          // 3. Révéler les cubes secrets liés à la recette
+          if (secret && secret.length > 0) {
+            secret.forEach(secretCubeId => {
+              const cubeToReveal = this.cubes.find(c => c.id === secretCubeId);
+              if (cubeToReveal) {
+                cubeToReveal.disp = true;
+                console.log(`Cube secret "${secretCubeId}" révélé !`);
+              }
+            });
+            this.saveCubesState(); // On sauvegarde à nouveau pour l'état 'disp'
+          }
+          
+          // 4. Marquer les cubes de la liste 'discover' comme trouvés
+          if (discover && discover.length > 0) {
+            discover.forEach(discoverCubeId => {
+              const cubeToDiscover = this.cubes.find(c => c.id === discoverCubeId);
+              if (cubeToDiscover) {
+                cubeToDiscover.find = true;
+                console.log(`Cube "${discoverCubeId}" marqué comme découvert !`);
+              }
+            });
+            // L'état est déjà sauvegardé juste après pour les secrets,
+            // mais une sauvegarde ici garantit que ça fonctionne même sans 'secret'.
+            this.saveCubesState();
+          }
           this.saveDiscoveredCubesState();
           return; // Arrêter après avoir trouvé une recette correspondante
         }

@@ -6,7 +6,7 @@
   >
     <EncryptedImage
       v-if="isPinned"
-      src="assets/clou.png"
+      src="assets/sprite/clou.png"
       alt="Clou"
       class="nail-image"
       :style="clouStyle"
@@ -35,7 +35,7 @@ export default {
     },
     imgSrc: {
       type: String,
-      default: 'assets/ronge_bois_symbole.png' // Une image par défaut
+      default: 'assets/sprite/ronge_bois_symbole.png' // Une image par défaut
     },
     cubeId: {
       type: String,

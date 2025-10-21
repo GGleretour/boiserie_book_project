@@ -4,13 +4,14 @@
     <div class="config-container">
       <button class="close-button" @click="close">Close</button>
     </div>
-    <div class="pages-container" v-if="pages[currentPage]">
+    <div class="pages-container" v-if="pages[currentPage]" @click="logClickPosition">
       <!-- Page de Gauche -->
       <RecipePage 
         v-model:pageData="pages[currentPage].left"
         :cubes="leftPageCubes"
         :page-width="400"
         :page-height="600" 
+        ref="leftPage"
         @discovered="$emit('discovered', $event)"
       />
       <!-- Page de Droite -->
@@ -19,13 +20,14 @@
         :cubes="rightPageCubes"
         :page-width="400"
         :page-height="600"
+        ref="rightPage"
         @discovered="$emit('discovered', $event)"
       />
     </div>
     <div class="navigation-container">
       <EncryptedImage
         id="arrow_left"
-        src="assets/arrow.png" 
+        src="assets/sprite/arrow.png" 
         alt="arrow left"
         class="nav-button"
         @click="prevPage"
@@ -35,7 +37,7 @@
       <span class="page-number">Pages {{ currentPage * 2 + 1 }} - {{ currentPage * 2 + 2 }}</span>
       <EncryptedImage
         id="arrow_right"
-        src="assets/arrow.png" 
+        src="assets/sprite/arrow.png" 
         alt="arrow right"
         class="nav-button"
         @click="nextPage"
@@ -113,6 +115,39 @@ export default {
       if (this.currentPage > 0) {
         this.currentPage--;
         this.$emit('page-changed', this.currentPage);
+      }
+    },
+    logClickPosition(event) {
+      // Cette fonction ne s'exécute qu'en mode développement (npm run dev)
+      if (import.meta.env.DEV) {
+        const leftPageEl = this.$refs.leftPage?.$el;
+        const rightPageEl = this.$refs.rightPage?.$el;
+
+        if (!leftPageEl || !rightPageEl) return;
+
+        const leftRect = leftPageEl.getBoundingClientRect();
+        const rightRect = rightPageEl.getBoundingClientRect();
+
+        let pageClicked = null;
+        let x = 0;
+        let y = 0;
+        let side = '';
+
+        if (event.clientX >= leftRect.left && event.clientX <= leftRect.right && event.clientY >= leftRect.top && event.clientY <= leftRect.bottom) {
+          pageClicked = leftRect;
+          side = 'left';
+        } else if (event.clientX >= rightRect.left && event.clientX <= rightRect.right && event.clientY >= rightRect.top && event.clientY <= rightRect.bottom) {
+          pageClicked = rightRect;
+          side = 'right';
+        }
+
+        if (pageClicked) {
+          const x_percent = Math.round(((event.clientX - pageClicked.left) / pageClicked.width) * 100);
+          const y_percent = Math.round(((event.clientY - pageClicked.top) / pageClicked.height) * 100);
+          const x_px = Math.round(event.clientX - pageClicked.left);
+          const y_px = Math.round(event.clientY - pageClicked.top);
+          console.log(`Click sur la double-page ${this.currentPage}: côté '${side}', x: '${x_percent}%' (${x_px}px), y: '${y_percent}%' (${y_px}px)`);
+        }
       }
     },
   },

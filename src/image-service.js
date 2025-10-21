@@ -25,6 +25,9 @@ export async function getDecryptedImage(src) {
     return '';
   }
 
+  // Normalise les chemins pour utiliser des slashs, ce qui est standard pour les URLs.
+  src = src.replace(/\\/g, '/');
+
   // 1. Vérifier si l'image est déjà dans le cache
   if (imageCache.has(src)) {
     return imageCache.get(src);

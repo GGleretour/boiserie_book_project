@@ -1,28 +1,10 @@
 export const recipes = [
   {
-    name: 'Poto-Bois',
-    result: {
-      // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
-      originalCubeId: 'poto-bois',
-      img_src: 'assets/page_cake_olivier_2.png',
-      type: 'result', // Un type spécifique pour les objets fabriqués
-    },
-    ingredients: {
-      // Les IDs des cubes originaux requis pour la recette
-      kitchenReceptacle: 'petit_chaudron', // Le chaudron va dans la zone "réceptacle"
-      kitchenBag: ['glachon', 'pomme'], // Les ingrédients vont dans "l'atelier"
-      kitchenOutil: 'louche',
-      kitchenRune: 'rune_louche',
-      kitchenCarburant: 'charbon',
-    },
-    secret: [''] //les nom/id des cubes secret qui peuvent désormais être trouvé
-  },
-  {
     name: 'olivier_cake',
     result: {
-      // L'ID du cube original 'olivier_cake' qui doit exister dans cubes.js
-      originalCubeId: 'olivier_cake',
-      img_src: 'assets/page_cake_olivier_1.png',
+      // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
+      originalCubeId: 'secret_1',
+      img_src: 'assets-encrypted/secret_1.png.enc',
       type: 'result', // Un type spécifique pour les objets fabriqués
     },
     ingredients: {
@@ -43,6 +25,33 @@ export const recipes = [
       kitchenRune: 'rune_batteur',
       kitchenCarburant: 'beure',
     },
+    secret: ['block_BI_1_1', 'block_BI_1_2', 'block_BI_1_3', 'block_BI_1_4', 'block_BI_1_5'], // Les IDs des cubes à rendre visibles (disp: true)
+    discover: ['indice_secret_1'] // Les IDs des cubes à marquer comme découverts (find: true)
+  },
+   {
+    name: 'olivier_cake',
+    result: {
+      // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
+      originalCubeId: 'secret_1',
+      img_src: 'assets-encrypted/block_B_secret_1.png.enc',
+      type: 'result', // Un type spécifique pour les objets fabriqués
+    },
+    ingredients: {
+      // Les IDs des cubes originaux requis pour la recette
+      kitchenReceptacle: 'petit_chaudron', // Le chaudron va dans la zone "réceptacle"
+      kitchenBag: [
+        'block_BI_1_1',
+        'block_BI_1_2',
+        'block_BI_1_3',
+        'block_BI_1_4',
+        'block_BI_1_5'
+      ], // Les ingrédients vont dans "l'atelier"
+      kitchenOutil: 'louche',
+      kitchenRune: 'rune_louche',
+      kitchenCarburant: 'charbon',
+    },
+    secret: [], // Les IDs des cubes à rendre visibles (disp: true)
+    discover: ['page_B_secret_1_1', 'page_B_secret_1_2', 'block_B_secret_1'] // Les IDs des cubes à marquer comme découverts (find: true)
   },
   // ... vous pourrez ajouter d'autres recettes ici
 ];
