@@ -146,7 +146,7 @@ export default {
           const y_percent = Math.round(((event.clientY - pageClicked.top) / pageClicked.height) * 100);
           const x_px = Math.round(event.clientX - pageClicked.left);
           const y_px = Math.round(event.clientY - pageClicked.top);
-          console.log(`Click sur la double-page ${this.currentPage}: côté '${side}', x: '${x_percent}%' (${x_px}px), y: '${y_percent}%' (${y_px}px)`);
+          console.log(`x_out:'${x_px}px',\ny_out:'${y_px}px',\npage: ${this.currentPage},\nside: '${side}',\n`);
         }
       }
     },
