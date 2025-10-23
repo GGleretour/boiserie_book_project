@@ -2,7 +2,7 @@
 <template>
   <LoadingScreen v-if="isLoading" />
   <template v-else>
-    <ResultViewer v-model:visible="resultViewerVisible" :img-src="resultViewerImgSrc" :show-retrieve-button="isKitchenResult" @retrieve="handleRetrieveResult" />
+    <ResultViewer v-model:visible="resultViewerVisible" :img-src="resultViewerImgSrc" :show-retrieve-button="isKitchenResult" :show-download-button="!isKitchenResult" @retrieve="handleRetrieveResult" />
     <Glossary :cubes="cubes" @spawn-from-glossary="spawnDiscoveredCube" />
     <EncryptedImage
       src="assets/sprite/background.png"
