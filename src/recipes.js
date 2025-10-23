@@ -29,7 +29,7 @@ export const recipes = [
     discover: ['indice_secret_1'] // Les IDs des cubes à marquer comme découverts (find: true)
   },
    {
-    name: 'olivier_cake',
+    name: 'recette secrète',
     result: {
       // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
       originalCubeId: 'secret_1',
@@ -53,5 +53,31 @@ export const recipes = [
     secret: [], // Les IDs des cubes à rendre visibles (disp: true)
     discover: ['page_B_secret_1_1', 'page_B_secret_1_2', 'block_B_secret_1'] // Les IDs des cubes à marquer comme découverts (find: true)
   },
-  // ... vous pourrez ajouter d'autres recettes ici
+  {
+    name: 'ragout_facon_bucheron',
+    result: {
+      // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
+      originalCubeId: 'secret_1',
+      img_src: 'assets-encrypted/secret_1.png.enc',
+      type: 'result', // Un type spécifique pour les objets fabriqués
+    },
+    ingredients: {
+      // Les IDs des cubes originaux requis pour la recette
+      kitchenReceptacle: 'petit_chaudron', // Le chaudron va dans la zone "réceptacle"
+      kitchenBag: [
+        'ecorce',
+        'branche_sapin',
+        'sciure',
+        'champignon',
+        'carotte',
+        'patate',
+        'sel',
+      ], // Les ingrédients vont dans "l'atelier"
+      kitchenOutil: 'louche',
+      kitchenRune: 'rune_louche',
+      kitchenCarburant: 'charbon',
+    },
+    secret: [], // Les IDs des cubes à rendre visibles (disp: true)
+    discover: ['indice_secret_1'] // Les IDs des cubes à marquer comme découverts (find: true)
+  },
 ];
