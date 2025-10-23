@@ -190,6 +190,8 @@ export default {
       'assets/sprite/book_boiserie.png',
       // BookPages.vue
       'assets/sprite/arrow.png',
+      // loop img
+      'assets/sprite/loop.png',
       // Kitchen.vue (images de fond des zones)
       'assets/block/block_I_vide.png',
       'assets/block/block_B_vide.png',
@@ -574,14 +576,14 @@ header {
 .home-container {
   position: relative;
 }
-.loupe-cursor {
-  cursor: url('assets/sprite/loupe.png'), auto;
+.loupe-cursor { /* Cette règle est dans le style scoped, elle peut être moins prioritaire */
+  cursor: url('/assets/sprite/loup.png') 0 0, auto;
 }
 
 </style>
 <style>
 /* Style global pour le curseur en mode loupe */
 .loupe-cursor, .loupe-cursor * {
-  cursor: url('/assets/sprite/loupe.png') 16 16, auto !important;
+  cursor: url('/assets/sprite/loup.png') 0 0, auto !important;
 }
 </style>

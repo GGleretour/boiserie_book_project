@@ -205,14 +205,9 @@ export default {
       this.$emit('close-book');
     },
     handleDisplayClick() {
+      // Si un cube est présent dans la zone de résultat, un clic le libère.
       if (this.kitchenDisplayCube) {
-        if (this.kitchenDisplayCube.type === 'result') {
-          // Si c'est un résultat, on ouvre la visionneuse
-          this.$emit('open-result-viewer', this.kitchenDisplayCube);
-        } else {
-          // Sinon, on relâche le cube (comportement précédent)
-          this.$emit('release-discovered-cube', this.kitchenDisplayCube.id);
-        }
+        this.$emit('release-discovered-cube', this.kitchenDisplayCube.id);
       }
     },
     releaseReceptacleCube() {
