@@ -2,7 +2,7 @@
 <template>
   <LoadingScreen v-if="isLoading" />
   <template v-else>
-    <ResultViewer v-model:visible="resultViewerVisible" :img-src="resultViewerImgSrc" @retrieve="handleRetrieveResult" />
+    <ResultViewer v-model:visible="resultViewerVisible" :img-src="resultViewerImgSrc" :show-retrieve-button="isKitchenResult" @retrieve="handleRetrieveResult" />
     <Glossary :cubes="cubes" @spawn-from-glossary="spawnDiscoveredCube" />
     <EncryptedImage
       src="assets/sprite/background.png"
@@ -78,15 +78,8 @@
         :stored-discovered-cubes="storedDiscoveredCubes"
         @release-discovered-cube="releaseDiscoveredCube"
     />
-      <!-- OPTIMISATION : Utiliser un seul v-for pour tous les cubes non stockés -->
-      <DiscoveredCube
-        v-for="cube in freeDiscoveredCubes"
-        :key="cube.id"
-        :original-cube-id="cube.originalCubeId"
-        :img-src="cube.img_src"
-        :cube-id="cube.id"
-        @stored="storeDiscoveredCube"
-      />
+      <!-- Affiche tous les cubes "libres" (ni stockés, ni dans la cuisine) -->
+      <DiscoveredCube v-for="cube in freeDiscoveredCubes" :key="cube.id" :original-cube-id="cube.originalCubeId" :img-src="cube.img_src" :cube-id="cube.id" @stored="storeDiscoveredCube" @inspect="handleInspectCube" :is-loupe-mode-active="isLoupeModeActive" />
   </main>
 </template>
 </template>
@@ -138,6 +131,8 @@ export default {
       // Pour la visionneuse de résultat
       resultViewerVisible: false,
       resultViewerImgSrc: null,
+      isLoupeModeActive: false,
+      isKitchenResult: false, // Pour savoir si la visionneuse affiche un résultat de cuisine
     };
   },
   computed: {
@@ -283,8 +278,23 @@ export default {
     this.$nextTick(() => {
       document.addEventListener('contextmenu', event => event.preventDefault());
     });
+
+    window.addEventListener('keydown', this.handleGlobalKeyDown);
+  },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.handleGlobalKeyDown);
   },
   methods: {
+    handleGlobalKeyDown(event) {
+      // On ne veut pas activer/désactiver le mode si un input est focus
+      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+        return;
+      }
+      if (event.key.toLowerCase() === 'l') {
+        this.isLoupeModeActive = !this.isLoupeModeActive;
+        document.body.classList.toggle('loupe-cursor', this.isLoupeModeActive);
+      }
+    },
     async loadEncryptedCubes() {
       try {
         const response = await fetch('assets-encrypted/cubes.enc');
@@ -411,7 +421,13 @@ export default {
       }
     },
     handleOpenResultViewer(cubeData) {
+      this.isKitchenResult = true; // C'est un résultat de cuisine
       this.resultViewerImgSrc = cubeData.img_src;
+      this.resultViewerVisible = true;
+    },
+    handleInspectCube(cubeData) {
+      this.isKitchenResult = false; // Ce n'est pas un résultat de cuisine
+      this.resultViewerImgSrc = cubeData.imgSrc;
       this.resultViewerVisible = true;
     },
     handleRetrieveResult() {
@@ -558,6 +574,14 @@ header {
 .home-container {
   position: relative;
 }
+.loupe-cursor {
+  cursor: url('assets/sprite/loupe.png'), auto;
+}
 
-
+</style>
+<style>
+/* Style global pour le curseur en mode loupe */
+.loupe-cursor, .loupe-cursor * {
+  cursor: url('/assets/sprite/loupe.png') 16 16, auto !important;
+}
 </style>

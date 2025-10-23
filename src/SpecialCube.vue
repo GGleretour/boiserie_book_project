@@ -84,6 +84,11 @@ export default {
   },
   methods: {
     startDrag(event) {
+      // On s'assure que le clic sur le sac ne déclenche pas d'inspection
+      if (event.target.closest('#special-cube-container')) {
+        event.stopPropagation();
+      }
+
       event.preventDefault();
       this.isDragging = true;
       document.body.classList.add('no-select');

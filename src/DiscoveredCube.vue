@@ -81,6 +81,10 @@ export default {
     inventoryCenterY: {
       type: Number,
       default: null, // Position Y du centre de la zone de rebond
+    },
+    isLoupeModeActive: {
+      type: Boolean,
+      default: false,
     }
   },
   data() {
@@ -171,6 +175,12 @@ export default {
       }
     },
     startDrag(event) {
+      // Si le mode loupe est actif, on émet un événement pour inspecter et on arrête tout.
+      if (this.isLoupeModeActive) {
+        this.$emit('inspect', { imgSrc: this.imgSrc });
+        return;
+      }
+
       // Si le cube est cloué, un clic (gauche ou droit) le décloue
       if (this.isPinned) {
         this.isPinned = false;

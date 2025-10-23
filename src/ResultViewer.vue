@@ -1,19 +1,15 @@
 <template>
   <div v-if="visible" class="result-viewer-overlay" @click.self="close">
-    <div class="viewer-content">
-      <EncryptedImage :src="imgSrc" alt="Résultat agrandi" class="result-image" />
-      <div class="button-container">
-        <button @click="retrieve" class="action-button retrieve-button">Récupérer</button>
-        <button @click="downloadImage" class="action-button download-button">Télécharger</button>
-        <button @click="close" class="action-button close-button">Retour</button>
-      </div>
+    <div class="result-viewer-content">
+      <button class="close-btn" @click="close">&times;</button>
+      <EncryptedImage :src="imgSrc" alt="Résultat de la recette" class="result-image"/>
+      <button v-if="showRetrieveButton" class="retrieve-btn" @click="retrieve">Récupérer</button>
     </div>
   </div>
 </template>
 
 <script>
 import EncryptedImage from './EncryptedImage.vue';
-import { getDecryptedImage } from './image-service.js';
 
 export default {
   name: 'ResultViewer',
@@ -21,13 +17,18 @@ export default {
   props: {
     visible: {
       type: Boolean,
-      default: false,
+      required: true,
     },
     imgSrc: {
       type: String,
       default: null,
     },
+    showRetrieveButton: {
+      type: Boolean,
+      default: false,
+    }
   },
+  emits: ['update:visible', 'retrieve'],
   methods: {
     close() {
       this.$emit('update:visible', false);
@@ -35,20 +36,6 @@ export default {
     retrieve() {
       this.$emit('retrieve');
       this.close();
-    },
-    async downloadImage() {
-      if (!this.imgSrc) return;
-      // Nous utilisons getDecryptedImage pour obtenir l'URL de l'objet Blob
-      const objectUrl = await getDecryptedImage(this.imgSrc);
-      const link = document.createElement('a');
-      link.href = objectUrl;
-      // Extrait le nom du fichier de l'URL originale
-      const filename = this.imgSrc.split('/').pop().replace('.enc', '');
-      link.download = filename || 'resultat.png';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      // Il n'est pas nécessaire de révoquer l'URL de l'objet ici car elle est gérée par le cache d'image.
     },
   },
 };
@@ -67,20 +54,39 @@ export default {
   align-items: center;
   z-index: 1000;
 }
-.viewer-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+
+.result-viewer-content {
+  position: relative;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
 }
+
 .result-image {
   max-width: 80vw;
   max-height: 80vh;
   object-fit: contain;
 }
-.button-container { display: flex; gap: 15px; }
-.action-button { padding: 12px 25px; font-size: 16px; cursor: pointer; border: none; border-radius: 5px; color: white; }
-.retrieve-button { background-color: #3498db; }
-.download-button { background-color: #4CAF50; }
-.close-button { background-color: #e02929; }
+
+.close-btn, .retrieve-btn {
+  /* Styles pour les boutons */
+  cursor: pointer;
+  padding: 10px 20px;
+  margin-top: 15px;
+  border-radius: 5px;
+}
+.close-btn {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  color: #333;
+}
+.retrieve-btn {
+  background-color: #4CAF50;
+  color: rgb(105, 105, 105);
+  border: none;
+}
 </style>
