@@ -8,13 +8,13 @@
       src="assets/sprite/background.png"
       class="background-app"
       alt="background"/>
-    <header v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false">
+    <header v-show="pageMenu == 0">
       <EncryptedImage alt="logo_ronge_bois"
         class="logo"
         src="assets/sprite/ronge_bois_symbole.png"
         width="250"
         height="auto"
-        @click="showReadMe"
+        @click="pageMenu = 2"
       />
 
       <EncryptedImage alt="logo_petit_chaudron"
@@ -22,19 +22,19 @@
         src="assets/sprite/petit_chaudron.png"
         width="250"
         height="auto"
-        @click="showKitchen"
+        @click="pageMenu = 3"
       />
     </header>
 
     <main>
-      <div v-show="pagesVisible == false && readMeVisible == false && kitchenVisible == false" class="home-container">
+      <div v-show="pageMenu == 0" class="home-container">
         <EncryptedImage
           src="assets/sprite/book_boiserie.png"
           alt="Book Cover"
           class="book-cover"
           width="400"
           height="600"
-          @click="showPages"
+          @click="pageMenu = 1"
         />
         <Cube 
           v-for="cube in homeCubes"
@@ -45,7 +45,7 @@
         />
       </div>
       <BookPages
-        v-show="pagesVisible"
+        v-show="pageMenu == 1"
         @close-book="receiveEmit"
         @page-changed="updateCurrentBookPage"
         @discovered="spawnDiscoveredCube"
@@ -54,12 +54,12 @@
         :current-book-page="currentBookPage"
       />
       <ReadMe
-        v-show="readMeVisible"
+        v-show="pageMenu == 2"
         @close-book="receiveEmit"
       />
       <Kitchen
-        v-show="kitchenVisible"
-        :is-visible="kitchenVisible"
+        v-show="pageMenu == 3"
+        :is-visible="pageMenu == 3"
         @close-book="receiveEmit"
 
         :kitchen-bag-cubes="kitchenBagCubes"
@@ -107,9 +107,7 @@ const SECRET_KEY = import.meta.env.VITE_CRYPTO_SECRET_KEY;
 
 // --- State ---
 const isLoading = ref(true);
-const pagesVisible = ref(false);
-const readMeVisible = ref(false);
-const kitchenVisible = ref(false);
+const pageMenu= ref(0);
 const cubes = ref([]); // Sera chargé de manière asynchrone
 const currentBookPage = ref(-1); // -1 signifie que le livre est fermé
 const discoveredCubes = ref([]);
@@ -185,23 +183,8 @@ async function loadEncryptedCubes() {
   }
 }
 
-function showPages() {
-  pagesVisible.value = true;
-  currentBookPage.value = 0;
-}
-
-function showReadMe() {
-  readMeVisible.value = true;
-}
-
-function showKitchen() {
-  kitchenVisible.value = true;
-}
-
 function receiveEmit() {
-  pagesVisible.value = false;
-  readMeVisible.value = false;
-  kitchenVisible.value = false;
+  pageMenu.value = 0;
   currentBookPage.value = -1;
 }
 
