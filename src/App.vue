@@ -24,25 +24,25 @@
         height="auto"
         @click="pageMenu = 3"
       />
+      <EncryptedImage
+        src="assets/sprite/book_boiserie.png"
+        alt="Book Cover"
+        class="book-cover"
+        width="400"
+        height="600"
+        @click="pageMenu = 1"
+      />
+      <Cube 
+        v-for="cube in homeCubes"
+        :key="cube.id" 
+        :cube-data="cube"
+        @discovered="spawnDiscoveredCube"
+        
+      />
     </header>
 
     <main>
       <div v-show="pageMenu == 0" class="home-container">
-        <EncryptedImage
-          src="assets/sprite/book_boiserie.png"
-          alt="Book Cover"
-          class="book-cover"
-          width="400"
-          height="600"
-          @click="pageMenu = 1"
-        />
-        <Cube 
-          v-for="cube in homeCubes"
-          :key="cube.id" 
-          :cube-data="cube"
-          @discovered="spawnDiscoveredCube"
-          
-        />
       </div>
       <BookPages
         v-show="pageMenu == 1"

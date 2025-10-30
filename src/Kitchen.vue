@@ -237,10 +237,11 @@ export default {
 <style scoped>
 #kitchen_container {
   z-index: 1;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  display: flex;
+  padding-right: 0;
+  flex-direction: column;
+  align-items: left;
+  padding: 20px;
 }
 
 .content-wrapper {

@@ -165,11 +165,10 @@ export default {
 }
 
 .pages-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   margin-top: 10px;
-  justify-content: left;
   align-items: center;
-  flex-direction: row; /* Ensure pages are side by side */
 }
 
 .navigation-container {
