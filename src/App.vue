@@ -3,7 +3,7 @@
   <LoadingScreen v-if="isLoading" />
   <template v-else>
     <ResultViewer v-model:visible="resultViewerVisible" :img-src="resultViewerImgSrc" :show-retrieve-button="isKitchenResult" :show-download-button="!isKitchenResult" @retrieve="handleRetrieveResult" />
-    <Glossary :cubes="cubes" @spawn-from-glossary="spawnDiscoveredCube" />
+    <Glossary :cubes="cubesDefined" @spawn-from-glossary="spawnDiscoveredCube" />
     <EncryptedImage
       src="assets/sprite/background.png"
       class="background-app"
@@ -49,8 +49,8 @@
         @close-book="receiveEmit"
         @page-changed="updateCurrentBookPage"
         @discovered="spawnDiscoveredCube"
-        :cubes="cubes"
-        @state-changed="saveCubesState"
+        :cubes="cubesDefined"
+        @state-changed="saveCubesDefinedState"
         :current-book-page="currentBookPage"
       />
       <ReadMe
@@ -74,12 +74,12 @@
         @open-result-viewer="handleOpenResultViewer"
       />
     <SpecialCube
-        :cubes="cubes"
-        :stored-discovered-cubes="storedDiscoveredCubes"
+        :cubes="cubesDefined"
+        :stored-discovered-cubes="storedCubesAnimated"
         @release-discovered-cube="releaseDiscoveredCube"
     />
       <!-- Affiche tous les cubes "libres" (ni stockés, ni dans la cuisine) -->
-      <DiscoveredCube v-for="cube in freeDiscoveredCubes" :key="cube.id" :original-cube-id="cube.originalCubeId" :img-src="cube.img_src" :cube-id="cube.id" @stored="storeDiscoveredCube" @inspect="handleInspectCube" :is-loupe-mode-active="isLoupeModeActive" />
+      <DiscoveredCube v-for="cube in freeCubesAnimated" :key="cube.id" :original-cube-id="cube.originalCubeId" :img-src="cube.img_src" :cube-id="cube.id" @stored="storeDiscoveredCube" @inspect="handleInspectCube" :is-loupe-mode-active="isLoupeModeActive" />
   </main>
 </template>
 </template>
@@ -108,49 +108,49 @@ const SECRET_KEY = import.meta.env.VITE_CRYPTO_SECRET_KEY;
 // --- State ---
 const isLoading = ref(true);
 const pageMenu= ref(0);
-const cubes = ref([]); // Sera chargé de manière asynchrone
+const cubesDefined = ref([]); // Sera chargé de manière asynchrone
 const currentBookPage = ref(-1); // -1 signifie que le livre est fermé
-const discoveredCubes = ref([]);
+const cubesAnimated = ref([]);
 const resultViewerVisible = ref(false);
 const resultViewerImgSrc = ref(null);
 const isLoupeModeActive = ref(false);
 const isKitchenResult = ref(false); // Pour savoir si la visionneuse affiche un résultat de cuisine
 
 // --- Computed properties ---
-const freeDiscoveredCubes = computed(() => {
-  return discoveredCubes.value.filter(c => !c.isStored && !c.isInKitchenBag && !c.isInKitchenDisplay && !c.isInKitchenReceptacle && !c.isInKitchenOutil && !c.isInKitchenRune && !c.isInKitchenCarburant);
+const freeCubesAnimated = computed(() => {
+  return cubesAnimated.value.filter(c => !c.isStored && !c.isInKitchenBag && !c.isInKitchenDisplay && !c.isInKitchenReceptacle && !c.isInKitchenOutil && !c.isInKitchenRune && !c.isInKitchenCarburant);
 });
 
 const homeCubes = computed(() => {
-  return cubes.value.filter(cube => (cube.page === undefined || cube.page === null) && !cube.isInInventory && cube.disp);
+  return cubesDefined.value.filter(cube => (cube.page === undefined || cube.page === null) && !cube.isInInventory && cube.disp);
 });
 
-const storedDiscoveredCubes = computed(() => {
-  return discoveredCubes.value.filter(c => c.isStored);
+const storedCubesAnimated = computed(() => {
+  return cubesAnimated.value.filter(c => c.isStored);
 });
 
 const kitchenBagCubes = computed(() => {
-  return discoveredCubes.value.filter(c => c.isInKitchenBag);
+  return cubesAnimated.value.filter(c => c.isInKitchenBag);
 });
 
 const kitchenDisplayCube = computed(() => {
-  return discoveredCubes.value.find(c => c.isInKitchenDisplay);
+  return cubesAnimated.value.find(c => c.isInKitchenDisplay);
 });
 
 const kitchenReceptacleCube = computed(() => {
-  return discoveredCubes.value.find(c => c.isInKitchenReceptacle);
+  return cubesAnimated.value.find(c => c.isInKitchenReceptacle);
 });
 
 const kitchenOutilCube = computed(() => {
-  return discoveredCubes.value.find(c => c.isInKitchenOutil);
+  return cubesAnimated.value.find(c => c.isInKitchenOutil);
 });
 
 const kitchenRuneCube = computed(() => {
-  return discoveredCubes.value.find(c => c.isInKitchenRune);
+  return cubesAnimated.value.find(c => c.isInKitchenRune);
 });
 
 const kitchenCarburantCube = computed(() => {
-  return discoveredCubes.value.find(c => c.isInKitchenCarburant);
+  return cubesAnimated.value.find(c => c.isInKitchenCarburant);
 });
 
 // --- Methods ---
@@ -192,36 +192,36 @@ function updateCurrentBookPage(pageIndex) {
   currentBookPage.value = pageIndex;
 }
 
-function saveCubesState() {
-  const stringifiedData = JSON.stringify(cubes.value);
+function saveCubesDefinedState() {
+  const stringifiedData = JSON.stringify(cubesDefined.value);
   const encryptedData = CryptoJS.AES.encrypt(stringifiedData, SECRET_KEY).toString();
-  localStorage.setItem('cubes', encryptedData);
+  localStorage.setItem('cubesDefined', encryptedData);
 }
 
-function saveDiscoveredCubesState() {
-  const stringifiedData = JSON.stringify(discoveredCubes.value);
+function saveCubesAnimatedState() {
+  const stringifiedData = JSON.stringify(cubesAnimated.value);
   const encryptedData = CryptoJS.AES.encrypt(stringifiedData, SECRET_KEY).toString();
-  localStorage.setItem('discoveredCubes', encryptedData);
+  localStorage.setItem('cubesAnimated', encryptedData);
 }
 
 function spawnDiscoveredCube(cubeData) {
   const newId = `dc-${Date.now()}`;
-  discoveredCubes.value.push({ id: newId, originalCubeId: cubeData.id, isStored: false, isInKitchenBag: false, isInKitchenDisplay: false, isInKitchenReceptacle: false, isInKitchenOutil: false, isInKitchenRune: false, isInKitchenCarburant: false, img_src: cubeData.img_src, type: cubeData.type });
+  cubesAnimated.value.push({ id: newId, originalCubeId: cubeData.id, isStored: false, isInKitchenBag: false, isInKitchenDisplay: false, isInKitchenReceptacle: false, isInKitchenOutil: false, isInKitchenRune: false, isInKitchenCarburant: false, img_src: cubeData.img_src, type: cubeData.type });
 
-  const originalCube = cubes.value.find(c => c.id === cubeData.id);
+  const originalCube = cubesDefined.value.find(c => c.id === cubeData.id);
   if (originalCube) {
     originalCube.find = true;
-    saveCubesState();
+    saveCubesDefinedState();
   }
 
-  saveDiscoveredCubesState();
+  saveCubesAnimatedState();
   console.log('Nouveau DiscoveredCube créé !', newId);
 }
 
 function checkRecipes() {
   const currentIngredients = {
     kitchenReceptacle: kitchenReceptacleCube.value ? kitchenReceptacleCube.value.originalCubeId : null,
-    kitchenBag: discoveredCubes.value.filter(c => c.isInKitchenBag).map(c => c.originalCubeId),
+    kitchenBag: cubesAnimated.value.filter(c => c.isInKitchenBag).map(c => c.originalCubeId),
     kitchenOutil: kitchenOutilCube.value ? kitchenOutilCube.value.originalCubeId : null,
     kitchenRune: kitchenRuneCube.value ? kitchenRuneCube.value.originalCubeId : null,
     kitchenCarburant: kitchenCarburantCube.value ? kitchenCarburantCube.value.originalCubeId : null,
@@ -241,13 +241,13 @@ function checkRecipes() {
     if (receptacleMatch && outilMatch && runeMatch && carburantMatch && bagMatch) {
       console.log(`Recette "${recipe.name}" réussie !`);
 
-      const ingredientCubes = discoveredCubes.value.filter(c =>
+      const ingredientCubes = cubesAnimated.value.filter(c =>
         c.isInKitchenReceptacle || c.isInKitchenBag || c.isInKitchenOutil || c.isInKitchenRune || c.isInKitchenCarburant
       );
-      discoveredCubes.value = discoveredCubes.value.filter(c => !ingredientCubes.includes(c));
+      cubesAnimated.value = cubesAnimated.value.filter(c => !ingredientCubes.includes(c));
 
       const newId = `dc-${Date.now()}`;
-      discoveredCubes.value.push({
+      cubesAnimated.value.push({
         id: newId,
         originalCubeId: result.originalCubeId,
         img_src: result.img_src,
@@ -255,41 +255,41 @@ function checkRecipes() {
         isInKitchenDisplay: true,
       });
 
-      const originalCube = cubes.value.find(c => c.id === result.originalCubeId);
+      const originalCube = cubesDefined.value.find(c => c.id === result.originalCubeId);
       if (originalCube) {
         originalCube.find = true;
-        saveCubesState();
+        saveCubesDefinedState();
       }
 
       if (secret && secret.length > 0) {
         secret.forEach(secretCubeId => {
-          const cubeToReveal = cubes.value.find(c => c.id === secretCubeId);
+          const cubeToReveal = cubesDefined.value.find(c => c.id === secretCubeId);
           if (cubeToReveal) {
             cubeToReveal.disp = true;
             console.log(`Cube secret "${secretCubeId}" révélé !`);
           }
         });
-        saveCubesState();
+        saveCubesDefinedState();
       }
 
       if (discover && discover.length > 0) {
         discover.forEach(discoverCubeId => {
-          const cubeToDiscover = cubes.value.find(c => c.id === discoverCubeId);
+          const cubeToDiscover = cubesDefined.value.find(c => c.id === discoverCubeId);
           if (cubeToDiscover) {
             cubeToDiscover.find = true;
             console.log(`Cube "${discoverCubeId}" marqué comme découvert !`);
           }
         });
-        saveCubesState();
+        saveCubesDefinedState();
       }
-      saveDiscoveredCubesState();
+      saveCubesAnimatedState();
       return;
     }
   }
 }
 
 function storeDiscoveredCube({ cubeId, zone }) {
-  const cube = discoveredCubes.value.find(c => c.id === cubeId);
+  const cube = cubesAnimated.value.find(c => c.id === cubeId);
   if (cube) {
     if (zone !== 'mainBag' && zone !== 'kitchenDisplay' && cube.type !== zone) {
       return;
@@ -306,7 +306,7 @@ function storeDiscoveredCube({ cubeId, zone }) {
       cube.isStored = true;
     } else if (zone === 'kitchenDisplay') {
       if (cube.type === 'result') {
-        const currentDisplayCube = discoveredCubes.value.find(c => c.isInKitchenDisplay && c.id !== cube.id);
+        const currentDisplayCube = cubesAnimated.value.find(c => c.isInKitchenDisplay && c.id !== cube.id);
         if (currentDisplayCube) {
           currentDisplayCube.isInKitchenDisplay = false;
         }
@@ -315,37 +315,37 @@ function storeDiscoveredCube({ cubeId, zone }) {
     } else if (zone === 'kitchenBag') {
       cube.isInKitchenBag = true;
     } else if (zone === 'kitchenReceptacle') {
-      const currentReceptacleCube = discoveredCubes.value.find(c => c.isInKitchenReceptacle && c.id !== cube.id);
+      const currentReceptacleCube = cubesAnimated.value.find(c => c.isInKitchenReceptacle && c.id !== cube.id);
       if (currentReceptacleCube) {
         currentReceptacleCube.isInKitchenReceptacle = false;
       }
       cube.isInKitchenReceptacle = true;
     } else if (zone === 'kitchenOutil') {
-      const currentOutilCube = discoveredCubes.value.find(c => c.isInKitchenOutil && c.id !== cube.id);
+      const currentOutilCube = cubesAnimated.value.find(c => c.isInKitchenOutil && c.id !== cube.id);
       if (currentOutilCube) {
         currentOutilCube.isInKitchenOutil = false;
       }
       cube.isInKitchenOutil = true;
     } else if (zone === 'kitchenRune') {
-      const currentRuneCube = discoveredCubes.value.find(c => c.isInKitchenRune && c.id !== cube.id);
+      const currentRuneCube = cubesAnimated.value.find(c => c.isInKitchenRune && c.id !== cube.id);
       if (currentRuneCube) {
         currentRuneCube.isInKitchenRune = false;
       }
       cube.isInKitchenRune = true;
     } else if (zone === 'kitchenCarburant') {
-      const currentCarburantCube = discoveredCubes.value.find(c => c.isInKitchenCarburant && c.id !== cube.id);
+      const currentCarburantCube = cubesAnimated.value.find(c => c.isInKitchenCarburant && c.id !== cube.id);
       if (currentCarburantCube) {
         currentCarburantCube.isInKitchenCarburant = false;
       }
       cube.isInKitchenCarburant = true;
     }
 
-    const originalCube = cubes.value.find(c => c.id === cube.originalCubeId);
+    const originalCube = cubesDefined.value.find(c => c.id === cube.originalCubeId);
     if (originalCube) {
       originalCube.find = true;
-      saveCubesState();
+      saveCubesDefinedState();
     }
-    saveDiscoveredCubesState();
+    saveCubesAnimatedState();
     checkRecipes();
   }
 }
@@ -363,7 +363,7 @@ function handleInspectCube(cubeData) {
 }
 
 function releaseDiscoveredCube(cubeId) {
-  const cube = discoveredCubes.value.find(c => c.id === cubeId);
+  const cube = cubesAnimated.value.find(c => c.id === cubeId);
   if (cube) {
     cube.isStored = false;
     cube.isInKitchenBag = false;
@@ -372,7 +372,7 @@ function releaseDiscoveredCube(cubeId) {
     cube.isInKitchenOutil = false;
     cube.isInKitchenRune = false;
     cube.isInKitchenCarburant = false;
-    saveDiscoveredCubesState();
+    saveCubesAnimatedState();
   }
 }
 
@@ -406,25 +406,25 @@ onMounted(async () => {
 
   // 5. Initialiser le reste de l'état.
   if (cubesinfos) {
-    cubes.value = JSON.parse(JSON.stringify(cubesinfos));
+    cubesDefined.value = JSON.parse(JSON.stringify(cubesinfos));
 
-    const encryptedCubes = localStorage.getItem('cubes');
-    const encryptedDiscoveredCubes = localStorage.getItem('discoveredCubes');
+    const encryptedCubes = localStorage.getItem('cubesDefined');
+    const encryptedCubesAnimated = localStorage.getItem('cubesAnimated');
 
     let savedCubesString = null;
     if (encryptedCubes) {
       try {
         const bytes = CryptoJS.AES.decrypt(encryptedCubes, SECRET_KEY);
         savedCubesString = bytes.toString(CryptoJS.enc.Utf8);
-      } catch (e) { console.error("Erreur de déchiffrement pour 'cubes'", e); }
+      } catch (e) { console.error("Erreur de déchiffrement pour 'cubesDefined'", e); }
     }
 
-    let savedDiscoveredCubesString = null;
-    if (encryptedDiscoveredCubes) {
+    let savedCubesAnimatedString = null;
+    if (encryptedCubesAnimated) {
       try {
-        const bytes = CryptoJS.AES.decrypt(encryptedDiscoveredCubes, SECRET_KEY);
-        savedDiscoveredCubesString = bytes.toString(CryptoJS.enc.Utf8);
-      } catch (e) { console.error("Erreur de déchiffrement pour 'discoveredCubes'", e); }
+        const bytes = CryptoJS.AES.decrypt(encryptedCubesAnimated, SECRET_KEY);
+        savedCubesAnimatedString = bytes.toString(CryptoJS.enc.Utf8);
+      } catch (e) { console.error("Erreur de déchiffrement pour 'cubesAnimated'", e); }
     }
 
     const savedOriginalsState = new Map();
@@ -437,7 +437,7 @@ onMounted(async () => {
       });
     }
 
-    cubes.value.forEach(cube => {
+    cubesDefined.value.forEach(cube => {
       const savedState = savedOriginalsState.get(cube.id);
       if (savedState) {
         cube.find = savedState.find || false;
@@ -447,13 +447,13 @@ onMounted(async () => {
       }
     });
 
-    let savedDiscoveredCubesData = [];
-    if (savedDiscoveredCubesString) {
-      savedDiscoveredCubesData = JSON.parse(savedDiscoveredCubesString);
+    let savedCubesAnimatedData = [];
+    if (savedCubesAnimatedString) {
+      savedCubesAnimatedData = JSON.parse(savedCubesAnimatedString);
     }
 
-    const storedDiscovered = savedDiscoveredCubesData.filter(c => c.isStored || c.isInKitchenBag || c.isInKitchenDisplay || c.isInKitchenReceptacle || c.isInKitchenOutil || c.isInKitchenRune || c.isInKitchenCarburant);
-    discoveredCubes.value = storedDiscovered;
+    const storedDiscovered = savedCubesAnimatedData.filter(c => c.isStored || c.isInKitchenBag || c.isInKitchenDisplay || c.isInKitchenReceptacle || c.isInKitchenOutil || c.isInKitchenRune || c.isInKitchenCarburant);
+    cubesAnimated.value = storedDiscovered;
   }
 
   isLoading.value = false;
