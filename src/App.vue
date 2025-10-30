@@ -419,7 +419,11 @@ onMounted(async () => {
         if (savedCube.disp === true) {
           cube.disp = true;
         }
-        cube.instances = savedCube.instances || [];
+        if (savedCube.instances) {
+          cube.instances = savedCube.instances.filter(inst => inst.location !== 'free');
+        } else {
+          cube.instances = [];
+        }
       }
     });
   }
