@@ -24,35 +24,32 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import EncryptedImage from './EncryptedImage.vue';
+import { def } from '@vue/shared';
 
-export default {
-  name: 'Glossary',
-  components: { EncryptedImage },
-  props: {
-    cubes: {
-      type: Array,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      isOpen: false,
-    };
-  },
-  methods: {
-    toggleGlossary() {
-      this.isOpen = !this.isOpen;
-    },
-    handleCubeClick(cube) {
-      // On ne peut faire apparaître que les cubes déjà découverts
-      if (cube.find) {
-        this.$emit('spawn-from-glossary', cube);
-      }
-    },
-  },
+/* --- Props --- */
+defineProps(['cubes']);
+const emit =defineEmits(['spawn-from-glossary']);
+
+//   State
+
+const isOpen = ref(false);
+
+//   Methods
+function toggleGlossary() {
+  isOpen.value = !isOpen.value;
 };
+
+function handleCubeClick(cube) {
+  // On ne peut faire apparaître que les cubes déjà découverts
+  if (cube.find) {
+    emit('spawn-from-glossary', cube);
+  }
+}
+
+
 </script>
 
 <style scoped>
@@ -129,7 +126,7 @@ export default {
 }
 
 .cube-image.not-discovered {
-  filter: grayscale(1) brightness(0.1);
+  filter: grayscale(1) brightness(0);
   cursor: not-allowed;
 }
 </style>
