@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import GlossaryCubeImg from '../components/GlossaryCubeImg.vue';
+import GlossaryCubeImg from './GlossaryCubeImg.vue';
 
 defineProps(['cubes']);
 
