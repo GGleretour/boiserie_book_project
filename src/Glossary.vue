@@ -5,20 +5,7 @@
     <div class="glossary-content">
       <EncryptedImage src="assets/sprite/planche_a_glossaire.png" alt="Planche du glossaire" class="glossary-background" />
       <div class="cubes-grid">
-        <div
-          v-for="cube in cubes"
-          :key="cube.id"
-          class="cube-slot"
-          @click="handleCubeClick(cube)"
-        >
-          <EncryptedImage
-            :src="cube.img_src"
-            :alt="cube.id"
-            class="cube-image"
-            :class="{ 'not-discovered': !cube.find }"
-            draggable="false"
-          />
-        </div>
+        <GlossaryCubeSlot :cubes="cubes" @spawn-from-glossary="emit('spawn-from-glossary', $event)"/>
       </div>
     </div>
   </div>
@@ -27,7 +14,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import EncryptedImage from './EncryptedImage.vue';
-import { def } from '@vue/shared';
+import GlossaryCubeSlot from '../components/GlossaryCubeSlot.vue';
 
 /* --- Props --- */
 defineProps(['cubes']);
@@ -41,15 +28,6 @@ const isOpen = ref(false);
 function toggleGlossary() {
   isOpen.value = !isOpen.value;
 };
-
-function handleCubeClick(cube) {
-  // On ne peut faire apparaître que les cubes déjà découverts
-  if (cube.find) {
-    emit('spawn-from-glossary', cube);
-  }
-}
-
-
 </script>
 
 <style scoped>
@@ -108,25 +86,5 @@ function handleCubeClick(cube) {
   gap: 0px;
   padding: 5px;
   overflow-y: auto;
-}
-
-.cube-slot {
-  width: 45px;
-  height: 45px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.cube-image {
-  max-width: 100%;
-  max-height: 100%;
-  transition: filter 0.3s ease;
-}
-
-.cube-image.not-discovered {
-  filter: grayscale(1) brightness(0);
-  cursor: not-allowed;
 }
 </style>
