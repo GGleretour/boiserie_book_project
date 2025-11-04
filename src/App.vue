@@ -374,11 +374,10 @@ onMounted(async () => {
   const cubeImagePaths = cubesinfos ? cubesinfos.map(cube => cube.img_src).filter(Boolean) : [];
 
   const staticUIImages = [
-    'assets/sprite/background.png', 'assets/sprite/ronge_bois_symbole.png', 'assets/sprite/petit_chaudron.png',
-    'assets/sprite/book_boiserie.png', 'assets/sprite/arrow.png', 'assets/sprite/loup.png',
+    'assets/sprite/background.png', 'assets/sprite/ronge_bois_symbole.png', 'assets/sprite/petit_chaudron.png', 'assets/sprite/sac_de_jute_1.png', 'assets/sprite/sac_de_jute_2.png',
+    'assets/sprite/book_boiserie.png', 'assets/sprite/arrow.png', 'assets/sprite/loup.png', 'assets/sprite/clou.png', 'assets/sprite/planche_a_glossaire.png',
     'assets/block/block_I_vide.png', 'assets/block/block_B_vide.png', 'assets/block/block_Re_vide.png',
     'assets/block/block_O_vide.png', 'assets/block/block_ru_vide.png', 'assets/block/block_C_vide.png',
-    'assets/loading_the_castor.gif'
   ];
 
   // 3. Créer une liste complète de toutes les images à précharger.
