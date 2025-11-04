@@ -349,15 +349,14 @@ function handleInspectCube(cubeData) {
   resultViewerVisible.value = true;
 }
 
-function releaseDiscoveredCube(cubeId) {
-  for (const cubeDef of cubesDefined.value) {
-    const instance = cubeDef.instances.find(inst => inst.id === cubeId);
+function releaseDiscoveredCube(cubeId, originalCubeId) {
+  const instance = cubesDefined.value.map(cubeDef => cubeDef.instances.find(inst => inst.id === cubeId)).find(inst => inst !== undefined);
+  //cubesDefined.valuefind(cubeDef => cubeDef.id === originalCubeId).instances.find(inst => inst.id === cubeId);
     if (instance) {
       instance.location = 'free';
       saveCubesDefinedState();
       return; // Exit after finding and updating
     }
-  }
 }
 
 function handleRetrieveResult() {
