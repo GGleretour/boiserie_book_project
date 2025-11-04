@@ -1,6 +1,6 @@
 <template>
   <div class="glossary-container" :class="{ 'is-open': isOpen }">
-    <GlossaryHandle @toggle-glossary="toggleGlossary"/>
+    <GlossaryHandle v-model:isOpen="isOpen"/>
     <GlossaryContent :cubes="cubes" @spawn-from-glossary="$emit('spawn-from-glossary', $event)"/>
   </div>
 </template>
@@ -16,11 +16,6 @@ defineProps(['cubes']);
 
 /* --- State --- */
 const isOpen = ref(false);
-
-/* --- Computed properties --- */
-function toggleGlossary() {
-  isOpen.value = !isOpen.value;
-};
 </script>
 
 <style scoped>

@@ -1,8 +1,9 @@
 <template>
-    <div class="glossary-handle" @click="$emit('toggle-glossary')"></div>
+  <div class="glossary-handle" @click="isOpen = !isOpen"></div>
 </template>
 
 <script setup>
+  const isOpen = defineModel('isOpen');
 </script>
 
 <style scoped>
