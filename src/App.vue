@@ -375,7 +375,7 @@ onMounted(async () => {
 
   const staticUIImages = [
     'assets/sprite/background.png', 'assets/sprite/ronge_bois_symbole.png', 'assets/sprite/petit_chaudron.png',
-    'assets/sprite/book_boiserie.png', 'assets/sprite/arrow.png', 'assets/sprite/loop.png',
+    'assets/sprite/book_boiserie.png', 'assets/sprite/arrow.png', 'assets/sprite/loup.png',
     'assets/block/block_I_vide.png', 'assets/block/block_B_vide.png', 'assets/block/block_Re_vide.png',
     'assets/block/block_O_vide.png', 'assets/block/block_ru_vide.png', 'assets/block/block_C_vide.png',
     'assets/loading_the_castor.gif'
