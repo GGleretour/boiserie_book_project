@@ -377,7 +377,7 @@ onMounted(async () => {
     'assets/sprite/background.png', 'assets/sprite/ronge_bois_symbole.png', 'assets/sprite/petit_chaudron.png', 'assets/sprite/sac_de_jute_1.png', 'assets/sprite/sac_de_jute_2.png',
     'assets/sprite/book_boiserie.png', 'assets/sprite/arrow.png', 'assets/sprite/loup.png', 'assets/sprite/clou.png', 'assets/sprite/planche_a_glossaire.png',
     'assets/block/block_I_vide.png', 'assets/block/block_B_vide.png', 'assets/block/block_Re_vide.png',
-    'assets/block/block_O_vide.png', 'assets/block/block_ru_vide.png', 'assets/block/block_C_vide.png',
+    'assets/block/block_O_vide.png', 'assets/block/block_ru_vide.png', 'assets/block/block_C_vide.png', 'assets/block/block_V_cubeVoid.png',
   ];
 
   // 3. Créer une liste complète de toutes les images à précharger.
@@ -471,13 +471,13 @@ header {
   position: relative;
 }
 .loupe-cursor { /* Cette règle est dans le style scoped, elle peut être moins prioritaire */
-  cursor: url('/assets/sprite/loup.png') 0 0, auto;
+  cursor: url('assets/sprite/loup.png') 0 0, auto;
 }
 
 </style>
 <style>
 /* Style global pour le curseur en mode loupe */
 .loupe-cursor, .loupe-cursor * {
-  cursor: url('/assets/sprite/loup.png') 0 0, auto !important;
+  cursor: url('assets/sprite/loup.png') 0 0, auto !important;
 }
 </style>

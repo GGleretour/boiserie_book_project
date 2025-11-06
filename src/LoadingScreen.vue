@@ -2,13 +2,16 @@
   <div class="loading-overlay">
     <div class="loading-box">
       <p>Chargement des grimoires...</p>
-      <img src="/assets/loading_the_castor.gif" alt="Chargement..." />
+      <EncryptedImage src="assets/loading_the_castor.gif" alt="Chargement..." />
     </div>
   </div>
 </template>
 
 <script>
+import EncryptedImage from './EncryptedImage.vue';
+
 export default {
+  components: { EncryptedImage },
   name: 'LoadingScreen',
 };
 </script>

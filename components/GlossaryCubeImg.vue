@@ -1,6 +1,23 @@
 <template>
   <EncryptedImage
+    v-if="cube.find===true"
     :src="cube.img_src"
+    :alt="cube.id"
+    class="cube-image"
+    :class="{ 'not-discovered': !cube.find }"
+    draggable="false"
+  />
+  <EncryptedImage
+    v-else-if="cube.type==='result'"
+    src="assets/block/block_V_pageVoid.png"
+    :alt="cube.id"
+    class="cube-image"
+    :class="{ 'not-discovered': !cube.find }"
+    draggable="false"
+  />
+  <EncryptedImage
+    v-else
+    src="assets/block/block_V_cubeVoid.png"
     :alt="cube.id"
     class="cube-image"
     :class="{ 'not-discovered': !cube.find }"
