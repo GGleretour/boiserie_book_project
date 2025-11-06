@@ -262,6 +262,8 @@ function checkRecipes() {
           location: 'kitchenDisplay',
         });
         resultCubeDef.find = true;
+        saveCubesDefinedState();
+        console.log('Nouveau DiscoveredCube créé !', newId);
       }
 
       // Handle secret and discover
@@ -308,7 +310,7 @@ function storeDiscoveredCube({ cubeId, zone }) {
   if (!targetInstance) return;
 
   // Type validation check
-  if (zone !== 'mainBag' && zone !== 'kitchenDisplay' && originalCubeOfInstance.type !== zone) {
+  if (zone !== 'mainBag' && originalCubeOfInstance.type !== zone) {
     return;
   }
 

@@ -3,9 +3,7 @@ export const recipes = [
     name: 'olivier_cake',
     result: {
       // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
-      originalCubeId: 'secret_1',
-      img_src: 'assets-encrypted/secret_1.png.enc',
-      type: 'result', // Un type spécifique pour les objets fabriqués
+      originalCubeId: 'indice_secret_1',
     },
     ingredients: {
       // Les IDs des cubes originaux requis pour la recette
@@ -32,9 +30,7 @@ export const recipes = [
     name: 'recette secrète',
     result: {
       // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
-      originalCubeId: 'secret_1',
-      img_src: 'assets-encrypted/block_B_secret_1.png.enc',
-      type: 'result', // Un type spécifique pour les objets fabriqués
+      originalCubeId: 'block_B_secret_1',
     },
     ingredients: {
       // Les IDs des cubes originaux requis pour la recette
@@ -57,9 +53,7 @@ export const recipes = [
     name: 'ragout_facon_bucheron',
     result: {
       // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
-      originalCubeId: 'secret_1',
-      img_src: 'assets-encrypted/secret_1.png.enc',
-      type: 'result', // Un type spécifique pour les objets fabriqués
+      originalCubeId: 'indice_secret_1',
     },
     ingredients: {
       // Les IDs des cubes originaux requis pour la recette

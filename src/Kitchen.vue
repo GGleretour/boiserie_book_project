@@ -136,8 +136,6 @@ const receptacleZoneStyle = computed(() => { return getZoneStyle(kitchenReceptac
 const outilZoneStyle = computed(() => { return getZoneStyle(kitchenOutilCube.value, 'outil', 'assets/block/block_O_vide.png'); });
 const runeZoneStyle = computed(() => { return getZoneStyle(kitchenRuneCube.value, 'rune', 'assets/block/block_ru_vide.png'); });
 const carburantZoneStyle = computed(() => { return getZoneStyle(kitchenCarburantCube.value, 'carburant', 'assets/block/block_C_vide.png'); });
-  
-
 
 watch(isVisible, async (newValue) => {
   if (newValue && !decryptedZoneImages.bag) {
