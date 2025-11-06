@@ -44,7 +44,7 @@
           @dragover.prevent
           @drop="$emit('drop-on-zone', 'kitchenDisplay')"
           :style="displayZoneStyle"
-          @click="handleDisplayClick"
+          @click="releaseDisplayCube"
         >
         <p>Brumage</p>
         
@@ -181,7 +181,7 @@ function getZoneStyle(cube, zoneKey, defaultPath) {
 function close() {
   emit('close-book');
 };
-function handleDisplayClick() {
+function releaseDisplayCube() {
   // Si un cube est présent dans la zone de résultat, un clic le libère.
   if (kitchenDisplayCube.value) {
     emit('release-discovered-cube', kitchenDisplayCube.value.id, kitchenDisplayCube.value.originalCubeId);
@@ -304,7 +304,7 @@ function releaseCarburantCube() {
     close() {
       this.$emit('close-book');
     },
-    handleDisplayClick() {
+    releaseDisplayCube() {
       // Si un cube est présent dans la zone de résultat, un clic le libère.
       if (this.kitchenDisplayCube) {
         this.$emit('release-discovered-cube', this.kitchenDisplayCube.id);
