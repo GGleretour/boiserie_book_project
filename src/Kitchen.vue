@@ -37,29 +37,17 @@
           @release-discovered-cube="$emit('release-discovered-cube', $event)"
         />
         <!-- Zone 4 : La zone outil (avec gestion du drop) -->
-        <div
-          id="kitchen-outil-zone"
-          class="drop-zone kitchen-outil"
-          @dragover.prevent
-          @drop="$emit('drop-on-zone', 'kitchenOutil')"
-          :style="outilZoneStyle"
-          @click="releaseOutilCube"
-        >
-          <p>Outils</p>
-
-        </div>
+        <KitchenZoneOutil
+          :kitchen-outil-cube="kitchenOutilCube"
+          @drop-on-zone="$emit('drop-on-zone', $event)"
+          @release-discovered-cube="$emit('release-discovered-cube', $event)"
+        />
         <!-- Zone 5 : La zone rune (avec gestion du drop) -->
-        <div
-          id="kitchen-rune-zone"
-          class="drop-zone kitchen-rune"
-          @dragover.prevent
-          @drop="$emit('drop-on-zone', 'kitchenRune')"
-          :style="runeZoneStyle"
-          @click="releaseRuneCube"
-        >
-          <p>Rune</p>
-
-        </div>
+         <KitchenZoneRune
+          :kitchen-rune-cube="kitchenRuneCube"
+          @drop-on-zone="$emit('drop-on-zone', $event)"
+          @release-discovered-cube="$emit('release-discovered-cube', $event)"
+        />
         <!-- Zone 6 : La zone carburant (avec gestion du drop) -->
         <div
           id="kitchen-carburant-zone"
@@ -84,6 +72,9 @@ import { reactive, watch, nextTick, ref, computed } from 'vue';
 import KitchenZoneBag from '../components/KitchenZoneBag.vue';
 import KitchenZoneResult from '../components/KitchenZoneResult.vue';
 import KitchenZoneReceptacle from '../components/KitchenZoneReceptacle.vue';
+import KitchenZoneRune from '../components/KitchenZoneRune.vue';
+import KitchenZoneOutil from '../components/KitchenZoneOutil.vue';
+//import KitchenZoneCarburant from '../components/KitchenZoneCarburant.vue';
 
 const kitchenBagCubes = defineModel('kitchenBagCubes');
 const kitchenDisplayCube = defineModel('kitchenDisplayCube');
@@ -97,12 +88,12 @@ const emit = defineEmits(['drop-on-zone', 'release-discovered-cube', 'close-book
 
 //const receptacleZoneStyle = computed(() => { return getZoneStyle(kitchenReceptacleCube.value, 'receptacle', 'assets/block/block_Re_vide.png'); });
 const outilZoneStyle = computed(() => { return getZoneStyle(kitchenOutilCube.value, 'outil', 'assets/block/block_O_vide.png'); });
-const runeZoneStyle = computed(() => { return getZoneStyle(kitchenRuneCube.value, 'rune', 'assets/block/block_ru_vide.png'); });
+//const runeZoneStyle = computed(() => { return getZoneStyle(kitchenRuneCube.value, 'rune', 'assets/block/block_ru_vide.png'); });
 const carburantZoneStyle = computed(() => { return getZoneStyle(kitchenCarburantCube.value, 'carburant', 'assets/block/block_C_vide.png'); });
 
 //watch(kitchenReceptacleCube, (newCube) => { updateDecryptedImage(newCube, 'receptacle', 'assets/block/block_Re_vide.png'); }, { deep: true, immediate: true });
 watch(kitchenOutilCube, (newCube) => { updateDecryptedImage(newCube, 'outil', 'assets/block/block_O_vide.png'); }, { deep: true, immediate: true });
-watch(kitchenRuneCube, (newCube) => { updateDecryptedImage(newCube, 'rune', 'assets/block/block_ru_vide.png'); }, { deep: true, immediate: true });
+//watch(kitchenRuneCube, (newCube) => { updateDecryptedImage(newCube, 'rune', 'assets/block/block_ru_vide.png'); }, { deep: true, immediate: true });
 watch(kitchenCarburantCube, (newCube) => { updateDecryptedImage(newCube, 'carburant', 'assets/block/block_C_vide.png'); }, { deep: true, immediate: true });
 
 function close() {
@@ -118,11 +109,7 @@ function releaseOutilCube() {
     emit('release-discovered-cube', kitchenOutilCube.value.id, kitchenOutilCube.value.originalCubeId);
   }
 };
-function releaseRuneCube() {
-  if (kitchenRuneCube.value) {
-    emit('release-discovered-cube', kitchenRuneCube.value.id, kitchenRuneCube.value.originalCubeId);
-  }
-};
+
 function releaseCarburantCube() {
   if (kitchenCarburantCube.value) {
     emit('release-discovered-cube', kitchenCarburantCube.value.id, kitchenCarburantCube.value.originalCubeId);
@@ -173,18 +160,6 @@ function releaseCarburantCube() {
   height: 100px;
   top: 35%; /* Pointe haut-droite */
   left: 90%;
-  color: white;
-  text-align: center;
-  padding: 6px;
-  font-size: 0.7em;
-  cursor: pointer;
-}
-
-.kitchen-rune {
-  width: 100px;
-  height: 100px;
-  top: 35%; /* Pointe haut-gauche */
-  left: 10%;
   color: white;
   text-align: center;
   padding: 6px;
