@@ -16,11 +16,14 @@
 
       <!-- Conteneur carré pour la disposition en étoile -->
       <div class="star-layout-container">
+        <KitchenZoneBag
+        :is-visible="isVisible"
+        :kitchen-bag-cubes="kitchenBagCubes"
+        @release-discovered-cube="$emit('release-discovered-cube', $event)"
+        />
         <!-- Zone 1 : Le "sac" de la cuisine -->
-        <div id="kitchen-bag-zone" class="drop-zone kitchen-bag" :style="bagZoneStyle">
+        <!--<div id="kitchen-bag-zone" class="drop-zone kitchen-bag" :style="bagZoneStyle">
           <p>ingredients</p>
-          <!-- Affiche les cubes stockés dans cette zone -->
-          <!-- Ajout d'une ref pour accéder aux instances des cubes -->
           <DiscoveredCube
             v-for="cube in kitchenBagCubes"
             :key="`kitchen-bag-${cube.id}`"
@@ -35,7 +38,7 @@
             :inventory-offset-bottom="97"
             @mousedown.stop="$emit('release-discovered-cube', cube.id)"
           />
-        </div>
+        </div>-->
 
         <!-- Zone 2 : La zone d'affichage/remplacement -->
         <div
@@ -106,8 +109,8 @@
 <script setup>
 import { getDecryptedImage } from './image-service.js';
 import EncryptedImage from './EncryptedImage.vue';
-import DiscoveredCube from './DiscoveredCube.vue';
 import { reactive, watch, nextTick, ref, computed } from 'vue';
+import KitchenZoneBag from '../components/KitchenZoneBag.vue';
 
 const decryptedZoneImages = reactive({
   display: null,
@@ -333,6 +336,7 @@ function releaseCarburantCube() {
 </script>
 
 <style scoped>
+/* KITCHEN STYLES */
 #kitchen_container {
   z-index: 1;
   display: flex;
@@ -365,6 +369,8 @@ function releaseCarburantCube() {
   /* Centrage de l'élément sur ses coordonnées top/left */
   transform: translate(-50%, -50%);
 }
+/* ----------------- */
+/* KITCHEN ZONE STYLES */
 
 .kitchen-bag {
   width: 160px;
