@@ -71,7 +71,6 @@
 
         @release-discovered-cube="releaseDiscoveredCube"
         @drop-on-zone="storeDiscoveredCube"
-        @open-result-viewer="handleOpenResultViewer"
       />
     <SpecialCube
         :cubes="cubesDefined"
