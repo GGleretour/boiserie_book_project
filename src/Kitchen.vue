@@ -2,9 +2,10 @@
   <!-- Note: v-show est utilisé pour que les refs soient disponibles même quand le composant est caché -->
   <div id="kitchen_container">
     <!-- Bouton de fermeture -->
-    <div class="config-container">
+     <CloseButton @close="$emit('close-book')"/>
+    <!--<div class="config-container">
       <button class="close-button" @click="close">Close</button>
-    </div>
+    </div>-->
     <div class="content-wrapper">
       <EncryptedImage
         id="kitchen_page"
@@ -61,6 +62,7 @@
 </template>
 
 <script setup>
+/* Import */
 import EncryptedImage from './EncryptedImage.vue';
 import KitchenZoneBag from '../components/KitchenZoneBag.vue';
 import KitchenZoneResult from '../components/KitchenZoneResult.vue';
@@ -68,6 +70,8 @@ import KitchenZoneReceptacle from '../components/KitchenZoneReceptacle.vue';
 import KitchenZoneRune from '../components/KitchenZoneRune.vue';
 import KitchenZoneOutil from '../components/KitchenZoneOutil.vue';
 import KitchenZoneCarburant from '../components/KitchenZoneCarburant.vue';
+import CloseButton from '../components/CloseButton.vue';
+/* ----------------- */
 
 const kitchenBagCubes = defineModel('kitchenBagCubes');
 const kitchenDisplayCube = defineModel('kitchenDisplayCube');
