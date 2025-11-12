@@ -24,7 +24,7 @@
 /* Imports */
 import DiscoveredCube from '../src/DiscoveredCube.vue';
 import { getZoneStyle, updateDecryptedImage, decryptedZoneImages} from '../src/command-liste.js';
-import { reactive, watch, nextTick, ref, computed } from 'vue';
+import {watch, nextTick, ref, computed } from 'vue';
 /* ----------------- */
 
 /* Events */
