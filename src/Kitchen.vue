@@ -16,29 +16,12 @@
 
       <!-- Conteneur carré pour la disposition en étoile -->
       <div class="star-layout-container">
+        <!-- Zone 1 : Le "sac" de la cuisine -->
         <KitchenZoneBag
         :is-visible="isVisible"
         :kitchen-bag-cubes="kitchenBagCubes"
         @release-discovered-cube="$emit('release-discovered-cube', $event)"
         />
-        <!-- Zone 1 : Le "sac" de la cuisine -->
-        <!--<div id="kitchen-bag-zone" class="drop-zone kitchen-bag" :style="bagZoneStyle">
-          <p>ingredients</p>
-          <DiscoveredCube
-            v-for="cube in kitchenBagCubes"
-            :key="`kitchen-bag-${cube.id}`"
-            :is-in-inventory="true"
-            :cube-id="cube.id"
-            :original-cube-id="cube.originalCubeId"
-            :img-src="cube.img_src"
-            ref="kitchenBagCubeRefs"
-            :inventory-offset-left="97"
-            :inventory-offset-right="97"
-            :inventory-offset-top="97"
-            :inventory-offset-bottom="97"
-            @mousedown.stop="$emit('release-discovered-cube', cube.id)"
-          />
-        </div>-->
 
         <!-- Zone 2 : La zone d'affichage/remplacement -->
         <div
@@ -107,21 +90,10 @@
 </template>
 
 <script setup>
-import { getDecryptedImage } from './image-service.js';
+import { updateDecryptedImage, getZoneStyle} from './command-liste.js';
 import EncryptedImage from './EncryptedImage.vue';
 import { reactive, watch, nextTick, ref, computed } from 'vue';
 import KitchenZoneBag from '../components/KitchenZoneBag.vue';
-
-const decryptedZoneImages = reactive({
-  display: null,
-  receptacle: null,
-  outil: null,
-  rune: null,
-  carburant: null,
-  bag: null,
-});
-
-const kitchenBagCubeRefs = ref([]);
 
 const kitchenBagCubes = defineModel('kitchenBagCubes');
 const kitchenDisplayCube = defineModel('kitchenDisplayCube');
@@ -133,52 +105,18 @@ const isVisible = defineModel('isVisible');
 
 const emit = defineEmits(['drop-on-zone', 'release-discovered-cube', 'close-book', 'open-result-viewer']);
 
-const bagZoneStyle = computed(() => { return getZoneStyle(null, 'bag', 'assets/block/block_I_vide.png');});
 const displayZoneStyle = computed(() => { return getZoneStyle(kitchenDisplayCube.value, 'display', 'assets/block/block_B_vide.png'); });
 const receptacleZoneStyle = computed(() => { return getZoneStyle(kitchenReceptacleCube.value, 'receptacle', 'assets/block/block_Re_vide.png'); });
 const outilZoneStyle = computed(() => { return getZoneStyle(kitchenOutilCube.value, 'outil', 'assets/block/block_O_vide.png'); });
 const runeZoneStyle = computed(() => { return getZoneStyle(kitchenRuneCube.value, 'rune', 'assets/block/block_ru_vide.png'); });
 const carburantZoneStyle = computed(() => { return getZoneStyle(kitchenCarburantCube.value, 'carburant', 'assets/block/block_C_vide.png'); });
 
-watch(isVisible, async (newValue) => {
-  if (newValue && !decryptedZoneImages.bag) {
-    // Charge l'image de fond du sac d'ingrédients la première fois que la cuisine est visible
-    updateDecryptedImage(null, 'bag', 'assets/block/block_I_vide.png');
-    // Lorsque la cuisine devient visible, on force le repositionnement des cubes.
-    nextTick(() => {
-      kitchenBagCubeRefs.value?.forEach(cube => cube.recenterInParent());
-    });
-  }
-});
 watch(kitchenDisplayCube, (newCube) => { updateDecryptedImage(newCube, 'display', 'assets/block/block_B_vide.png'); }, { deep: true, immediate: true });
 watch(kitchenReceptacleCube, (newCube) => { updateDecryptedImage(newCube, 'receptacle', 'assets/block/block_Re_vide.png'); }, { deep: true, immediate: true });
 watch(kitchenOutilCube, (newCube) => { updateDecryptedImage(newCube, 'outil', 'assets/block/block_O_vide.png'); }, { deep: true, immediate: true });
 watch(kitchenRuneCube, (newCube) => { updateDecryptedImage(newCube, 'rune', 'assets/block/block_ru_vide.png'); }, { deep: true, immediate: true });
 watch(kitchenCarburantCube, (newCube) => { updateDecryptedImage(newCube, 'carburant', 'assets/block/block_C_vide.png'); }, { deep: true, immediate: true });
-  
-async function updateDecryptedImage(cube, zoneKey, defaultPath) {
-  const path = cube ? cube.img_src : defaultPath;
-  if (path) {
-    decryptedZoneImages[zoneKey] = await getDecryptedImage(path);
-  } else {
-    decryptedZoneImages[zoneKey] = null;
-  }
-};
 
-function getZoneStyle(cube, zoneKey, defaultPath) {
-  const imageUrl = decryptedZoneImages[zoneKey];
-  const finalStyle = {
-    backgroundImage: `url(${imageUrl})`,
-    backgroundSize: 'contain',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat'
-  };
-  if (cube && cube.img_src) {
-    finalStyle.backgroundSize = 'cover';
-    finalStyle.border = 'none';
-  }
-  return finalStyle;
-};
 function close() {
   emit('close-book');
 };
@@ -208,131 +146,6 @@ function releaseCarburantCube() {
     emit('release-discovered-cube', kitchenCarburantCube.value.id, kitchenCarburantCube.value.originalCubeId);
   }
 };
-
-/*export default {
-  name: 'Kitchen',
-  components: { EncryptedImage, DiscoveredCube },
-  data() {
-    return {
-      decryptedZoneImages: {
-        display: null,
-        receptacle: null,
-        outil: null,
-        rune: null,
-        carburant: null,
-        bag: null,
-      },
-    };
-  },
-  props: {
-    kitchenBagCubes: {
-      type: Array,
-      default: () => [],
-    },
-    kitchenDisplayCube: {
-      type: Object,
-      default: null,
-    },
-    kitchenReceptacleCube: {
-      type: Object,
-      default: null,
-    },
-    kitchenOutilCube: {
-      type: Object,
-      default: null,
-    },
-    kitchenRuneCube: {
-      type: Object,
-      default: null,
-    },
-    kitchenCarburantCube: {
-      type: Object,
-      default: null,
-    },
-    isVisible: {
-      type: Boolean,
-    },
-  },
-  computed: {
-    bagZoneStyle() { return this.getZoneStyle(null, 'bag', 'assets/block/block_I_vide.png'); },
-    displayZoneStyle() { return this.getZoneStyle(this.kitchenDisplayCube, 'display', 'assets/block/block_B_vide.png'); },
-    receptacleZoneStyle() { return this.getZoneStyle(this.kitchenReceptacleCube, 'receptacle', 'assets/block/block_Re_vide.png'); },
-    outilZoneStyle() { return this.getZoneStyle(this.kitchenOutilCube, 'outil', 'assets/block/block_O_vide.png'); },
-    runeZoneStyle() { return this.getZoneStyle(this.kitchenRuneCube, 'rune', 'assets/block/block_ru_vide.png'); },
-    carburantZoneStyle() { return this.getZoneStyle(this.kitchenCarburantCube, 'carburant', 'assets/block/block_C_vide.png'); },
-  },
-  watch: {
-    isVisible(newValue) {
-      if (newValue && !this.decryptedZoneImages.bag) {
-        // Charge l'image de fond du sac d'ingrédients la première fois que la cuisine est visible
-        this.updateDecryptedImage(null, 'bag', 'assets/block/block_I_vide.png');
-
-        // Lorsque la cuisine devient visible, on force le repositionnement des cubes.
-        this.$nextTick(() => {
-          this.$refs.kitchenBagCubeRefs?.forEach(cube => cube.recenterInParent());
-        });
-      }
-    },
-    kitchenDisplayCube: { handler(newCube) { this.updateDecryptedImage(newCube, 'display', 'assets/block/block_B_vide.png'); }, immediate: true },
-    kitchenReceptacleCube: { handler(newCube) { this.updateDecryptedImage(newCube, 'receptacle', 'assets/block/block_Re_vide.png'); }, immediate: true },
-    kitchenOutilCube: { handler(newCube) { this.updateDecryptedImage(newCube, 'outil', 'assets/block/block_O_vide.png'); }, immediate: true },
-    kitchenRuneCube: { handler(newCube) { this.updateDecryptedImage(newCube, 'rune', 'assets/block/block_ru_vide.png'); }, immediate: true },
-    kitchenCarburantCube: { handler(newCube) { this.updateDecryptedImage(newCube, 'carburant', 'assets/block/block_C_vide.png'); }, immediate: true },
-  },
-  methods: {
-    async updateDecryptedImage(cube, zoneKey, defaultPath) {
-      const path = cube ? cube.img_src : defaultPath;
-      if (path) {
-        this.decryptedZoneImages[zoneKey] = await getDecryptedImage(path);
-      } else {
-        this.decryptedZoneImages[zoneKey] = null;
-      }
-    },
-    getZoneStyle(cube, zoneKey, defaultPath) {
-      const imageUrl = this.decryptedZoneImages[zoneKey] || '';
-      const finalStyle = {
-        backgroundImage: `url(${imageUrl})`,
-        backgroundSize: 'contain',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      };
-      if (cube) {
-        finalStyle.backgroundSize = 'cover';
-        finalStyle.border = 'none';
-      }
-      return finalStyle;
-    },
-    close() {
-      this.$emit('close-book');
-    },
-    releaseDisplayCube() {
-      // Si un cube est présent dans la zone de résultat, un clic le libère.
-      if (this.kitchenDisplayCube) {
-        this.$emit('release-discovered-cube', this.kitchenDisplayCube.id);
-      }
-    },
-    releaseReceptacleCube() {
-      if (this.kitchenReceptacleCube) {
-        this.$emit('release-discovered-cube', this.kitchenReceptacleCube.id);
-      }
-    },
-    releaseOutilCube() {
-      if (this.kitchenOutilCube) {
-        this.$emit('release-discovered-cube', this.kitchenOutilCube.id);
-      }
-    },
-    releaseRuneCube() {
-      if (this.kitchenRuneCube) {
-        this.$emit('release-discovered-cube', this.kitchenRuneCube.id);
-      }
-    },
-    releaseCarburantCube() {
-      if (this.kitchenCarburantCube) {
-        this.$emit('release-discovered-cube', this.kitchenCarburantCube.id);
-      }
-    },
-  },
-};*/
 </script>
 
 <style scoped>

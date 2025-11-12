@@ -21,21 +21,28 @@
 </template>
 
 <script setup>
+/* Imports */
 import DiscoveredCube from '../src/DiscoveredCube.vue';
 import { getZoneStyle, updateDecryptedImage, decryptedZoneImages} from '../src/command-liste.js';
 import { reactive, watch, nextTick, ref, computed } from 'vue';
+/* ----------------- */
 
+/* Events */
 const emit = defineEmits(['release-discovered-cube']);
 const props = defineProps(['kitchenBagCubes'])
+/* ----------------- */
+
+/* define */
+const kitchenBagCubeRefs = ref([]);
 const kitchenBagCubes = defineModel('kitchenBagCubes');
 const isVisible = defineModel('isVisible');
-const kitchenBagCubeRefs = ref([]);
+/* ----------------- */
 
 /* Computed */
 const bagZoneStyle = computed(() => { return getZoneStyle(null, 'bag', 'assets/block/block_I_vide.png');});
 /* ----------------- */
 
-
+/* Methods */
 watch(isVisible, async (newValue) => {
   if (newValue && !decryptedZoneImages.bag) {
     // Charge l'image de fond du sac d'ingrédients la première fois que la cuisine est visible
@@ -46,6 +53,7 @@ watch(isVisible, async (newValue) => {
     });
   }
 });
+/* ----------------- */
 </script>
 
 <style scoped>
