@@ -31,17 +31,11 @@
         />
 
         <!-- Zone 3 : La zone réceptacle (avec gestion du drop) -->
-        <div
-          id="kitchen-receptacle-zone"
-          class="drop-zone kitchen-receptacle"
-          @dragover.prevent
-          @drop="$emit('drop-on-zone', 'kitchenReceptacle')"
-          :style="receptacleZoneStyle"
-          @click="releaseReceptacleCube"
-        >
-          <p>Receptacle</p>
-
-        </div>
+        <KitchenZoneReceptacle
+          :kitchen-receptacle-cube="kitchenReceptacleCube"
+          @drop-on-zone="$emit('drop-on-zone', $event)"
+          @release-discovered-cube="$emit('release-discovered-cube', $event)"
+        />
         <!-- Zone 4 : La zone outil (avec gestion du drop) -->
         <div
           id="kitchen-outil-zone"
@@ -89,6 +83,7 @@ import EncryptedImage from './EncryptedImage.vue';
 import { reactive, watch, nextTick, ref, computed } from 'vue';
 import KitchenZoneBag from '../components/KitchenZoneBag.vue';
 import KitchenZoneResult from '../components/KitchenZoneResult.vue';
+import KitchenZoneReceptacle from '../components/KitchenZoneReceptacle.vue';
 
 const kitchenBagCubes = defineModel('kitchenBagCubes');
 const kitchenDisplayCube = defineModel('kitchenDisplayCube');
@@ -100,12 +95,12 @@ const isVisible = defineModel('isVisible');
 
 const emit = defineEmits(['drop-on-zone', 'release-discovered-cube', 'close-book', 'open-result-viewer']);
 
-const receptacleZoneStyle = computed(() => { return getZoneStyle(kitchenReceptacleCube.value, 'receptacle', 'assets/block/block_Re_vide.png'); });
+//const receptacleZoneStyle = computed(() => { return getZoneStyle(kitchenReceptacleCube.value, 'receptacle', 'assets/block/block_Re_vide.png'); });
 const outilZoneStyle = computed(() => { return getZoneStyle(kitchenOutilCube.value, 'outil', 'assets/block/block_O_vide.png'); });
 const runeZoneStyle = computed(() => { return getZoneStyle(kitchenRuneCube.value, 'rune', 'assets/block/block_ru_vide.png'); });
 const carburantZoneStyle = computed(() => { return getZoneStyle(kitchenCarburantCube.value, 'carburant', 'assets/block/block_C_vide.png'); });
 
-watch(kitchenReceptacleCube, (newCube) => { updateDecryptedImage(newCube, 'receptacle', 'assets/block/block_Re_vide.png'); }, { deep: true, immediate: true });
+//watch(kitchenReceptacleCube, (newCube) => { updateDecryptedImage(newCube, 'receptacle', 'assets/block/block_Re_vide.png'); }, { deep: true, immediate: true });
 watch(kitchenOutilCube, (newCube) => { updateDecryptedImage(newCube, 'outil', 'assets/block/block_O_vide.png'); }, { deep: true, immediate: true });
 watch(kitchenRuneCube, (newCube) => { updateDecryptedImage(newCube, 'rune', 'assets/block/block_ru_vide.png'); }, { deep: true, immediate: true });
 watch(kitchenCarburantCube, (newCube) => { updateDecryptedImage(newCube, 'carburant', 'assets/block/block_C_vide.png'); }, { deep: true, immediate: true });
@@ -113,11 +108,11 @@ watch(kitchenCarburantCube, (newCube) => { updateDecryptedImage(newCube, 'carbur
 function close() {
   emit('close-book');
 };
-function releaseReceptacleCube() {
+/*function releaseReceptacleCube() {
   if (kitchenReceptacleCube.value) {
     emit('release-discovered-cube', kitchenReceptacleCube.value.id, kitchenReceptacleCube.value.originalCubeId);
   }
-};
+};*/
 function releaseOutilCube() {
   if (kitchenOutilCube.value) {
     emit('release-discovered-cube', kitchenOutilCube.value.id, kitchenOutilCube.value.originalCubeId);
@@ -172,17 +167,6 @@ function releaseCarburantCube() {
 /* ----------------- */
 /* KITCHEN ZONE STYLES */
 
-.kitchen-receptacle {
-  width: 100px;
-  height: 100px;
-  top: 80%; /* Pointe bas-gauche */
-  left: 22%;
-  color: white;
-  text-align: center;
-  padding: 6px;
-  font-size: 0.7em;
-  cursor: pointer;
-}
 
 .kitchen-outil {
   width: 100px;

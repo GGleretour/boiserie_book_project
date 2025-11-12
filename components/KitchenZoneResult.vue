@@ -13,7 +13,7 @@
 
 <script setup>
 /* Imports */
-import { getZoneStyle, updateDecryptedImage, decryptedZoneImages} from '../src/command-liste.js';
+import { getZoneStyle, updateDecryptedImage} from '../src/command-liste.js';
 import { watch, computed } from 'vue';
 /* ----------------- */
 
@@ -33,15 +33,11 @@ const displayZoneStyle = computed(() => { return getZoneStyle(kitchenDisplayCube
 /* Methods */
 watch(kitchenDisplayCube, (newCube) => { updateDecryptedImage(newCube, 'display', 'assets/block/block_B_vide.png'); }, { deep: true, immediate: true });
 function releaseDisplayCube() {
-  // Si un cube est présent dans la zone de résultat, un clic le libère.
   if (kitchenDisplayCube.value) {
     emit('release-discovered-cube', kitchenDisplayCube.value.id, kitchenDisplayCube.value.originalCubeId);
   }
 };
 /* ----------------- */
-
-
-
 </script>
 
 <style scoped>
