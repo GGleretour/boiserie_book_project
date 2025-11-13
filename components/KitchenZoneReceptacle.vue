@@ -1,7 +1,6 @@
 <template>
   <div
     id="kitchen-receptacle-zone"
-    class="drop-zone kitchen-receptacle"
     @dragover.prevent
     @drop="$emit('drop-on-zone', 'kitchenReceptacle')"
     :style="receptacleZoneStyle"
@@ -19,7 +18,6 @@ import { watch, computed } from 'vue';
 
 /* Events */
 const emit = defineEmits(['drop-on-zone', 'release-discovered-cube']);
-const props = defineProps(['kitchenDisplayCube'])
 /* ----------------- */
 
 /* define */

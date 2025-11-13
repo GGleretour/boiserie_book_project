@@ -29,7 +29,6 @@ import {watch, nextTick, ref, computed } from 'vue';
 
 /* Events */
 const emit = defineEmits(['release-discovered-cube']);
-const props = defineProps(['kitchenBagCubes'])
 /* ----------------- */
 
 /* define */

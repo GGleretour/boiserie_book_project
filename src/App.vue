@@ -7,7 +7,8 @@
     <EncryptedImage
       src="assets/sprite/background.png"
       class="background-app"
-      alt="background"/>
+      alt="background"
+      />
     <header v-show="pageMenu == 0">
       <EncryptedImage alt="logo_ronge_bois"
         class="logo"
@@ -15,15 +16,14 @@
         width="250"
         height="auto"
         @click="pageMenu = 2"
-      />
-
+        />
       <EncryptedImage alt="logo_petit_chaudron"
         class="logo"
         src="assets/sprite/petit_chaudron.png"
         width="250"
         height="auto"
         @click="pageMenu = 3"
-      />
+        />
       <EncryptedImage
         src="assets/sprite/book_boiserie.png"
         alt="Book Cover"
@@ -31,16 +31,14 @@
         width="400"
         height="600"
         @click="pageMenu = 1"
-      />
+        />
       <Cube 
         v-for="cube in homeCubes"
         :key="cube.id" 
         :cube-data="cube"
         @discovered="spawnDiscoveredCube"
-        
-      />
+        />
     </header>
-
     <main>
       <div v-show="pageMenu == 0" class="home-container">
       </div>
@@ -52,11 +50,11 @@
         :cubes="cubesDefined"
         @state-changed="saveCubesDefinedState"
         :current-book-page="currentBookPage"
-      />
+        />
       <ReadMe
         v-show="pageMenu == 2"
         @close-book="receiveEmit"
-      />
+        />
       <Kitchen
         v-show="pageMenu == 3"
         :is-visible="pageMenu == 3"
@@ -71,16 +69,25 @@
 
         @release-discovered-cube="releaseDiscoveredCube"
         @drop-on-zone="storeDiscoveredCube"
-      />
-    <SpecialCube
+        />
+      <SpecialCube
         :cubes="cubesDefined"
         :stored-discovered-cubes="storedCubesAnimated"
         @release-discovered-cube="releaseDiscoveredCube"
-    />
+        />
       <!-- Affiche tous les cubes "libres" (ni stockés, ni dans la cuisine) -->
-      <DiscoveredCube v-for="cube in freeCubesAnimated" :key="cube.id" :original-cube-id="cube.originalCubeId" :img-src="cube.img_src" :cube-id="cube.id" @stored="storeDiscoveredCube" @inspect="handleInspectCube" :is-loupe-mode-active="isLoupeModeActive" />
-  </main>
-</template>
+      <DiscoveredCube
+        v-for="cube in freeCubesAnimated"
+        :key="cube.id"
+        :original-cube-id="cube.originalCubeId"
+        :img-src="cube.img_src"
+        :cube-id="cube.id"
+        @stored="storeDiscoveredCube"
+        @inspect="handleInspectCube"
+        :is-loupe-mode-active="isLoupeModeActive"
+        />
+    </main>
+  </template>
 </template>
 
 <script setup>

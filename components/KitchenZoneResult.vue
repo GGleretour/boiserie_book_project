@@ -3,7 +3,7 @@
       id="kitchen-display-zone"
       class="drop-zone kitchen-display"
       @dragover.prevent
-      @drop="$emit('drop-on-zone', 'kitchenDisplay')"
+      @drop="$emit('drop-on-zone', { cubeId: kitchenDisplayCube.value.id, zone: 'kitchenDisplay' })"
       :style="displayZoneStyle"
       @click="releaseDisplayCube"
     >
@@ -19,7 +19,6 @@ import { watch, computed } from 'vue';
 
 /* Events */
 const emit = defineEmits(['drop-on-zone', 'release-discovered-cube']);
-const props = defineProps(['kitchenDisplayCube'])
 /* ----------------- */
 
 /* define */

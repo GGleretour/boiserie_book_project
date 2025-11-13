@@ -2,43 +2,63 @@
   <div class="star-layout-container">
     <!-- Zone 1 : Le "sac" de la cuisine -->
     <KitchenZoneBag
-      class="zone-bag-posi zone-big-style"
-      :is-visible="isVisible"
-      :kitchen-bag-cubes="kitchenBagCubes"
-      @release-discovered-cube="$emit('release-discovered-cube', $event)"
-      />
+    class="zone-bag-posi zone-big-style"
+    :is-visible="isVisible"
+    :kitchen-bag-cubes="kitchenBagCubes"
+    @release-discovered-cube="$emit('release-discovered-cube', $event)"
+    />
     <!-- Zone 2 : La zone d'affichage/remplacement -->
-    <KitchenZoneResult
-      class="zone-result-posi zone-moyen-style"
-      :kitchen-display-cube="kitchenDisplayCube"
-      @drop-on-zone="$emit('drop-on-zone', $event)"
+    <ZoneDepotForUnique
+    id="kitchen-display-zone"
+    class="zone-moyen-style "
+    :given-cube="kitchenDisplayCube"
+    :zone-idl-img="'assets/block/block_B_vide.png'"
+    :zone-name="'Résultat'"
+    style = "top: 50%; left: 50%;"
+    @drop-on-zone="$emit('drop-on-zone', $event)"
       @release-discovered-cube="$emit('release-discovered-cube', $event)"
       />
     <!-- Zone 3 : La zone réceptacle (avec gestion du drop) -->
-    <KitchenZoneReceptacle
-      class="zone-receptacle-posi zone-moyen-style"
-      :kitchen-receptacle-cube="kitchenReceptacleCube"
+    <ZoneDepotForUnique
+      id="kitchen-receptacle-zone"
+      class="zone-moyen-style "
+      :given-cube="kitchenReceptacleCube"
+      :zone-idl-img="'assets/block/block_Re_vide.png'"
+      :zone-name="'Réceptacle'"
+      style = "top: 80%; left: 22%;"
       @drop-on-zone="$emit('drop-on-zone', $event)"
       @release-discovered-cube="$emit('release-discovered-cube', $event)"
       />
     <!-- Zone 4 : La zone outil (avec gestion du drop) -->
-    <KitchenZoneOutil
-      class="zone-outil-posi zone-moyen-style"
-      :kitchen-outil-cube="kitchenOutilCube"
+    <ZoneDepotForUnique
+      id="kitchen-outil-zone"
+      class="zone-moyen-style "
+      :given-cube="kitchenOutilCube"
+      :zone-idl-img="'assets/block/block_O_vide.png'"
+      :zone-name="'Outil'"
+      style = "top: 35%; left: 90%;"
       @drop-on-zone="$emit('drop-on-zone', $event)"
       @release-discovered-cube="$emit('release-discovered-cube', $event)"
       />
     <!-- Zone 5 : La zone rune (avec gestion du drop) -->
-    <KitchenZoneRune
-      class="zone-rune-posi zone-moyen-style"
-      :kitchen-rune-cube="kitchenRuneCube"
+    <ZoneDepotForUnique
+      id="kitchen-rune-zone"
+      class="zone-moyen-style "
+      :given-cube="kitchenRuneCube"
+      :zone-idl-img="'assets/block/block_ru_vide.png'"
+      :zone-name="'Rune'"
+      style = "top: 35%; left: 10%;"
       @drop-on-zone="$emit('drop-on-zone', $event)"
       @release-discovered-cube="$emit('release-discovered-cube', $event)"
       />
     <!-- Zone 6 : La zone carburant (avec gestion du drop) -->
-    <KitchenZoneCarburant
-      class="zone-carburant-posi zone-moyen-style"
-      :kitchen-carburant-cube="kitchenCarburantCube"
+    <ZoneDepotForUnique
+      id="kitchen-carburant-zone"
+      class="zone-moyen-style "
+      :given-cube="kitchenCarburantCube"
+      :zone-idl-img="'assets/block/block_C_vide.png'"
+      :zone-name="'Carburant'"
+      style = "top: 80%; left: 78%;"
       @drop-on-zone="$emit('drop-on-zone', $event)"
       @release-discovered-cube="$emit('release-discovered-cube', $event)"
       />
@@ -53,6 +73,7 @@ import KitchenZoneReceptacle from './KitchenZoneReceptacle.vue';
 import KitchenZoneRune from './KitchenZoneRune.vue';
 import KitchenZoneOutil from './KitchenZoneOutil.vue';
 import KitchenZoneCarburant from './KitchenZoneCarburant.vue';
+import ZoneDepotForUnique from './ZoneDepotForUnique.vue';
 /* ----------------- */
 
 /* Events */
