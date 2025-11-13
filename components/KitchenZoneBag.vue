@@ -57,27 +57,4 @@ watch(isVisible, async (newValue) => {
 </script>
 
 <style scoped>
-/* DROP ZONE STYLES */
-.drop-zone {
-  position: absolute;
-  border-radius: 10px;
-  box-sizing: border-box;
-  /* Centrage de l'élément sur ses coordonnées top/left */
-  transform: translate(-50%, -50%);
-}
-/* ----------------- */
-
-/* KITCHEN BAG STYLES */
-.kitchen-bag {
-  width: 160px;
-  height: 160px;
-  top: 5%; /* Pointe du haut */
-  left: 50%; 
-  color: white;
-  text-align: center;
-  padding: 10px;
-  font-size: 0.9em;
-  cursor: pointer;
-}
-/* ----------------- */
 </style>

@@ -1,33 +1,28 @@
 <template>
-  <!-- Note: v-show est utilisé pour que les refs soient disponibles même quand le composant est caché -->
   <div id="kitchen_container">
     <!-- Bouton de fermeture -->
      <CloseButton @close="$emit('close-book')"/>
-    <!--<div class="config-container">
-      <button class="close-button" @click="close">Close</button>
-    </div>-->
     
     <div class="content-wrapper">
       <EncryptedImage
-      id="kitchen_page"
-      src="assets/page/page_vide_from_book.png"
-      alt="kitchen page"
-      width="600"
-      height="auto"
-      />
+        id="kitchen_page"
+        src="assets/page/page_vide_from_book.png"
+        alt="kitchen page"
+        width="600"
+        height="auto"
+        />
       <!-- Conteneur carré pour la disposition en étoile -->
       <KitchenStarLayoutContainer
-          :kitchen-bag-cubes="kitchenBagCubes"
-          :kitchen-display-cube="kitchenDisplayCube"
-          :kitchen-receptacle-cube="kitchenReceptacleCube"
-          :kitchen-outil-cube="kitchenOutilCube"
-          :kitchen-rune-cube="kitchenRuneCube"
-          :kitchen-carburant-cube="kitchenCarburantCube"
-          :is-visible="isVisible"
-          @drop-on-zone="$emit('drop-on-zone', $event)"
-          @release-discovered-cube="$emit('release-discovered-cube', $event)"
+        :kitchen-bag-cubes="kitchenBagCubes"
+        :kitchen-display-cube="kitchenDisplayCube"
+        :kitchen-receptacle-cube="kitchenReceptacleCube"
+        :kitchen-outil-cube="kitchenOutilCube"
+        :kitchen-rune-cube="kitchenRuneCube"
+        :kitchen-carburant-cube="kitchenCarburantCube"
+        :is-visible="isVisible"
+        @drop-on-zone="$emit('drop-on-zone', $event)"
+        @release-discovered-cube="$emit('release-discovered-cube', $event)"
       />
-
     </div>
   </div>
 </template>

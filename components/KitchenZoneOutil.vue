@@ -41,28 +41,4 @@ function releaseOutilCube() {
 </script>
 
 <style scoped>
-/* DROP ZONE STYLES */
-.drop-zone {
-  position: absolute;
-  border-radius: 10px;
-  box-sizing: border-box;
-  /* Centrage de l'élément sur ses coordonnées top/left */
-  transform: translate(-50%, -50%);
-}
-/* ----------------- */
-
-/* Kitchen Zone Outil STYLES */
-.kitchen-outil {
-  width: 100px;
-  height: 100px;
-  top: 35%; /* Pointe haut-droite */
-  left: 90%;
-  color: white;
-  text-align: center;
-  padding: 6px;
-  font-size: 0.7em;
-  cursor: pointer;
-}
-/* ----------------- */
-
 </style>
