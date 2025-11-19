@@ -39,7 +39,7 @@ defineProps(['cube']);
 }
 
 .cube-image.not-discovered {
-  filter: grayscale(1) brightness(0);
+  filter: grayscale(1) brightness(0.1);
   cursor: not-allowed;
 }
 /* ----------------- */
