@@ -2,20 +2,20 @@
   <div class="star-layout-container">
     <!-- Zone 1 : Le "sac" de la cuisine -->
     <KitchenZoneBag
-    class="zone-bag-posi zone-big-style"
-    :is-visible="isVisible"
-    :kitchen-bag-cubes="kitchenBagCubes"
-    @release-discovered-cube="$emit('release-discovered-cube', $event)"
-    />
+      class="zone-bag-posi zone-big-style"
+      :is-visible="isVisible"
+      :kitchen-bag-cubes="kitchenBagCubes"
+      @release-discovered-cube="$emit('release-discovered-cube', $event)"
+      />
     <!-- Zone 2 : La zone d'affichage/remplacement -->
     <ZoneDepotForUnique
-    id="kitchen-display-zone"
-    class="zone-moyen-style "
-    :given-cube="kitchenDisplayCube"
-    :zone-idl-img="'assets/block/block_B_vide.png'"
-    :zone-name="'Résultat'"
-    style = "top: 50%; left: 50%;"
-    @drop-on-zone="$emit('drop-on-zone', $event)"
+      id="kitchen-display-zone"
+      class="zone-moyen-style "
+      :given-cube="kitchenDisplayCube"
+      :zone-idl-img="'assets/block/block_B_vide.png'"
+      :zone-name="'Résultat'"
+      style = "top: 50%; left: 50%;"
+      @drop-on-zone="$emit('drop-on-zone', $event)"
       @release-discovered-cube="$emit('release-discovered-cube', $event)"
       />
     <!-- Zone 3 : La zone réceptacle (avec gestion du drop) -->
@@ -68,11 +68,6 @@
 <script setup>
 /* Imports */
 import KitchenZoneBag from './KitchenZoneBag.vue';
-import KitchenZoneResult from './KitchenZoneResult.vue';
-import KitchenZoneReceptacle from './KitchenZoneReceptacle.vue';
-import KitchenZoneRune from './KitchenZoneRune.vue';
-import KitchenZoneOutil from './KitchenZoneOutil.vue';
-import KitchenZoneCarburant from './KitchenZoneCarburant.vue';
 import ZoneDepotForUnique from './ZoneDepotForUnique.vue';
 /* ----------------- */
 
@@ -100,26 +95,6 @@ const props = defineProps(['kitchenBagCubes', 'kitchenDisplayCube', 'kitchenRece
 .zone-bag-posi {
   top: 5%; /* Pointe du haut */
   left: 50%;
-}
-.zone-result-posi {
-  top: 50%; /* Pointe du haut */
-  left: 50%;
-}
-.zone-receptacle-posi {
-  top: 80%; /* Pointe bas-gauche */
-  left: 22%;
-}
-.zone-outil-posi {
-  top: 35%; /* Pointe haut-droite */
-  left: 90%;
-}
-.zone-rune-posi {
-  top: 35%; /* Pointe haut-gauche */
-  left: 10%;
-}
-.zone-carburant-posi {
-  top: 80%; /* Pointe bas-droite */
-  left: 78%;
 }
 /* ----------------- */
 .zone-moyen-style {

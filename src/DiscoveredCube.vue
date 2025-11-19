@@ -196,7 +196,6 @@ export default {
         }
         return;
       }
-
       this.isDragging = true;
       document.body.classList.add('no-select');
 
