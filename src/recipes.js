@@ -27,7 +27,7 @@ export const recipes = [
     discover: ['indice_secret_1'] // Les IDs des cubes à marquer comme découverts (find: true)
   },
    {
-    name: 'recette secrète',
+    name: 'recette secrète 1',
     result: {
       // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
       originalCubeId: 'block_B_secret_1',
@@ -53,7 +53,7 @@ export const recipes = [
     name: 'ragout_facon_bucheron',
     result: {
       // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
-      originalCubeId: 'indice_secret_1',
+      originalCubeId: 'indice_secret_2',
     },
     ingredients: {
       // Les IDs des cubes originaux requis pour la recette
@@ -71,7 +71,31 @@ export const recipes = [
       kitchenRune: 'rune_louche',
       kitchenCarburant: 'charbon',
     },
+    secret: ['block_BI_2_1', 'block_BI_2_2', 'block_BI_2_3', 'block_BI_2_4', 'block_BI_2_5', 'block_BI_2_6'], // Les IDs des cubes à rendre visibles (disp: true)
+    discover: ['indice_secret_2'] // Les IDs des cubes à marquer comme découverts (find: true)
+  },
+   {
+    name: 'recette secrète 2',
+    result: {
+      // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
+      originalCubeId: 'block_B_secret_2',
+    },
+    ingredients: {
+      // Les IDs des cubes originaux requis pour la recette
+      kitchenReceptacle: 'petit_chaudron', // Le chaudron va dans la zone "réceptacle"
+      kitchenBag: [
+        'block_BI_2_1',
+        'block_BI_2_2',
+        'block_BI_2_3',
+        'block_BI_2_4',
+        'block_BI_2_5',
+        'block_BI_2_6'
+      ], // Les ingrédients vont dans "l'atelier"
+      kitchenOutil: 'louche',
+      kitchenRune: 'rune_louche',
+      kitchenCarburant: 'charbon',
+    },
     secret: [], // Les IDs des cubes à rendre visibles (disp: true)
-    discover: ['indice_secret_1'] // Les IDs des cubes à marquer comme découverts (find: true)
+    discover: ['page_B_secret_2_1', 'page_B_secret_2_2', 'page_B_secret_2_3', 'block_B_secret_2'] // Les IDs des cubes à marquer comme découverts (find: true)
   },
 ];

@@ -3,7 +3,7 @@
     <CloseButton @close="$emit('close-book')"/>
     <EncryptedImage
       id="readme_page"
-      src="assets/page/page_vide_from_book.png"
+      src="assets/page/page_readMe.png"
       alt="read me page"
       width="600"
       height="auto"
