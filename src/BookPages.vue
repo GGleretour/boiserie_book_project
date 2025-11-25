@@ -8,7 +8,7 @@
       <!-- Page de Gauche -->
       <RecipePage 
         v-model:pageData="pages[currentPage].left"
-        :cubes="leftPageCubes"
+        :cubes="whatPageCubes(pages[currentPage].left.imageUrl)"
         :page-width="400"
         :page-height="600" 
         ref="leftPage"
@@ -17,7 +17,7 @@
       <!-- Page de Droite -->
       <RecipePage 
         v-model:pageData="pages[currentPage].right"
-        :cubes="rightPageCubes"
+        :cubes="whatPageCubes(pages[currentPage].right.imageUrl)"
         :page-width="400"
         :page-height="600"
         ref="rightPage"
@@ -91,14 +91,6 @@ export default {
     visibleCubes() {
       // Filtre les cubes pour la double-page actuelle
       return this.cubes.filter(cube => cube.page === this.currentPage && !cube.isInInventory && cube.disp);
-    },
-    leftPageCubes() {
-      // Cubes pour la page de gauche
-      return this.visibleCubes.filter(cube => cube.side === 'left');
-    },
-    rightPageCubes() {
-      // Cubes pour la page de droite
-      return this.visibleCubes.filter(cube => cube.side === 'right');
     }
   },
   methods: {
@@ -116,6 +108,9 @@ export default {
         this.currentPage--;
         this.$emit('page-changed', this.currentPage);
       }
+    },
+    whatPageCubes(page) {
+      return this.cubes.filter(cube => cube.page === page && cube.disp);
     },
     logClickPosition(event) {
       // Cette fonction ne s'exécute qu'en mode développement (npm run dev)
@@ -142,11 +137,13 @@ export default {
         }
 
         if (pageClicked) {
-          const x_percent = Math.round(((event.clientX - pageClicked.left) / pageClicked.width) * 100);
-          const y_percent = Math.round(((event.clientY - pageClicked.top) / pageClicked.height) * 100);
           const x_px = Math.round(event.clientX - pageClicked.left);
           const y_px = Math.round(event.clientY - pageClicked.top);
-          console.log(`x_out:'${x_px}px',\ny_out:'${y_px}px',\npage: ${this.currentPage},\nside: '${side}',\n`);
+          if (side === 'left') {
+          console.log(`x_out:'${x_px}px',\ny_out:'${y_px}px',\npage: '${this.pages[this.currentPage].left.imageUrl}',\n`);
+          } else {
+          console.log(`x_out:'${x_px}px',\ny_out:'${y_px}px',\npage: '${this.pages[this.currentPage].right.imageUrl}',\n`);
+          }
         }
       }
     },
