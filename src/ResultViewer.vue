@@ -5,7 +5,7 @@
       <EncryptedImage ref="encryptedImage" :src="imgSrc" alt="Image inspectée" class="result-image"/>
       <div class="button-container">
         <button v-if="showRetrieveButton" class="retrieve-btn" @click="retrieve">Récupérer</button>
-        <button v-if="showDownloadButton" class="download-btn" @click="downloadImage">Télécharger</button>
+        <button v-if="showDownloadButton" class="download-btn" @click="downloadImage">Télécharger: {{imgSrc.split('/').pop().replace('.enc', '')}}</button>
       </div>
     </div>
   </div>
