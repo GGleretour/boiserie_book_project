@@ -3,7 +3,7 @@ export const recipes = [
     name: 'olivier_cake',
     result: {
       // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
-      originalCubeId: 'indice_secret_1',
+      originalCubeId: 'result_secret_1',
     },
     ingredients: {
       // Les IDs des cubes originaux requis pour la recette
@@ -24,7 +24,7 @@ export const recipes = [
       kitchenCarburant: 'beure',
     },
     secret: ['block_BI_1_1', 'block_BI_1_2', 'block_BI_1_3', 'block_BI_1_4', 'block_BI_1_5'], // Les IDs des cubes à rendre visibles (disp: true)
-    discover: ['indice_secret_1'] // Les IDs des cubes à marquer comme découverts (find: true)
+    discover: ['indice_secret_1', 'result_secret_1'] // Les IDs des cubes à marquer comme découverts (find: true)
   },
    {
     name: 'recette secrète 1',
@@ -53,7 +53,7 @@ export const recipes = [
     name: 'ragout_facon_bucheron',
     result: {
       // L'ID du cube original 'poto-bois' qui doit exister dans cubes.js
-      originalCubeId: 'indice_secret_2',
+      originalCubeId: 'result_secret_2',
     },
     ingredients: {
       // Les IDs des cubes originaux requis pour la recette
@@ -72,7 +72,7 @@ export const recipes = [
       kitchenCarburant: 'charbon',
     },
     secret: ['block_BI_2_1', 'block_BI_2_2', 'block_BI_2_3', 'block_BI_2_4', 'block_BI_2_5', 'block_BI_2_6'], // Les IDs des cubes à rendre visibles (disp: true)
-    discover: ['indice_secret_2'] // Les IDs des cubes à marquer comme découverts (find: true)
+    discover: ['indice_secret_2', 'result_secret_2'] // Les IDs des cubes à marquer comme découverts (find: true)
   },
    {
     name: 'recette secrète 2',
