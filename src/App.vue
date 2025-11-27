@@ -10,6 +10,7 @@
       alt="background"
       />
     <header v-show="pageMenu == 0">
+      <GoogleTag/>
       <EncryptedImage alt="logo_ronge_bois"
         class="logo"
         src="assets/sprite/ronge_bois_symbole.png"
@@ -102,6 +103,7 @@ import EncryptedImage from './EncryptedImage.vue';
 import CryptoJS from 'crypto-js';
 import ResultViewer from './ResultViewer.vue';
 import Glossary from './Glossary.vue';
+import GoogleTag from './GoogleTag.vue';
 
 import LoadingScreen from './LoadingScreen.vue';
 import { preloadImages } from './image-service.js';
