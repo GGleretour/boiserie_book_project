@@ -102,7 +102,6 @@ import EncryptedImage from './EncryptedImage.vue';
 import CryptoJS from 'crypto-js';
 import ResultViewer from './ResultViewer.vue';
 import Glossary from './Glossary.vue';
-import GoogleTag from './GoogleTag.vue';
 
 import LoadingScreen from './LoadingScreen.vue';
 import { preloadImages } from './image-service.js';
