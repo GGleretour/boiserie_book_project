@@ -1,6 +1,5 @@
 
 <template>
-  <GoogleTag/>
   <LoadingScreen v-if="isLoading" />
   <template v-else>
     <ResultViewer v-model:visible="resultViewerVisible" :img-src="resultViewerImgSrc" :show-retrieve-button="isKitchenResult" :show-download-button="!isKitchenResult" @retrieve="handleRetrieveResult" />
