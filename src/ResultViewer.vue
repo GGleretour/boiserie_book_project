@@ -110,7 +110,7 @@ export default {
   background: transparent;
   border: none;
   font-size: 2rem;
-  color: #333;
+  color: #c00000;
 }
 .retrieve-btn {
   background-color: #4CAF50;

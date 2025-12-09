@@ -479,13 +479,13 @@ header {
   position: relative;
 }
 .loupe-cursor { /* Cette règle est dans le style scoped, elle peut être moins prioritaire */
-  cursor: url('assets/sprite/loup.png') 0 0, auto;
+  cursor: url('./assets/sprite/loup.png') 0 0, auto;
 }
 
 </style>
 <style>
 /* Style global pour le curseur en mode loupe */
 .loupe-cursor, .loupe-cursor * {
-  cursor: url('assets/sprite/loup.png') 0 0, auto !important;
+  cursor: url('./assets/sprite/loup.png') 0 0, auto !important;
 }
 </style>
