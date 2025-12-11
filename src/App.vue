@@ -4,7 +4,8 @@
   <template v-else>
     <ResultViewer v-model:visible="resultViewerVisible" :img-src="resultViewerImgSrc" :show-retrieve-button="isKitchenResult" :show-download-button="!isKitchenResult" @retrieve="handleRetrieveResult" />
     <Glossary :cubes="cubesDefined" @spawn-from-glossary="spawnDiscoveredCube" />
-    <OptionMenu v-show="isOptionMenuVisible" @close-book="isOptionMenuVisible = false" />
+    <OptionMenu v-show="isOptionMenuVisible" @close-menu="isOptionMenuVisible = false" />
+    <NinjaBois v-show="isNinjaBoisVisible" @close-ninja-bois="isNinjaBoisVisible = false" />
     <EncryptedImage
       src="assets/sprite/background.png"
       class="background-app"
@@ -109,6 +110,7 @@ import { preloadImages } from './image-service.js';
 import { recipes } from './recipes.js';
 import { pageImages } from './pages.js';
 import OptionMenu from './OptionMenu.vue';
+import NinjaBois from './NinjaBois.vue';
 
 // Récupère la clé secrète depuis les variables d'environnement.
 const SECRET_KEY = import.meta.env.VITE_CRYPTO_SECRET_KEY;
@@ -123,6 +125,8 @@ const resultViewerImgSrc = ref(null);
 const isLoupeModeActive = ref(false);
 const isKitchenResult = ref(false); // Pour savoir si la visionneuse affiche un résultat de cuisine
 const isOptionMenuVisible = ref(false);
+const isNinjaBoisVisible = ref(false);
+
 
 // --- Computed properties ---
 const allInstances = computed(() => {
@@ -183,6 +187,9 @@ function handleGlobalKeyDown(event) {
   }
   if (event.key === 'Escape') {
     isOptionMenuVisible.value = !isOptionMenuVisible.value;
+  }
+  if (event.key.toLowerCase() === 'n') {
+    isNinjaBoisVisible.value = !isNinjaBoisVisible.value;
   }
 }
 
@@ -391,7 +398,7 @@ onMounted(async () => {
     'assets/sprite/background.png', 'assets/sprite/ronge_bois_symbole.png', 'assets/sprite/petit_chaudron.png', 'assets/sprite/sac_de_jute_1.png', 'assets/sprite/sac_de_jute_2.png',
     'assets/sprite/book_boiserie.png', 'assets/sprite/arrow.png', 'assets/sprite/loup.png', 'assets/sprite/clou.png', 'assets/sprite/planche_a_glossaire.png', 'assets/page/page_helpMe.png',
     'assets/block/block_I_vide.png', 'assets/block/block_B_vide.png', 'assets/block/block_Re_vide.png', 'assets/block/block_V_pageVoid.png', 'assets/page/page_readMe.png',
-    'assets/block/block_O_vide.png', 'assets/block/block_ru_vide.png', 'assets/block/block_C_vide.png', 'assets/block/block_V_cubeVoid.png',
+    'assets/block/block_O_vide.png', 'assets/block/block_ru_vide.png', 'assets/block/block_C_vide.png', 'assets/block/block_V_cubeVoid.png', 'assets/page_ninja_bois.png',
   ];
 
   // 3. Créer une liste complète de toutes les images à précharger.
